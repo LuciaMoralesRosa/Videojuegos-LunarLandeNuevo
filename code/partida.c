@@ -1,9 +1,9 @@
 #include "partida.h"
+#include "gestor_colisiones.h"
+#include "gestor_plataformas.h"
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
-#include "gestor_plataformas.h"
-#include "variables_globales.h"
-#include "gestor_colisiones.h"
+#include "../data/variables_globales.h"
 
 #define fuel_por_moneda 500
 #define masa_nave 1000

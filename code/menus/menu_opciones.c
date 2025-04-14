@@ -1,7 +1,7 @@
-#include "menu.h"
-#include "palabra.h"
-#include "../resources/caracteres.h"
-#include "../code/transformaciones.h"
+#include "menu_opciones.h"
+#include "../palabra.h"
+#include "../../resources/caracteres.h"
+#include "../../code/transformaciones.h"
 #include <stdio.h>
 #include <windows.h>
 
@@ -155,7 +155,7 @@ OpcionMenu obtenerOpcionSeleccionada(void) {
 
 void gestionar_opcion_seleccionada(void) {
     switch (opcionSeleccionada) {
-    case MISSION:
+    case MISSION:{
         struct Punto p = opcionesTextuales[0]->origen;
         destruir_palabra(opcionesTextuales[0]);
         switch (tipo_mision) {
@@ -183,7 +183,8 @@ void gestionar_opcion_seleccionada(void) {
             break;
         }
         break;
-    case ASTEROIDS:
+    }
+    case ASTEROIDS: {
         struct Punto p1 = opcionesTextuales[1]->origen;
         destruir_palabra(opcionesTextuales[1]);
         if(asteroides_activados == 0) {
@@ -195,8 +196,9 @@ void gestionar_opcion_seleccionada(void) {
             opcionesTextuales[1] = crearPalabraDesdeCadena(cadenasOpciones[1], p1);
             asteroides_activados = 0;
         }
-        break;        
-    case TURRETS:
+        break; 
+    }       
+    case TURRETS: {
         struct Punto p2 = opcionesTextuales[2]->origen;
         destruir_palabra(opcionesTextuales[2]);
         if(torretas_activadas == 0) {
@@ -208,7 +210,8 @@ void gestionar_opcion_seleccionada(void) {
             opcionesTextuales[2] = crearPalabraDesdeCadena(cadenasOpciones[2], p2);
             torretas_activadas = 0;
         }
-        break; 
+        break;
+    }
     default:
         break;
     }

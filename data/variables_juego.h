@@ -1,0 +1,5 @@
+#ifndef VARIABLES_JUEGO_H
+#define VARIABLES_JUEGO_H
+
+
+#endif // VARIABLES_JUEGO_H

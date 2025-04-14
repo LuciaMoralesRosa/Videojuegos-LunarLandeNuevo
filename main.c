@@ -1,38 +1,47 @@
 #include "code/lunar_lander.h"
-#include "code/menu.h"
+#include "code/menus/menu_opciones.h"
 #include "code/gestor_plataformas.h"
 #include "code/palabra.h"
+#include "code/menus/menu_insertar_moneda.h"
 #include "resources/superficie_lunar.h"
 
-#include "code/variables_globales.h"
-#include "code/constantes.h"
+#include "data/variables_globales.h"
+#include "data/constantes.h"
+#include "data/variables_juego.h"
 
 #include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
 
-#define timer 1
+#define timer_TICK_juego 1
+#define timer_IA 10000
 
 
+// ---------------------------- VARIABLES ESCALADO -----------------------------
 // Factor por el que escalar la escena
 float factor_escalado = 1.0f; 
-
-// 1 si la ventana esta en fullcreen, 0 si no (sin bordes ni cabecera)
 uint8_t fullscreen = 0;
 uint8_t esc_presionado = 0;
 // Rectangulo que contiene la ventana anterior al resize de pantalla completa
 RECT rectVentanaAnterior;
+// -----------------------------------------------------------------------------
 
-// Moneda presionada
+
+// VARIABLES MAQUINA ESTADOS JUEGO
 uint8_t moneda_presionada = 0;
+uint8_t monedas_introducidas = 0;
+
 
 /* Estado de la aplicación */
 typedef enum {
-    ESTADO_MENU,
-    ESTADO_JUEGO
+    ESTADO_PIDIENDO_MONEDA,
+    ESTADO_OPCIONES,
+    ESTADO_JUEGO,
+    ESTADO_ATERRIZAJE,
+    ESTADO_FIN_PARTIDA
 } EstadoAplicacion;
 
-EstadoAplicacion estadoActual = ESTADO_MENU;
+EstadoAplicacion estadoActual = ESTADO_PIDIENDO_MONEDA;
 
 
 struct Punto* p1 = NULL;
@@ -122,124 +131,222 @@ void escalar(HWND hwnd) {
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-    case WM_CREATE: {
-        SetTimer(hwnd, timer, intervalo_fisicas_ms, NULL);
-        inicializarMenu();
-        break;
-    }
-    case WM_SYSCOMMAND: {
-        if ((wParam & 0xFFF0) == SC_RESTORE) {
-            if (fullscreen == 1 && esc_presionado == 1) {
-                fullscreen = 0;
-                SetWindowLong(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-                SetWindowPos(
-                    hwnd, NULL,
-                    rectVentanaAnterior.left,
-                    rectVentanaAnterior.top,
-                    rectVentanaAnterior.right - rectVentanaAnterior.left,
-                    rectVentanaAnterior.bottom - rectVentanaAnterior.top,
-                    SWP_NOZORDER | SWP_FRAMECHANGED
-                );
-            } else if (esc_presionado == 1) {
-                esc_presionado = 0;
-                return 0;
-            }
-            esc_presionado = 0;
-        } else if ((wParam & 0xFFF0) == SC_MAXIMIZE) {
-            fullscreen = 1;
-            GetWindowRect(hwnd, &rectVentanaAnterior);
-            SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-            escalar(hwnd);
+        case WM_CREATE: {
+            SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
+            inicializarMenu();
+            break;
         }
-        break;
-    }
-    case WM_GETMINMAXINFO: {
-        MINMAXINFO* mmi = (MINMAXINFO*)lParam;
-        RECT rc = {0, 0, anchura_minima_ventana, altura_minima_ventana};
-        AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-        mmi->ptMinTrackSize.x = rc.right - rc.left;
-        mmi->ptMinTrackSize.y = rc.bottom - rc.top;
-        break;
-    }
-    case WM_SIZE: {
-        escalar(hwnd);
-        break;
-    }
-    case WM_TIMER: {
-        if (wParam == timer) {
-            manejar_instante();
-            manejar_teclas();
-            InvalidateRect(hwnd, NULL, FALSE);
-        }
-        break;
-    }
-    case WM_PAINT: {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-        HDC hdcMem = CreateCompatibleDC(hdc);
-        RECT rect;
-        GetClientRect(hwnd, &rect);
-        HBITMAP hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
-        HGDIOBJ hOld = SelectObject(hdcMem, hbmMem);
-        HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
-        FillRect(hdcMem, &rect, brush);
-        DeleteObject(brush);
         
-        if (estadoActual == ESTADO_MENU) {
-            // Pasa el hwnd real a la función
-            dibujarMenuEnBuffer(hdcMem, hwnd);
-
-        } else if (estadoActual == ESTADO_JUEGO) {
-            dibujar_bordes(hdcMem);
-            pintar_pantalla(hdcMem);
-        }
-        pruebasDibujables(hdcMem);
-        
-        BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
-        SelectObject(hdcMem, hOld);
-        DeleteObject(hbmMem);
-        DeleteDC(hdcMem);
-        EndPaint(hwnd, &ps);
-        break;
-    }
-    
-    case WM_KEYDOWN: {
-        if(estadoActual == ESTADO_MENU) {
-            procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
-            if(wParam == VK_RETURN) {
-                gestionar_opcion_seleccionada();
-                OpcionMenu op = obtenerOpcionSeleccionada();
-                if(op == EXIT) {
-                    printf("Exit seleccionado\n");
-                    PostQuitMessage(0); // Terminar el proceso
+        case WM_SYSCOMMAND: {
+            if ((wParam & 0xFFF0) == SC_RESTORE) {
+                if (fullscreen == 1 && esc_presionado == 1) {
+                    fullscreen = 0;
+                    SetWindowLong(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+                    SetWindowPos(
+                        hwnd, NULL,
+                        rectVentanaAnterior.left,
+                        rectVentanaAnterior.top,
+                        rectVentanaAnterior.right - rectVentanaAnterior.left,
+                        rectVentanaAnterior.bottom - rectVentanaAnterior.top,
+                        SWP_NOZORDER | SWP_FRAMECHANGED
+                    );
+                } else if (esc_presionado == 1) {
+                    esc_presionado = 0;
+                    return 0;
                 }
+                esc_presionado = 0;
+            } else if ((wParam & 0xFFF0) == SC_MAXIMIZE) {
+                fullscreen = 1;
+                GetWindowRect(hwnd, &rectVentanaAnterior);
+                SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+                escalar(hwnd);
             }
+            break;
         }
-        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-            esc_presionado = 1;
-            SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-        }
-        if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
-        if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
-        if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
-        if (GetAsyncKeyState(VK_SPACE) & 0x8000) pulsar_tecla(ESPACIO);
-        if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
 
-    break;
-    }
-    case WM_KEYUP: {
-        if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
-        if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
-        if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
-        if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
-        if (!(GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000)) levantar_tecla(MONEDA);
+        case WM_GETMINMAXINFO: {
+            MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+            RECT rc = {0, 0, anchura_minima_ventana, altura_minima_ventana};
+            AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+            mmi->ptMinTrackSize.x = rc.right - rc.left;
+            mmi->ptMinTrackSize.y = rc.bottom - rc.top;
+            break;
+        }
+
+        case WM_SIZE: {
+            escalar(hwnd);
+            break;
+        }
+
+        case WM_TIMER: {
+            switch(estadoActual) {
+                case ESTADO_PIDIENDO_MONEDA: {
+                    if(wParam == timer_IA) {
+                        // Gestionar partida ia
+                        destruir_menu_insertar_moneda();
+                    }
+                    break;
+                }
+                case ESTADO_JUEGO: {
+                    if (wParam == timer_TICK_juego) {
+                        manejar_instante();
+                        manejar_teclas();
+                        InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    break;
+                }
+                default: break;
+            }
         break;
-    }
-    case WM_DESTROY: {
-        KillTimer(hwnd, timer);
-        PostQuitMessage(0);
-        return 0;
-    }
+        }
+
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            HDC hdcMem = CreateCompatibleDC(hdc);
+            RECT rect;
+            GetClientRect(hwnd, &rect);
+            HBITMAP hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
+            HGDIOBJ hOld = SelectObject(hdcMem, hbmMem);
+            HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
+            FillRect(hdcMem, &rect, brush);
+            DeleteObject(brush);
+
+            dibujar_bordes(hdcMem);
+            switch(estadoActual) {
+                case ESTADO_PIDIENDO_MONEDA: {
+                    // Gestionar IA de fondo
+
+                    // Pintar peticion
+                    mostrar_insertar_moneda(hdcMem);
+                    break;
+                }
+                case ESTADO_OPCIONES: {
+                    dibujarMenuEnBuffer(hdcMem, hwnd);
+                    break;
+                }
+                case ESTADO_JUEGO: {
+                    pintar_pantalla(hdcMem);
+                    break;
+                }
+                case ESTADO_ATERRIZAJE: {
+                    break;
+                }
+                case ESTADO_FIN_PARTIDA: {
+                    break;
+                }
+                default: break;
+            }
+            
+            //pruebasDibujables(hdcMem);
+            
+            BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
+            SelectObject(hdcMem, hOld);
+            DeleteObject(hbmMem);
+            DeleteDC(hdcMem);
+            EndPaint(hwnd, &ps);
+            break;
+        }
+        
+        case WM_KEYDOWN: {
+            switch(estadoActual) {
+                case ESTADO_PIDIENDO_MONEDA: {
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                        monedas_introducidas++;
+                        estadoActual = ESTADO_OPCIONES;
+                    }
+                    break;
+                }
+
+                case ESTADO_OPCIONES: {
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                        monedas_introducidas++;
+                    }
+                    procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
+                    if(wParam == VK_RETURN) {
+                        gestionar_opcion_seleccionada();
+                        OpcionMenu op = obtenerOpcionSeleccionada();
+                        if(op == EXIT) {
+                            printf("Exit seleccionado\n");
+                            PostQuitMessage(0); // Terminar el proceso
+                        }
+                    }
+                    if (wParam == VK_SPACE) {
+                        estadoActual = ESTADO_JUEGO;
+                        printf("pidiendo comenzar juego\n");
+                        pulsar_tecla(ESPACIO);
+                    }
+                    break;
+                }
+
+                case ESTADO_JUEGO: {
+                    if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
+                    if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
+                    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
+                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) pulsar_tecla(ESPACIO);
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+                    break;
+                }
+
+                case ESTADO_ATERRIZAJE: {
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+                    break;
+                }
+
+                case ESTADO_FIN_PARTIDA: {
+                    if (GetAsyncKeyState(VK_SPACE) & 0x8000) { 
+                        //resetear();
+                    }
+                    break;
+                }
+
+                default: break;
+            }
+            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+                esc_presionado = 1;
+                SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+            }
+        break;
+        }
+
+        case WM_KEYUP: {
+            switch(estadoActual) {
+                case ESTADO_PIDIENDO_MONEDA: {
+                    break;
+                }
+
+                case ESTADO_OPCIONES: {
+                    break;
+                }
+
+                case ESTADO_JUEGO: {
+                    if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
+                    if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
+                    if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
+                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
+                    break;
+                }
+
+                case ESTADO_ATERRIZAJE: {
+                    break;
+                }
+
+                case ESTADO_FIN_PARTIDA: {
+                    break;
+                }
+
+                default: break;
+            }
+            
+            break;
+        }
+
+        case WM_DESTROY: {
+            KillTimer(hwnd, timer_TICK_juego);
+            KillTimer(hwnd, timer_IA);
+            PostQuitMessage(0);
+            return 0;
+        }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -264,6 +371,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                NULL, NULL, hInstance, NULL);
     inicializar_puntos();
     inicializar_aleatoriedad();
+    crear_palabra_insertar_moneda();
     
     if (!hwnd) return 0;
     ShowWindow(hwnd, nCmdShow);

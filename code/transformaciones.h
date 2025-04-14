@@ -6,7 +6,7 @@
 
 #include "dibujable.h"
 #include "palabra.h"
-#include "constantes.h"
+#include "../data/constantes.h"
 #include "../resources/superficie_lunar.h"
 
 /**

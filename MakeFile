@@ -7,9 +7,11 @@ CFLAGS = -Wall -Wextra -Wpedantic -g -mwindows
 # Directorios de código fuente
 SRC_DIR = code
 RES_DIR = resources
+DATA_DIR = data
+MENU_DIR = menus
 
 # Archivos fuente (todos los .c en code/ y resources/)
-SRCS = $(wildcard $(SRC_DIR)/*.c $(RES_DIR)/*.c) main.c
+SRCS = $(wildcard $(SRC_DIR)/*.c $(DATA_DIR)/*.c $(RES_DIR)/*.c $(SRC_DIR)/$(MENU_DIR)/*.c) main.c
 
 # Archivos objeto (se reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)
@@ -30,7 +32,7 @@ $(TARGET): $(OBJS)
 
 # Limpiar archivos compilados
 clean:
-	del /Q $(SRC_DIR)\*.o $(RES_DIR)\*.o main.o 2>nul
+	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o main.o 2>nul
 
 # Recompilar todo y ejecutar
 run:

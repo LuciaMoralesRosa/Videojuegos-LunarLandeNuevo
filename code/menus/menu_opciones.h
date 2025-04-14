@@ -1,5 +1,5 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef MENU_OPCIONES_H
+#define MENU_OPCIONES_H
 
 #include <windows.h>
 
@@ -29,4 +29,4 @@ OpcionMenu obtenerOpcionSeleccionada(void);
 
 void gestionar_opcion_seleccionada(void);
 
-#endif // MENU_H
+#endif // MENU_OPCIONES_H
