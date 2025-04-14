@@ -1,12 +1,12 @@
-#ifndef LETRAS_H
-#define LETRAS_H
+#ifndef CARACTERES_H
+#define CARACTERES_H
 
 #include "../code/dibujable.h"
 
 #define ALTURA_CARACTER_MAX 16
 #define ANCHURA_CARACTER_MAX 10 
 #define SEPARACION_CARACTER 4
-#define CENTRO_CONST_CARACTER {5, 8}
+#define CENTRO_CONST_CARACTER {ANCHURA_CARACTER_MAX/2, ALTURA_CARACTER_MAX/2}
 
 // Letras
 extern const struct DibujableConstante Letra_A_Base;
@@ -48,4 +48,10 @@ extern const struct DibujableConstante Numero_7_Base;
 extern const struct DibujableConstante Numero_8_Base;
 extern const struct DibujableConstante Numero_9_Base;
 
-#endif // LETRAS_H
+// Simbolos
+extern const struct DibujableConstante Simbolo_DosPuntos_Base;
+extern const struct DibujableConstante Simbolo_Espacio_Base;
+extern const struct DibujableConstante Simbolo_Derecha_Base;
+extern const struct DibujableConstante Simbolo_Izquierda_Base;
+
+#endif // CARACTERES_H

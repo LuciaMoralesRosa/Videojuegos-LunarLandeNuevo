@@ -40,7 +40,7 @@ void colocar_palabra(struct Palabra* palabra, struct Punto destino){
 
     for(uint8_t i = 0; i < palabra -> num_letras; i++) {
         float nuevo_x = destino.x + separacion_centros * i;
-        colocar_dibujable(&palabra->letras[i], (struct Punto){nuevo_x, destino.y});
+        colocar_dibujable(palabra->letras[i], (struct Punto){nuevo_x, destino.y});
     } 
 }
 
@@ -108,7 +108,7 @@ void escalar_dibujable_en_escena_dados_ejes(struct Dibujable* dibujable, float f
 void escalar_palabra_en_escena_dados_ejes(struct Palabra* palabra, float factorX, float factorY) {
     if (!palabra->letras) return;
     for(uint8_t i = 0; i < palabra->num_letras; i++){
-        escalar_dibujable_en_escena_dados_ejes(&palabra->letras[i], factorX, factorY);
+        escalar_dibujable_en_escena_dados_ejes(palabra->letras[i], factorX, factorY);
     }
 
 }
@@ -136,10 +136,10 @@ void escalar_palabra_centrada(struct Palabra* palabra, float factor){
  */
 void escalar_palabra(struct Palabra* palabra, float factorX, float factorY) {
     for(uint8_t i = 0; i < palabra -> num_letras; i++){
-        if(!palabra->letras[i].puntos) return;
-        for(uint8_t j = 0; j < palabra->letras[i].num_puntos; j++){
-            escalarXPuntoDadoCentro(&palabra->letras[i].puntos[j], palabra->letras[i].origen, factorX);
-            escalarYPuntoDadoCentro(&palabra->letras[i].puntos[j], palabra->letras[i].origen, factorY);
+        if(!palabra->letras[i]->puntos) return;
+        for(uint8_t j = 0; j < palabra->letras[i]->num_puntos; j++){
+            escalarXPuntoDadoCentro(&palabra->letras[i]->puntos[j], palabra->letras[i]->origen, factorX);
+            escalarYPuntoDadoCentro(&palabra->letras[i]->puntos[j], palabra->letras[i]->origen, factorY);
         }
     }
 }
@@ -159,7 +159,7 @@ void escalar_palabra_centrada_dados_ejes(struct Palabra* palabra, float factorX,
     escalar_palabra(palabra, factorX, factorY);
 
     // Establecer las posiciones de los caracteres dado el nuevo origen
-    colocar_palabra(palabra, (struct Punto){nuevo_origen_palabra_x, palabra->letras[0].origen.y});
+    colocar_palabra(palabra, (struct Punto){nuevo_origen_palabra_x, palabra->letras[0]->origen.y});
 }
 
 
@@ -175,7 +175,7 @@ void trasladar_palabra(struct Palabra* palabra, struct Punto traslacion){
     if(!palabra || !palabra->letras) return;
     trasladarPunto(&palabra->origen, traslacion);
     for(uint8_t i = 0; i < palabra->num_letras; i++) {
-        trasladarDibujable(&palabra->letras[i], traslacion);
+        trasladarDibujable(palabra->letras[i], traslacion);
     }
 }
 

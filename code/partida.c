@@ -49,7 +49,7 @@ void escalar_escena_partida(float factor_x, float factor_y){
 		for(uint8_t i = 0; i < numero_plataformas; i++) {
 			escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].linea, factor_x, factor_y);
 			for(uint8_t j = 0; j < plataformas_partida[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes(&plataformas_partida[i].palabra->letras[j], factor_x, factor_y);
+				escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].palabra->letras[j], factor_x, factor_y);
 			}
 		}
 	}

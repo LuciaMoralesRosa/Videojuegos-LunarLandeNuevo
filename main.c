@@ -3,9 +3,11 @@
 #include "resources/superficie_lunar.h"
 #include "code/gestor_plataformas.h"
 #include "code/variables_globales.h"
+#include "code/menu.h"
 
 #include <stdio.h>
 #include <windows.h>
+#include <stdlib.h>
 
 #define timer 1
 #define tamano_inicial_pantalla_X 1024
@@ -36,25 +38,35 @@ float minimo(float a, float b) {
 
 void AttachConsoleToStdout() {
     AllocConsole();
-    freopen("CONOUT$", "w", stdout);  // Redirige stdout a la consola
-    freopen("CONOUT$", "w", stderr);  // Redirige stderr también
+    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stderr);
 }
 
-/**
- * @brief Funcion para realizar pruebas de dibujo de las naves
- * 
- * @param hdc
- */
-void pruebasDibujables(HDC hdc){
-}
+// Funcion utilizada en la opcion de test de dibujables
+void pruebasDibujables(HDC hdcMem) {
+    const char* alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    struct Punto origenTest = {10, 10};
 
+    struct Palabra* palabraTest = crearPalabraDesdeCadena(alfabeto, origenTest);
+    
+    dibujar_palabra(palabraTest, hdcMem);
+    
+    destruir_palabra(palabraTest);
+
+    const char* numeros = "0123456789 :><";
+
+    struct Punto origenNumeros = {10, 10 + ALTURA_CARACTER_MAX + 5};
+    struct Palabra* palabraNumeros = crearPalabraDesdeCadena(numeros, origenNumeros);
+    dibujar_palabra(palabraNumeros, hdcMem);
+    destruir_palabra(palabraNumeros);
+}
 
 void inicializar_puntos() {
-    // Usar malloc para asignar memoria dinámica para las estructuras
-    p1 = (struct Punto*)malloc(sizeof(struct Punto));
-    p2 = (struct Punto*)malloc(sizeof(struct Punto));
-    p3 = (struct Punto*)malloc(sizeof(struct Punto));
-    p4 = (struct Punto*)malloc(sizeof(struct Punto));
+    p1 = malloc(sizeof(struct Punto));
+    p2 = malloc(sizeof(struct Punto));
+    p3 = malloc(sizeof(struct Punto));
+    p4 = malloc(sizeof(struct Punto));
 }
 
 
@@ -65,12 +77,11 @@ void dibujar_linea(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
     int sx = (x1 < x2) ? 1 : -1;
     int sy = (y1 < y2) ? 1 : -1;
     int err = dx - dy;
-
+    
     while (1) {
-        SetPixel(hdc, x1, y1, color); // Dibuja el pixel actual
-
-        if (x1 == x2 && y1 == y2) break; // Si llegamos al final, salimos
-
+        SetPixel(hdc, x1, y1, color);
+        if (x1 == x2 && y1 == y2)
+            break;
         int e2 = 2 * err;
         if (e2 > -dy) { err -= dy; x1 += sx; }
         if (e2 < dx) { err += dx; y1 += sy; }
@@ -78,18 +89,14 @@ void dibujar_linea(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
 }
 
 void dibujar_bordes(HDC hdc) {
-    if(p1 == NULL || p2 == NULL || p3 == NULL || p4 == NULL) {
+    if (!p1 || !p2 || !p3 || !p4)
         return;
-    }
     dibujar_linea(hdc, p1->x, p1->y, p2->x, p2->y, RGB(255, 255, 255));
     dibujar_linea(hdc, p3->x, p3->y, p4->x, p4->y, RGB(255, 255, 255));
 }
 
-
 /**
- * @brief Escala la escena al tamaño de la ventana
- * 
- * @param hwnd Ventana a escalar
+ * Escala la escena al tamaño de la ventana
  */
 void escalar(HWND hwnd) {
     RECT rect;
@@ -98,127 +105,139 @@ void escalar(HWND hwnd) {
     int alto_cliente = rect.bottom - rect.top;
     float factor_resized_x = (float)ancho_cliente / tamano_inicial_pantalla_X;
     float factor_resized_y = (float)alto_cliente / tamano_inicial_pantalla_Y;
-
+    
     escalar_escena(1/factor_escalado, 1/factor_escalado);
     factor_escalado = minimo(factor_resized_x, factor_resized_y);
-
     escalar_escena(factor_escalado, factor_escalado);
-
+    
     int tam_escena_x = (int)(tamano_inicial_pantalla_X * factor_escalado);
     int tam_escena_y = (int)(tamano_inicial_pantalla_Y * factor_escalado);
-
-
+    
     if (!p1 || !p2 || !p3 || !p4) {
-        // Manejo de errores si malloc falla
         printf("Error al asignar memoria.\n");
-        return; // Salir o manejar el error
+        return;
     }
-
-    // Inicializar los puntos
+    
     *p1 = (struct Punto){0, tam_escena_y + 1};
     *p2 = (struct Punto){tam_escena_x + 1, tam_escena_y + 1};
     *p3 = (struct Punto){tam_escena_x + 1, 0};
     *p4 = (struct Punto){tam_escena_x + 1, tam_escena_y + 1};
 }
 
-// Función de ventana
+/* Estado de la aplicación */
+typedef enum {
+    ESTADO_MENU,
+    ESTADO_JUEGO,
+    ESTADO_TEST_DIBUJABLES
+} EstadoAplicacion;
+
+EstadoAplicacion estadoActual = ESTADO_MENU;
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-        case WM_CREATE:{
-            SetTimer(hwnd, timer, intervalo_fisicas_ms, NULL);
-        }
+    case WM_CREATE: {
+        SetTimer(hwnd, timer, intervalo_fisicas_ms, NULL);
+        inicializarMenu();
         break;
-
-        case WM_SYSCOMMAND: {
-            if((wParam & 0xFFF0) == SC_RESTORE){
-                if(fullscreen == 1 && esc_presionado == 1) {
-                    // Si se ha pulsado ESC y se estaba en fullscreen -> se restaura la ventana
-                    fullscreen = 0;
-                    // Restaurar estilo de ventana
-                    SetWindowLong(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-                    SetWindowPos(
-                        hwnd, NULL,
-                        rectVentanaAnterior.left,
-                        rectVentanaAnterior.top,
-                        rectVentanaAnterior.right - rectVentanaAnterior.left,
-                        rectVentanaAnterior.bottom - rectVentanaAnterior.top,
-                        SWP_NOZORDER | SWP_FRAMECHANGED // Necesario para aplicar los bordes
-                    );
-                } else if (esc_presionado == 1){
-                    // Si se ha pulsado ESC pero no se estaba en fullscreen -> no se propaga el restore
-                    esc_presionado = 0;
-                    return 0;
-                }
+    }
+    case WM_SYSCOMMAND: {
+        if ((wParam & 0xFFF0) == SC_RESTORE) {
+            if (fullscreen == 1 && esc_presionado == 1) {
+                fullscreen = 0;
+                SetWindowLong(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+                SetWindowPos(hwnd, NULL,
+                             rectVentanaAnterior.left,
+                             rectVentanaAnterior.top,
+                             rectVentanaAnterior.right - rectVentanaAnterior.left,
+                             rectVentanaAnterior.bottom - rectVentanaAnterior.top,
+                             SWP_NOZORDER | SWP_FRAMECHANGED);
+            } else if (esc_presionado == 1) {
                 esc_presionado = 0;
-            } else if ((wParam & 0xFFF0) == SC_MAXIMIZE) {
-                fullscreen = 1;
-                GetWindowRect(hwnd, &rectVentanaAnterior);
-                // Escalar y quitar bordes y cabecera
-                SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-                escalar(hwnd);
+                return 0;
             }
-        }
-        break;
-
-        case WM_GETMINMAXINFO: {
-            // Establecer tamaño minimo del area del cliente
-            MINMAXINFO* mmi = (MINMAXINFO*)lParam;
-            RECT rc = {0, 0, anchura_minima_ventana, altura_minima_ventana};
-            AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-            mmi->ptMinTrackSize.x = rc.right - rc.left;
-            mmi->ptMinTrackSize.y = rc.bottom - rc.top;
-        }
-        break;
-
-        case WM_SIZE: {
-            // La ventana ha cambiado de tamaño
+            esc_presionado = 0;
+        } else if ((wParam & 0xFFF0) == SC_MAXIMIZE) {
+            fullscreen = 1;
+            GetWindowRect(hwnd, &rectVentanaAnterior);
+            SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
             escalar(hwnd);
         }
         break;
-
-        case WM_TIMER:{
-            if (wParam == timer) {
-                manejar_instante();
-                manejar_teclas();
-                InvalidateRect(hwnd, NULL, FALSE); // Fuerza un repintado 
-            }
+    }
+    case WM_GETMINMAXINFO: {
+        MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+        RECT rc = {0, 0, anchura_minima_ventana, altura_minima_ventana};
+        AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+        mmi->ptMinTrackSize.x = rc.right - rc.left;
+        mmi->ptMinTrackSize.y = rc.bottom - rc.top;
+        break;
+    }
+    case WM_SIZE: {
+        escalar(hwnd);
+        break;
+    }
+    case WM_TIMER: {
+        if (wParam == timer) {
+            manejar_instante();
+            manejar_teclas();
+            InvalidateRect(hwnd, NULL, FALSE);
         }
         break;
-
-		case WM_PAINT: {
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-		
-			// Crear un buffer en memoria
-			HDC hdcMem = CreateCompatibleDC(hdc);
-			RECT rect;
-			GetClientRect(hwnd, &rect);
-			HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
-			HBITMAP hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
-			HGDIOBJ hOld = SelectObject(hdcMem, hbmMem);
-		
-			// Limpiar el buffer (pintarlo de negro)
-			FillRect(hdcMem, &rect, brush);
-			DeleteObject(brush);
-		
-			// Dibujar en el buffer en memoria
-            dibujar_bordes(hdc);
-			pruebasDibujables(hdcMem);
-			pintar_pantalla(hdcMem);
-		
-			// Copiar el buffer en la ventana
-			BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
-		
-			// Liberar recursos
-			SelectObject(hdcMem, hOld);
-			DeleteObject(hbmMem);
-			DeleteDC(hdcMem);
-		
-			EndPaint(hwnd, &ps);
-		}
-		break;
-
-        case WM_KEYDOWN: {
+    }
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        HDC hdcMem = CreateCompatibleDC(hdc);
+        RECT rect;
+        GetClientRect(hwnd, &rect);
+        HBITMAP hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
+        HGDIOBJ hOld = SelectObject(hdcMem, hbmMem);
+        HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
+        FillRect(hdcMem, &rect, brush);
+        DeleteObject(brush);
+        
+        if (estadoActual == ESTADO_MENU) {
+            // Pasa el hwnd real a la función
+            dibujarMenuEnBuffer(hdcMem, hwnd);
+        } else if (estadoActual == ESTADO_JUEGO) {
+            dibujar_bordes(hdcMem);
+            pintar_pantalla(hdcMem);
+        } else if (estadoActual == ESTADO_TEST_DIBUJABLES) {
+            pruebasDibujables(hdcMem);
+        }
+        
+        BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
+        SelectObject(hdcMem, hOld);
+        DeleteObject(hbmMem);
+        DeleteDC(hdcMem);
+        EndPaint(hwnd, &ps);
+        break;
+    }
+    
+    case WM_KEYDOWN: {
+        if(estadoActual == ESTADO_MENU) {
+            procesarEventoMenu(hwnd, uMsg, wParam, lParam);
+            if(wParam == VK_RETURN) {
+                OpcionMenu op = obtenerOpcionSeleccionada();
+                if(op == OPCION_PLAY) {
+                    printf("Play seleccionado\n");
+                    estadoActual = ESTADO_JUEGO;
+                    comenzarPartida();
+                }
+                else if(op == OPCION_TEST_DIBUJABLES) {
+                    printf("Test dibujables seleccionado\n");
+                    estadoActual = ESTADO_TEST_DIBUJABLES;
+                }
+                else if(op == OPCION_OPTIONS) {
+                    printf("Options seleccionado\n");
+                    // Configura la acción para Options
+                }
+                else if(op == OPCION_EXIT) {
+                    printf("Exit seleccionado\n");
+                    PostQuitMessage(0); // Terminar el proceso
+                }
+            }
+        } else if (estadoActual == ESTADO_JUEGO) {
             if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
                 esc_presionado = 1;
                 SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
@@ -228,58 +247,61 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
             if (GetAsyncKeyState(VK_SPACE) & 0x8000) pulsar_tecla(ESPACIO);
             if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+        } else if (estadoActual == ESTADO_TEST_DIBUJABLES) {
+            // Si se pulsa ESC en Test Dibujables, volver al menu
+            if (wParam == VK_ESCAPE) {
+                printf("Volviendo al menú desde Test Dibujables\n");
+                estadoActual = ESTADO_MENU;
+                InvalidateRect(hwnd, NULL, TRUE);
+            }
         }
-		break;
 
-        case WM_KEYUP: {
+        break;
+    }
+    case WM_KEYUP: {
+        if (estadoActual == ESTADO_JUEGO) {
             if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
             if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
             if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
             if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
             if (!(GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000)) levantar_tecla(MONEDA);
         }
-		break;
-        
-        case WM_DESTROY:{
-            KillTimer(hwnd, timer);
-            PostQuitMessage(0);
-        }
+        break;
+    }
+    case WM_DESTROY: {
+        KillTimer(hwnd, timer);
+        PostQuitMessage(0);
         return 0;
+    }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-// Función principal
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    AttachConsoleToStdout(); // Activa la consola para ver printf
+    AttachConsoleToStdout();
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = "RasterWindow";
-
-    // Fondo negro
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-
     RegisterClass(&wc);
-
-    // Creacion de la ventana
+    
     RECT rc = {0, 0, tamano_inicial_pantalla_X, tamano_inicial_pantalla_Y};
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
     HWND hwnd = CreateWindowEx(0, "RasterWindow", "Lunar Lander",
-                            WS_OVERLAPPEDWINDOW, 0, 0,
-                            (rc.right - rc.left), (rc.bottom - rc.top), NULL,
-                            NULL, hInstance, NULL);
+                               WS_OVERLAPPEDWINDOW, 0, 0,
+                               (rc.right - rc.left), (rc.bottom - rc.top),
+                               NULL, NULL, hInstance, NULL);
     inicializar_puntos();
-    inicializar_aleatoriedad(); // Inicializar rand
-
+    inicializar_aleatoriedad();
+    
     if (!hwnd) return 0;
     ShowWindow(hwnd, nCmdShow);
-
+    
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
     return 0;
 }

@@ -7,7 +7,7 @@
  * @brief Estructura que representa una palabra
  */
 struct Palabra {
-    struct Dibujable* letras;
+    struct Dibujable** letras;
     uint8_t num_letras;
     struct Punto origen; // Se corresponde con el origen de la primera letra
     float factor_escalado_x;
@@ -46,5 +46,7 @@ void dibujar_palabra(struct Palabra* palabra, HDC hdc);
  * @param palabra Palabra a destruir
  */
 void destruir_palabra(struct Palabra* palabra);
+
+struct Palabra* crearPalabraDesdeCadena(const char* cadena, struct Punto origen);
 
 #endif // PALABRA_H
