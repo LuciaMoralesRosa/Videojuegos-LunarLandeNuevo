@@ -63,3 +63,89 @@ const struct DibujableConstante Nave_Propulsion_Minima = {
     3,
     3
 };
+
+
+const struct DibujableConstante Fragmento_Pata_Izda = {
+    {0, 0},
+    (struct Punto[]){
+        {0, ALTURA_NAVE}, {1, ALTURA_NAVE}, {2, ALTURA_NAVE}, {3, 12}
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {1, 3}, // Pata izq (3)
+    },
+    4,
+    3
+};
+
+
+const struct DibujableConstante Fragmento_Pata_Dcha = {
+    {0, 0},
+    (struct Punto[]){
+        {15, 12}, {17, ALTURA_NAVE}, {16, ALTURA_NAVE}, {ANCHURA_NAVE, ALTURA_NAVE},
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {1, 3}, // Pata dcha (3)
+    },
+    4,
+    3
+};
+
+const struct DibujableConstante Fragmento_Cupula = {
+    {0, 0},
+    (struct Punto[]){
+        {6, 10}, {4, 8}, {4, 2}, {6, 0}, {12, 0}, {14, 2}, {14, 8}, {12, 10}
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 0}  
+    },
+    8,
+    8
+};
+
+const struct DibujableConstante Fragmento_Base = {
+    {0, 0},
+    (struct Punto[]){
+        {3, 12}, {3, 10}, {15, 10}, {15, 12}
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {2, 3}, {3, 0}
+    },
+    4,
+    4
+};
+
+const struct DibujableConstante Fragmento_Motor_Izda = {
+    {0, 0},
+    (struct Punto[]){
+        {6, 12}, {4, 16}, {5, ALTURA_NAVE}
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {2, 0}
+    },
+    3,
+    3
+};
+
+const struct DibujableConstante Fragmento_Motor_Dcha = {
+    {0, 0},
+    (struct Punto[]){
+        {12, 12}, {14, 16}, {13, ALTURA_NAVE}
+    },
+    (struct UnionAristas[]){
+        {0, 1}, {1, 2}, {2, 0}
+    },
+    3,
+    3
+};
+
+const struct DibujableConstante Fragmento_Motor_Base = {
+    {0, 0},
+    (struct Punto[]){
+        {4, 16}, {14, 16}
+    },
+    (struct UnionAristas[]){
+        {0, 1}
+    },
+    2,
+    1
+};

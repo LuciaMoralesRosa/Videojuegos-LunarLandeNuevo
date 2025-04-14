@@ -57,10 +57,6 @@ static void actualizarPosicionesMenu(HWND hwnd) {
     GetClientRect(hwnd, &rect);
     int anchoCliente = rect.right - rect.left;
     int altoCliente = rect.bottom - rect.top;
-    printf("HWND = %p\n", (void*)hwnd);
-    printf("rect.left   = %ld, rect.top    = %ld\n", rect.left,  rect.top);
-    printf("rect.right  = %ld, rect.bottom = %ld\n", rect.right, rect.bottom);
-    printf("anchoCliente = %d, altoCliente = %d\n", anchoCliente, altoCliente);
     
     // Calcular el ancho máximo de las opciones del menú
     int anchoTotalMenu = 0, anchoOpcion;
@@ -84,7 +80,6 @@ static void actualizarPosicionesMenu(HWND hwnd) {
         opcionesTextuales[i]->origen = nuevoOrigen;
         colocar_palabra(opcionesTextuales[i], nuevoOrigen);
     }
-    fprintf(stderr, "Posiciones de menú actualizadas: X=%d, Y=%d\n", menuPosX, menuPosY_inicial);
     
     ReleaseDC(hwnd, hdc);
 }
@@ -111,9 +106,9 @@ void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal) {
     destruir_palabra(titulo);
     
     // Dibujar cada opción del menú
-    for (int i = 0; i < NUM_OPCIONES; i++) {
+    for (uint8_t i = 0; i < NUM_OPCIONES; i++) {
         // Si es la opción seleccionada, dibujar el indicador
-        if (i == obtenerOpcionSeleccionada()) {
+        if (i == (uint8_t)obtenerOpcionSeleccionada()) {
             struct Punto indicadorOrigen;
             // Colocar el indicador a la izquierda de la opcion seleccionada
             indicadorOrigen.x = opcionesTextuales[i]->origen.x - 2 * ANCHURA_CARACTER_MAX;
@@ -129,6 +124,8 @@ void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal) {
 
 
 LRESULT procesarEventoMenu(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    (void)lParam; // Evita el warning
+
     if(uMsg == WM_KEYDOWN) {
         switch(wParam) {
             case VK_UP:

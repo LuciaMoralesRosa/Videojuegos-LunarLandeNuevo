@@ -6,5 +6,9 @@
 //extern float factor_resized_Y;
 //extern float factor_resized;
 
+extern float tam_ventana_x;
+extern float tam_ventana_y;
+
+
 
 #endif // VARIABLES_GLOBALES_H

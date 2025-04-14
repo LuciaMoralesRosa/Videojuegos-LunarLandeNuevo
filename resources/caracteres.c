@@ -510,8 +510,8 @@ const struct DibujableConstante Simbolo_DosPuntos_Base  = {
 
 const struct DibujableConstante Simbolo_Espacio_Base  = {
     CENTRO_CONST_CARACTER,
-    (struct Punto[]){},
-    (struct UnionAristas[]){},
+    NULL,
+    NULL,
     0,
     0
 };

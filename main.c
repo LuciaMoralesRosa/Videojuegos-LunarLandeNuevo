@@ -1,19 +1,18 @@
 #include "code/lunar_lander.h"
+#include "code/menu.h"
+#include "code/gestor_plataformas.h"
 #include "code/palabra.h"
 #include "resources/superficie_lunar.h"
-#include "code/gestor_plataformas.h"
+
 #include "code/variables_globales.h"
-#include "code/menu.h"
+#include "code/constantes.h"
 
 #include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
 
 #define timer 1
-#define tamano_inicial_pantalla_X 1024
-#define tamano_inicial_pantalla_Y 768
-#define anchura_minima_ventana 512
-#define altura_minima_ventana 384
+
 
 // Factor por el que escalar la escena
 float factor_escalado = 1.0f; 
@@ -44,22 +43,7 @@ void AttachConsoleToStdout() {
 
 // Funcion utilizada en la opcion de test de dibujables
 void pruebasDibujables(HDC hdcMem) {
-    const char* alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    
-    struct Punto origenTest = {10, 10};
 
-    struct Palabra* palabraTest = crearPalabraDesdeCadena(alfabeto, origenTest);
-    
-    dibujar_palabra(palabraTest, hdcMem);
-    
-    destruir_palabra(palabraTest);
-
-    const char* numeros = "0123456789 :><";
-
-    struct Punto origenNumeros = {10, 10 + ALTURA_CARACTER_MAX + 5};
-    struct Palabra* palabraNumeros = crearPalabraDesdeCadena(numeros, origenNumeros);
-    dibujar_palabra(palabraNumeros, hdcMem);
-    destruir_palabra(palabraNumeros);
 }
 
 void inicializar_puntos() {
@@ -199,12 +183,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         if (estadoActual == ESTADO_MENU) {
             // Pasa el hwnd real a la función
             dibujarMenuEnBuffer(hdcMem, hwnd);
+
         } else if (estadoActual == ESTADO_JUEGO) {
             dibujar_bordes(hdcMem);
             pintar_pantalla(hdcMem);
-        } else if (estadoActual == ESTADO_TEST_DIBUJABLES) {
-            pruebasDibujables(hdcMem);
         }
+        pruebasDibujables(hdcMem);
         
         BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
         SelectObject(hdcMem, hOld);
@@ -224,48 +208,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     estadoActual = ESTADO_JUEGO;
                     comenzarPartida();
                 }
-                else if(op == OPCION_TEST_DIBUJABLES) {
-                    printf("Test dibujables seleccionado\n");
-                    estadoActual = ESTADO_TEST_DIBUJABLES;
-                }
-                else if(op == OPCION_OPTIONS) {
-                    printf("Options seleccionado\n");
-                    // Configura la acción para Options
-                }
                 else if(op == OPCION_EXIT) {
                     printf("Exit seleccionado\n");
                     PostQuitMessage(0); // Terminar el proceso
                 }
             }
-        } else if (estadoActual == ESTADO_JUEGO) {
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-                esc_presionado = 1;
-                SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-            }
-            if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
-            if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
-            if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
-            if (GetAsyncKeyState(VK_SPACE) & 0x8000) pulsar_tecla(ESPACIO);
-            if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
-        } else if (estadoActual == ESTADO_TEST_DIBUJABLES) {
-            // Si se pulsa ESC en Test Dibujables, volver al menu
-            if (wParam == VK_ESCAPE) {
-                printf("Volviendo al menú desde Test Dibujables\n");
-                estadoActual = ESTADO_MENU;
-                InvalidateRect(hwnd, NULL, TRUE);
-            }
         }
+        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+            esc_presionado = 1;
+            SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+        }
+        if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
+        if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
+        if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
+        if (GetAsyncKeyState(VK_SPACE) & 0x8000) pulsar_tecla(ESPACIO);
+        if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
 
-        break;
+    break;
     }
     case WM_KEYUP: {
-        if (estadoActual == ESTADO_JUEGO) {
-            if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
-            if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
-            if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
-            if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
-            if (!(GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000)) levantar_tecla(MONEDA);
-        }
+        if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
+        if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
+        if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
+        if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
+        if (!(GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000)) levantar_tecla(MONEDA);
         break;
     }
     case WM_DESTROY: {
@@ -278,6 +244,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    (void)hPrevInstance; // Evita el warning
+    (void)lpCmdLine; // Evita el warning
+
     AttachConsoleToStdout();
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
