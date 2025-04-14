@@ -6,7 +6,11 @@
 #include <windows.h>
 
 // Variable internas para el menu
-static OpcionMenu opcionSeleccionada = OPCION_PLAY;
+static OpcionMenu opcionSeleccionada = MISSION;
+static Tipo_Mision tipo_mision = TRAINING;
+static uint8_t asteroides_activados = 0;
+static uint8_t torretas_activadas = 0;
+
 
 // Número de opciones definido en el header (NUM_OPCIONES)
 static struct Palabra* opcionesTextuales[NUM_OPCIONES] = {0};
@@ -17,10 +21,10 @@ static int menuPosY_inicial = 0;
 static const int espacioEntreOpciones = 30;
 
 // Cadena de cada opción en mayúsculas.
-static const char* cadenasOpciones[NUM_OPCIONES] = {
-    "PLAY",
-    "TEST DIBUJABLES",
-    "OPTIONS",
+static char* cadenasOpciones[NUM_OPCIONES] = {
+    "MISSION: TRAINING MISSION",
+    "-  ACTIVE ASTEROIDS",
+    "-  ACTIVE TURRETS",
     "EXIT"
 };
 
@@ -28,8 +32,7 @@ static const char* cadenasOpciones[NUM_OPCIONES] = {
 // ya está definida arriba: crearPalabraDesdeCadena
 
 void inicializarMenu(void) {
-    printf("Inicializando menú...\n");
-    opcionSeleccionada = OPCION_PLAY;
+    opcionSeleccionada = MISSION;
     // Esto se actualiza al dibujar
     struct Punto origenTemporal = {0, 0};
     // Se crean los objetos Texto para cada opción a partir de sus cadenas.
@@ -41,7 +44,7 @@ void inicializarMenu(void) {
 }
 
 void destruirMenu(void) {
-    // Libera cada objeto Texto creado para las opciones.
+    // Libera cada objeto creado para las opciones.
     for (int i = 0; i < NUM_OPCIONES; i++) {
         if (opcionesTextuales[i]) {
             destruir_palabra(opcionesTextuales[i]);
@@ -123,13 +126,13 @@ void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal) {
 }
 
 
-LRESULT procesarEventoMenu(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     (void)lParam; // Evita el warning
 
     if(uMsg == WM_KEYDOWN) {
         switch(wParam) {
             case VK_UP:
-                if(opcionSeleccionada > OPCION_PLAY)
+                if(opcionSeleccionada > MISSION)
                     opcionSeleccionada--;
                 InvalidateRect(hwnd, NULL, TRUE);  // repintado
                 break;
@@ -147,4 +150,66 @@ LRESULT procesarEventoMenu(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 OpcionMenu obtenerOpcionSeleccionada(void) {
     return opcionSeleccionada;
+}
+
+
+void gestionar_opcion_seleccionada(void) {
+    switch (opcionSeleccionada) {
+    case MISSION:
+        struct Punto p = opcionesTextuales[0]->origen;
+        destruir_palabra(opcionesTextuales[0]);
+        switch (tipo_mision) {
+        case TRAINING:
+            cadenasOpciones[0] = "CADET MISSION";
+            opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
+            tipo_mision = CADET;
+            break;
+        case CADET:
+            cadenasOpciones[0] = "PRIME MISSION";
+            opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
+            tipo_mision = PRIME;
+            break;
+        case PRIME:
+            cadenasOpciones[0] = "COMMAND MISSION";
+            opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
+            tipo_mision = COMMAND;
+            break;
+        case COMMAND:
+            cadenasOpciones[0] = "TRAINING MISSION";
+            opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
+            tipo_mision = TRAINING;
+            break;        
+        default:
+            break;
+        }
+        break;
+    case ASTEROIDS:
+        struct Punto p1 = opcionesTextuales[1]->origen;
+        destruir_palabra(opcionesTextuales[1]);
+        if(asteroides_activados == 0) {
+            cadenasOpciones[1] = "+  ACTIVE ASTEROIDS";
+            opcionesTextuales[1] = crearPalabraDesdeCadena(cadenasOpciones[1], p1);
+            asteroides_activados = 1;
+        } else {
+            cadenasOpciones[1] = "-  ACTIVE ASTEROIDS";
+            opcionesTextuales[1] = crearPalabraDesdeCadena(cadenasOpciones[1], p1);
+            asteroides_activados = 0;
+        }
+        break;        
+    case TURRETS:
+        struct Punto p2 = opcionesTextuales[2]->origen;
+        destruir_palabra(opcionesTextuales[2]);
+        if(torretas_activadas == 0) {
+            cadenasOpciones[2] = "+  ACTIVE TURRETS";
+            opcionesTextuales[2] = crearPalabraDesdeCadena(cadenasOpciones[2], p2);
+            torretas_activadas = 1;
+        } else {
+            cadenasOpciones[2] = "-  ACTIVE TURRETS";
+            opcionesTextuales[2] = crearPalabraDesdeCadena(cadenasOpciones[2], p2);
+            torretas_activadas = 0;
+        }
+        break; 
+    default:
+        break;
+    }
 }

@@ -4,20 +4,29 @@
 #include <windows.h>
 
 typedef enum {
-    OPCION_PLAY,
-    OPCION_TEST_DIBUJABLES,
-    OPCION_OPTIONS,
-    OPCION_EXIT,
+    MISSION,
+    ASTEROIDS,
+    TURRETS,
+    EXIT,
     NUM_OPCIONES  // Nos sirve para saber el total de opciones.
 } OpcionMenu;
+
+typedef enum {
+    TRAINING,
+    CADET,
+    PRIME,
+    COMMAND
+} Tipo_Mision;
 
 void inicializarMenu(void);
 
 void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal);
 
 
-LRESULT procesarEventoMenu(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 OpcionMenu obtenerOpcionSeleccionada(void);
+
+void gestionar_opcion_seleccionada(void);
 
 #endif // MENU_H

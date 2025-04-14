@@ -543,3 +543,33 @@ const struct DibujableConstante Simbolo_Izquierda_Base  = {
     3,
     3
 };
+
+const struct DibujableConstante Checkbox_Base  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {0, 0},
+        {ANCHURA_CARACTER_MAX*2, 0},
+        {ANCHURA_CARACTER_MAX*2, ANCHURA_CARACTER_MAX*2-1},
+        {0, ANCHURA_CARACTER_MAX*2-1}
+    },
+    (struct UnionAristas[]){
+        {0,1}, {1,2}, {2, 3}, {3, 0}
+    },
+    4,
+    4
+};
+
+const struct DibujableConstante Checkbox_Base_Check  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {0, 0},
+        {ANCHURA_CARACTER_MAX*2, 0},
+        {ANCHURA_CARACTER_MAX*2, ANCHURA_CARACTER_MAX*2-1},
+        {0, ANCHURA_CARACTER_MAX*2 -1}
+    },
+    (struct UnionAristas[]){
+        {0,1}, {1,2}, {2, 3}, {3, 0}, {0, 2}, {1, 3}
+    },
+    4,
+    6
+};

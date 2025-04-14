@@ -54,4 +54,9 @@ extern const struct DibujableConstante Simbolo_Espacio_Base;
 extern const struct DibujableConstante Simbolo_Derecha_Base;
 extern const struct DibujableConstante Simbolo_Izquierda_Base;
 
+extern const struct DibujableConstante Checkbox_Base;
+extern const struct DibujableConstante Checkbox_Base_Check;
+
+
+
 #endif // CARACTERES_H

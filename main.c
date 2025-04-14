@@ -26,6 +26,15 @@ RECT rectVentanaAnterior;
 // Moneda presionada
 uint8_t moneda_presionada = 0;
 
+/* Estado de la aplicación */
+typedef enum {
+    ESTADO_MENU,
+    ESTADO_JUEGO
+} EstadoAplicacion;
+
+EstadoAplicacion estadoActual = ESTADO_MENU;
+
+
 struct Punto* p1 = NULL;
 struct Punto* p2 = NULL;
 struct Punto* p3 = NULL;
@@ -87,6 +96,8 @@ void escalar(HWND hwnd) {
     GetClientRect(hwnd, &rect);
     int ancho_cliente = rect.right - rect.left;
     int alto_cliente = rect.bottom - rect.top;
+    tam_ventana_x = (float) ancho_cliente;
+    tam_ventana_y = (float) alto_cliente;
     float factor_resized_x = (float)ancho_cliente / tamano_inicial_pantalla_X;
     float factor_resized_y = (float)alto_cliente / tamano_inicial_pantalla_Y;
     
@@ -108,14 +119,6 @@ void escalar(HWND hwnd) {
     *p4 = (struct Punto){tam_escena_x + 1, tam_escena_y + 1};
 }
 
-/* Estado de la aplicación */
-typedef enum {
-    ESTADO_MENU,
-    ESTADO_JUEGO,
-    ESTADO_TEST_DIBUJABLES
-} EstadoAplicacion;
-
-EstadoAplicacion estadoActual = ESTADO_MENU;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -129,12 +132,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (fullscreen == 1 && esc_presionado == 1) {
                 fullscreen = 0;
                 SetWindowLong(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-                SetWindowPos(hwnd, NULL,
-                             rectVentanaAnterior.left,
-                             rectVentanaAnterior.top,
-                             rectVentanaAnterior.right - rectVentanaAnterior.left,
-                             rectVentanaAnterior.bottom - rectVentanaAnterior.top,
-                             SWP_NOZORDER | SWP_FRAMECHANGED);
+                SetWindowPos(
+                    hwnd, NULL,
+                    rectVentanaAnterior.left,
+                    rectVentanaAnterior.top,
+                    rectVentanaAnterior.right - rectVentanaAnterior.left,
+                    rectVentanaAnterior.bottom - rectVentanaAnterior.top,
+                    SWP_NOZORDER | SWP_FRAMECHANGED
+                );
             } else if (esc_presionado == 1) {
                 esc_presionado = 0;
                 return 0;
@@ -200,15 +205,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     
     case WM_KEYDOWN: {
         if(estadoActual == ESTADO_MENU) {
-            procesarEventoMenu(hwnd, uMsg, wParam, lParam);
+            procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
             if(wParam == VK_RETURN) {
+                gestionar_opcion_seleccionada();
                 OpcionMenu op = obtenerOpcionSeleccionada();
-                if(op == OPCION_PLAY) {
-                    printf("Play seleccionado\n");
-                    estadoActual = ESTADO_JUEGO;
-                    comenzarPartida();
-                }
-                else if(op == OPCION_EXIT) {
+                if(op == EXIT) {
                     printf("Exit seleccionado\n");
                     PostQuitMessage(0); // Terminar el proceso
                 }

@@ -132,6 +132,8 @@ struct Palabra* crearPalabraDesdeCadena(const char* cadena, struct Punto origen)
             case ':': agregar_letra(txt, &Simbolo_DosPuntos_Base); break;
             case '>': agregar_letra(txt, &Simbolo_Derecha_Base); break;
             case '<': agregar_letra(txt, &Simbolo_Izquierda_Base); break;
+            case '-': agregar_letra(txt, &Checkbox_Base); break;
+            case '+': agregar_letra(txt, &Checkbox_Base_Check); break;
             // Agnadir mas simbolos
             default: break;
         }
