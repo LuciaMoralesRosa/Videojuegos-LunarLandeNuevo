@@ -1,0 +1,39 @@
+# Compilador
+CC = gcc
+
+# Flags de compilación
+CFLAGS = -Wall -Wextra -Wpedantic -g -mwindows
+
+# Directorios de código fuente
+SRC_DIR = code
+RES_DIR = resources
+
+# Archivos fuente (todos los .c en code/ y resources/)
+SRCS = $(wildcard $(SRC_DIR)/*.c $(RES_DIR)/*.c) main.c
+
+# Archivos objeto (se reemplaza .c por .o)
+OBJS = $(SRCS:.c=.o)
+
+# Ejecutable final
+TARGET = lunar_lander.exe
+
+# Regla principal
+all: $(TARGET)
+
+# Compilar el ejecutable
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# Compilar cada archivo fuente en un objeto
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Limpiar archivos compilados
+clean:
+	del /Q $(SRC_DIR)\*.o $(RES_DIR)\*.o main.o 2>nul
+
+# Recompilar todo y ejecutar
+run:
+	mingw32-make -f MakeFile clean
+	mingw32-make -f MakeFile
+	./lunar_lander.exe
