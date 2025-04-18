@@ -19,7 +19,35 @@ struct Palabra* horizontal_speed_valor = {0};
 struct Palabra* vertical_speed = {0};
 struct Palabra* vertical_speed_valor = {0};
 
+int minutos = 0;
+int segundos = 0;
+
+
+void actualizar_segundos(void) {
+	if(segundos == 59) {
+		segundos = 0;
+		minutos++;
+	}
+	else {
+		segundos++;
+	}
+	char buffer[6];
+	buffer[0] = '0' + ((minutos / 10) % 10);     // Decena
+    buffer[1] = '0' + (minutos % 10);            // Unidad
+	buffer[2] = ':';
+	buffer[3] = '0' + ((segundos / 10) % 10);     // Decena
+    buffer[4] = '0' + (segundos % 10);            // Unidad
+	buffer[5] = '\0';                          // Terminador nulo para cadena
+	time_valor = crear_palabra_desde_cadena(buffer, time_valor->origen);
+	escalar_palabra_en_escena_dados_ejes(time_valor, factor_escalado, factor_escalado);
+	escalar_palabra_en_escena_dados_ejes(time_valor, 0.7, 0.7);
+
+}
+
 void inicializar_cabecera(void) {
+	minutos = 0;
+	segundos = 0;
+
 	float separacion_altura =  ALTURA_CARACTER_MAX + ALTURA_CARACTER_MAX / 2;
 	float origen_x_izda = 20;
 	float origen_x_izda_valores = 110;

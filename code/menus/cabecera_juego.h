@@ -7,4 +7,6 @@ void inicializar_cabecera(void);
 void escalar_cabecera(float factor);
 void dibujar_cabecera(HDC hdc);
 
+void actualizar_segundos();
+
 #endif // CABECERA_JUEGO_H

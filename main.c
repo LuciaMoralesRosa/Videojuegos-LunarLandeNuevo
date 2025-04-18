@@ -229,6 +229,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     if(wParam == timer_segundo) {
                         segundos_transcurridos++;
+                        actualizar_segundos();
                     }
                     break;
                 }
