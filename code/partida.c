@@ -1,10 +1,15 @@
 #include "partida.h"
 #include "gestor_colisiones.h"
 #include "gestor_plataformas.h"
+
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
+
 #include "../data/variables_globales.h"
+#include "../data/variables_juego.h"
+
 #include "menus/cabecera_juego.h"
+
 
 #define fuel_por_moneda 500
 #define masa_nave 1000
@@ -35,8 +40,6 @@ struct Dibujable* terreno = NULL;
 struct Plataforma* plataformas_partida = NULL;
 uint8_t numero_plataformas = 0;
 
-int combustible = 0;
-uint16_t puntuacion_partida = 0;
 static uint8_t fisicas = DESACTIVADAS;
 
 
@@ -101,6 +104,7 @@ void se_ha_aterrizado(){
 	nave->aceleracion[1] = 0;
 	fisicas = DESACTIVADAS;
 	printf("Combustible restante: %d\n", combustible);
+	actualizar_puntuacion_cabecera();
 }
 
 void gestionar_colisiones() {

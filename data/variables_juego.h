@@ -12,4 +12,12 @@ typedef enum {
 
 extern estado_aplicacion estado_actual;
 
+
+extern int combustible;
+extern int puntuacion_partida;
+extern float velocidad_horizontal;
+extern float velocidad_vertical;
+extern float altitud;
+
+
 #endif // VARIABLES_JUEGO_H

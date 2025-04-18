@@ -228,8 +228,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         InvalidateRect(hwnd, NULL, FALSE);
                     }
                     if(wParam == timer_segundo) {
-                        segundos_transcurridos++;
-                        actualizar_segundos();
+                        actualizar_segundos_cabecera();
                     }
                     break;
                 }

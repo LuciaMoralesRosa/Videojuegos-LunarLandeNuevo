@@ -1,6 +1,7 @@
 #include "fisicas.h"
 
 #include "partida.h"
+#include "../data/variables_juego.h"
 
 static uint8_t propulsor_activado = 0;
 static uint8_t propulsor = 0;
@@ -42,6 +43,11 @@ void calcularFisicas(struct objetoFisico* elemento){
         elemento -> velocidad[0] * intervalo_fisicas_ms / pixels_por_metro,
         -(elemento -> velocidad[1] * intervalo_fisicas_ms / pixels_por_metro)
     };
+
+	// Obtencion de valores globales para la cabecera
+	altitud = elemento->objeto->origen.y;
+	velocidad_horizontal = elemento -> velocidad[0];
+	velocidad_vertical = elemento -> velocidad[1];
 
     // Trasladar el objeto
     trasladarDibujable(elemento -> objeto, nueva_posicion);
