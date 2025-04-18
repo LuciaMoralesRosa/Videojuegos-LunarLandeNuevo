@@ -18,7 +18,7 @@ typedef enum {
     COMMAND
 } Tipo_Mision;
 
-void inicializarMenu(void);
+void inicializar_menu_nueva_partida(void);
 
 void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal);
 

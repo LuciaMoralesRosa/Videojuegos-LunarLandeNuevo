@@ -31,7 +31,7 @@ static char* cadenasOpciones[NUM_OPCIONES] = {
 // Función auxiliar (definida en este módulo o en otro archivo de utilidades)
 // ya está definida arriba: crearPalabraDesdeCadena
 
-void inicializarMenu(void) {
+void inicializar_menu_nueva_partida(void) {
     opcionSeleccionada = MISSION;
     // Esto se actualiza al dibujar
     struct Punto origenTemporal = {0, 0};
@@ -160,22 +160,22 @@ void gestionar_opcion_seleccionada(void) {
         destruir_palabra(opcionesTextuales[0]);
         switch (tipo_mision) {
         case TRAINING:
-            cadenasOpciones[0] = "CADET MISSION";
+            cadenasOpciones[0] = "MISSION: CADET MISSION";
             opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
             tipo_mision = CADET;
             break;
         case CADET:
-            cadenasOpciones[0] = "PRIME MISSION";
+            cadenasOpciones[0] = "MISSION: PRIME MISSION";
             opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
             tipo_mision = PRIME;
             break;
         case PRIME:
-            cadenasOpciones[0] = "COMMAND MISSION";
+            cadenasOpciones[0] = "MISSION: COMMAND MISSION";
             opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
             tipo_mision = COMMAND;
             break;
         case COMMAND:
-            cadenasOpciones[0] = "TRAINING MISSION";
+            cadenasOpciones[0] = "MISSION: TRAINING MISSION";
             opcionesTextuales[0] = crearPalabraDesdeCadena(cadenasOpciones[0], p);
             tipo_mision = TRAINING;
             break;        

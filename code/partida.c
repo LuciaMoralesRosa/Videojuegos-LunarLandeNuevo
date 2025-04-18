@@ -174,7 +174,7 @@ void manejar_instante_partida(){
 	}
 }
 
-void inicializarPartida(){
+void inicializar_partida(){
     combustible = 0;
 	terreno = crearDibujable(&Terreno);
 	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);
@@ -183,6 +183,10 @@ void inicializarPartida(){
 
 void anyadirMoneda(){
     combustible += fuel_por_moneda;
+}
+
+void insertar_monedas(int monedas) {
+	combustible += monedas * fuel_por_moneda;
 }
 
 void comenzarPartida(){

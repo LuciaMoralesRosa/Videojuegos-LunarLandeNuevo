@@ -14,8 +14,8 @@ void mostrar_insertar_moneda(HDC hdc){
     dibujar_palabra(insertar_moneda, hdc);
 }
 
-void escalar_menu_insertar_palabra(void) {
-
+void escalar_menu_insertar_moneda(float factor_escalado) {
+    escalar_palabra_centrada(insertar_moneda, factor_escalado);
 }
 
 void destruir_menu_insertar_moneda(void) {

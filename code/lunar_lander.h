@@ -38,5 +38,6 @@ void cambiar_estado(int nuevo_estado);
 
 void escalar_escena(float factor_x, float factor_y);
 
+void iniciar_partida(int monedas);
 
 #endif // LUNAR_LANDER_H

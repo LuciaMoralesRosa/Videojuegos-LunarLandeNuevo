@@ -32,16 +32,6 @@ uint8_t moneda_presionada = 0;
 uint8_t monedas_introducidas = 0;
 
 
-/* Estado de la aplicación */
-typedef enum {
-    ESTADO_PIDIENDO_MONEDA,
-    ESTADO_OPCIONES,
-    ESTADO_JUEGO,
-    ESTADO_ATERRIZAJE,
-    ESTADO_FIN_PARTIDA
-} EstadoAplicacion;
-
-EstadoAplicacion estadoActual = ESTADO_PIDIENDO_MONEDA;
 
 
 struct Punto* p1 = NULL;
@@ -57,6 +47,10 @@ void AttachConsoleToStdout() {
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
+}
+
+void repintar_ventana(HWND hwnd) {
+    InvalidateRect(hwnd, NULL, TRUE); // Enviar mensaje WM_PAINT para repintar
 }
 
 // Funcion utilizada en la opcion de test de dibujables
@@ -97,10 +91,36 @@ void dibujar_bordes(HDC hdc) {
     dibujar_linea(hdc, p3->x, p3->y, p4->x, p4->y, RGB(255, 255, 255));
 }
 
+void escalar_textos(float factor_escalado){
+    switch(estado_actual) {
+        case ESTADO_PIDIENDO_MONEDA:{
+            escalar_menu_insertar_moneda(factor_escalado);
+            break;
+        }
+        case ESTADO_OPCIONES:{
+
+            break;
+        }
+        case ESTADO_JUEGO:{
+
+            break;
+        }
+        case ESTADO_ATERRIZAJE:{
+
+            break;
+        }
+        case ESTADO_FIN_PARTIDA:{
+
+            break;
+        }
+    }
+}
+
+
 /**
  * Escala la escena al tamaño de la ventana
  */
-void escalar(HWND hwnd) {
+void escalar_ventana(HWND hwnd) {
     RECT rect;
     GetClientRect(hwnd, &rect);
     int ancho_cliente = rect.right - rect.left;
@@ -111,8 +131,10 @@ void escalar(HWND hwnd) {
     float factor_resized_y = (float)alto_cliente / tamano_inicial_pantalla_Y;
     
     escalar_escena(1/factor_escalado, 1/factor_escalado);
+    escalar_textos(1/factor_escalado);
     factor_escalado = minimo(factor_resized_x, factor_resized_y);
     escalar_escena(factor_escalado, factor_escalado);
+    escalar_textos(factor_escalado);
     
     int tam_escena_x = (int)(tamano_inicial_pantalla_X * factor_escalado);
     int tam_escena_y = (int)(tamano_inicial_pantalla_Y * factor_escalado);
@@ -129,11 +151,17 @@ void escalar(HWND hwnd) {
 }
 
 
+void iniciar_nueva_partida(HWND hwnd) {
+    monedas_introducidas = 0;
+    crear_palabra_insertar_moneda();
+    estado_actual = ESTADO_PIDIENDO_MONEDA;
+    repintar_ventana(hwnd);
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE: {
             SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
-            inicializarMenu();
             break;
         }
         
@@ -159,7 +187,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 fullscreen = 1;
                 GetWindowRect(hwnd, &rectVentanaAnterior);
                 SetWindowLong(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-                escalar(hwnd);
+                escalar_ventana(hwnd);
             }
             break;
         }
@@ -174,12 +202,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         case WM_SIZE: {
-            escalar(hwnd);
+            escalar_ventana(hwnd);
             break;
         }
 
         case WM_TIMER: {
-            switch(estadoActual) {
+            switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     if(wParam == timer_IA) {
                         // Gestionar partida ia
@@ -213,7 +241,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             DeleteObject(brush);
 
             dibujar_bordes(hdcMem);
-            switch(estadoActual) {
+            switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     // Gestionar IA de fondo
 
@@ -222,10 +250,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_OPCIONES: {
+                    printf("Pintando en ESTADO_OPCIONES\n\n");
                     dibujarMenuEnBuffer(hdcMem, hwnd);
                     break;
                 }
                 case ESTADO_JUEGO: {
+                    //printf("Pintando en ESTADO_JUEGO\n\n");
                     pintar_pantalla(hdcMem);
                     break;
                 }
@@ -237,9 +267,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 default: break;
             }
-            
-            //pruebasDibujables(hdcMem);
-            
+                        
             BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
             SelectObject(hdcMem, hOld);
             DeleteObject(hbmMem);
@@ -249,37 +277,49 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         
         case WM_KEYDOWN: {
-            switch(estadoActual) {
+            switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
+                    printf("Estoy presionando una tecla en ESTADO_PIDIENDO_MONEDA\n\n");
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        monedas_introducidas++;
-                        estadoActual = ESTADO_OPCIONES;
+                        monedas_introducidas = 1;
+                        printf("Moneda insertada en ESTADO_PIDIENDO_MONEDA\n\n");
+                        inicializar_menu_nueva_partida();
+                        estado_actual = ESTADO_OPCIONES;
+                        repintar_ventana(hwnd);
+                        destruir_menu_insertar_moneda();
                     }
                     break;
                 }
 
                 case ESTADO_OPCIONES: {
+                    printf("\n\nESTADO_OPCIONES: Estoy dentro\n\n");
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                        printf("ESTADO_OPCIONES: Añadiendo moneda\n\n");
                         monedas_introducidas++;
                     }
                     procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
                     if(wParam == VK_RETURN) {
+                        printf("ESTADO_OPCIONES: Presionando enter\n\n");
                         gestionar_opcion_seleccionada();
                         OpcionMenu op = obtenerOpcionSeleccionada();
                         if(op == EXIT) {
                             printf("Exit seleccionado\n");
                             PostQuitMessage(0); // Terminar el proceso
                         }
+                        repintar_ventana(hwnd);
                     }
                     if (wParam == VK_SPACE) {
-                        estadoActual = ESTADO_JUEGO;
-                        printf("pidiendo comenzar juego\n");
+                        printf("ESTADO_OPCIONES: Presionando espacio\n\n");
                         pulsar_tecla(ESPACIO);
+                        iniciar_partida(monedas_introducidas);
+                        estado_actual = ESTADO_JUEGO;
+                        repintar_ventana(hwnd);
                     }
                     break;
                 }
 
                 case ESTADO_JUEGO: {
+                    printf("ESTADO_JUEGO: Tecla pulsada\n\n");
                     if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
@@ -310,12 +350,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         case WM_KEYUP: {
-            switch(estadoActual) {
+            switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     break;
                 }
 
                 case ESTADO_OPCIONES: {
+                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)){
+                        
+                    }
                     break;
                 }
 
@@ -371,7 +414,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                NULL, NULL, hInstance, NULL);
     inicializar_puntos();
     inicializar_aleatoriedad();
-    crear_palabra_insertar_moneda();
+    iniciar_nueva_partida(hwnd);
+    
     
     if (!hwnd) return 0;
     ShowWindow(hwnd, nCmdShow);
