@@ -56,6 +56,7 @@ extern const struct DibujableConstante Simbolo_Izquierda_Base;
 
 extern const struct DibujableConstante Checkbox_Base;
 extern const struct DibujableConstante Checkbox_Base_Check;
+extern const struct DibujableConstante Menos_Base;
 
 
 

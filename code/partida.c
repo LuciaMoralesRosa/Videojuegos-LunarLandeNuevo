@@ -4,6 +4,7 @@
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
 #include "../data/variables_globales.h"
+#include "menus/cabecera_juego.h"
 
 #define fuel_por_moneda 500
 #define masa_nave 1000
@@ -136,6 +137,7 @@ void gestionar_colisiones() {
 
 
 void dibujar_escena(HDC hdc){
+	dibujar_cabecera(hdc);
     dibujarDibujable(hdc, nave -> objeto);
 	dibujarDibujable(hdc, terreno);
 	for(uint8_t i = 0; i < numero_plataformas; i++){
@@ -175,6 +177,7 @@ void manejar_instante_partida(){
 }
 
 void inicializar_partida(){
+	inicializar_cabecera();
     combustible = 0;
 	terreno = crearDibujable(&Terreno);
 	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);

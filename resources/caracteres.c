@@ -355,14 +355,16 @@ const struct DibujableConstante Letra_Z_Base = {
 const struct DibujableConstante Numero_0_Base = {
     CENTRO_CONST_CARACTER,
     (struct Punto[]){
-        {0, 0}, {0, ALTURA_CARACTER_MAX}, {ANCHURA_CARACTER_MAX, ALTURA_CARACTER_MAX}, 
-        {ANCHURA_CARACTER_MAX, 0}
+        {2, 0}, {ANCHURA_CARACTER_MAX - 2, 0}, {ANCHURA_CARACTER_MAX, 2},
+        {ANCHURA_CARACTER_MAX, ALTURA_CARACTER_MAX - 2},
+        {ANCHURA_CARACTER_MAX - 2, ALTURA_CARACTER_MAX},
+        {2, ALTURA_CARACTER_MAX}, {0, ALTURA_CARACTER_MAX - 2}, {0, 2}
     },
     (struct UnionAristas[]){
-        {0, 1}, {1, 2}, {2, 3}, {3, 0}
+        {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 0}
     },
-    4,
-    4
+    8,
+    8
 };
 
 const struct DibujableConstante Numero_1_Base = {
@@ -572,4 +574,17 @@ const struct DibujableConstante Checkbox_Base_Check  = {
     },
     4,
     6
+};
+
+const struct DibujableConstante Menos_Base  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {0, ALTURA_CARACTER_MAX/2},
+        {ANCHURA_CARACTER_MAX, ALTURA_CARACTER_MAX/2}
+    },
+    (struct UnionAristas[]){
+        {0,1}
+    },
+    2,
+    1
 };

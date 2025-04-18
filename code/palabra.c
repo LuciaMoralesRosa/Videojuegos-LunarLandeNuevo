@@ -20,20 +20,6 @@ struct Palabra* crear_palabra(struct Punto origen){
 void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* letra) {
     // Aumentar el tamaño del arreglo de letras
     palabra->num_letras++;
-    /*
-    palabra->letras = (struct Dibujable*)realloc(palabra->letras,
-                       palabra->num_letras * sizeof(struct Dibujable));
-    
-    // Definir como dibujable y ajustar posicion trasladando el origen
-    struct Dibujable* letraDibujable = crearDibujable(letra);
-    struct Punto nuevoOrigen = {palabra->origen.x + (palabra->num_letras - 1) *
-                               (ANCHURA_CARACTER_MAX + SEPARACION_CARACTER),
-                               palabra->origen.y};
-    colocar_dibujable(letraDibujable, nuevoOrigen);
-
-    // Añadir la letra a la palabra
-    palabra->letras[palabra->num_letras - 1] = *letraDibujable;
-    */
 
     struct Dibujable** temporal = realloc(palabra->letras, palabra->num_letras*sizeof(struct Dibujable*));
     if (!temporal) {
@@ -132,8 +118,9 @@ struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto orig
             case ':': agregar_letra(txt, &Simbolo_DosPuntos_Base); break;
             case '>': agregar_letra(txt, &Simbolo_Derecha_Base); break;
             case '<': agregar_letra(txt, &Simbolo_Izquierda_Base); break;
-            case '-': agregar_letra(txt, &Checkbox_Base); break;
+            case '*': agregar_letra(txt, &Checkbox_Base); break;
             case '+': agregar_letra(txt, &Checkbox_Base_Check); break;
+            case '-': agregar_letra(txt, &Menos_Base); break;
             // Agnadir mas simbolos
             default: break;
         }

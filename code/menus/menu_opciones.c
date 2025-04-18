@@ -20,8 +20,8 @@ static struct Palabra* indicador = {0};
 // Cadena de cada campo en mayúsculas.
 static char* campos_cadenas[NUM_OPCIONES] = {
     "MISSION: TRAINING MISSION",
-    "-  ACTIVE ASTEROIDS",
-    "-  ACTIVE TURRETS",
+    "*  ACTIVE ASTEROIDS",
+    "*  ACTIVE TURRETS",
     "EXIT"
 };
 
@@ -134,7 +134,7 @@ void gestionar_opcion_seleccionada(void) {
             campos_menu[1] = crear_palabra_desde_cadena(campos_cadenas[1], p1);
             asteroides_activados = 1;
         } else {
-            campos_cadenas[1] = "-  ACTIVE ASTEROIDS";
+            campos_cadenas[1] = "*  ACTIVE ASTEROIDS";
             campos_menu[1] = crear_palabra_desde_cadena(campos_cadenas[1], p1);
             asteroides_activados = 0;
         }
@@ -148,7 +148,7 @@ void gestionar_opcion_seleccionada(void) {
             campos_menu[2] = crear_palabra_desde_cadena(campos_cadenas[2], p2);
             torretas_activadas = 1;
         } else {
-            campos_cadenas[2] = "-  ACTIVE TURRETS";
+            campos_cadenas[2] = "*  ACTIVE TURRETS";
             campos_menu[2] = crear_palabra_desde_cadena(campos_cadenas[2], p2);
             torretas_activadas = 0;
         }

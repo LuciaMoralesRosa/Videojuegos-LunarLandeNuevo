@@ -1,8 +1,11 @@
 #include "code/lunar_lander.h"
-#include "code/menus/menu_opciones.h"
 #include "code/gestor_plataformas.h"
 #include "code/palabra.h"
+
 #include "code/menus/menu_insertar_moneda.h"
+#include "code/menus/menu_opciones.h"
+#include "code/menus/cabecera_juego.h"
+
 #include "resources/superficie_lunar.h"
 
 #include "data/variables_globales.h"
@@ -14,7 +17,8 @@
 #include <stdlib.h>
 
 #define timer_TICK_juego 1
-#define timer_IA 10000
+#define timer_IA 2
+#define timer_segundo 3
 
 
 // ---------------------------- VARIABLES ESCALADO -----------------------------
@@ -100,7 +104,7 @@ void escalar_textos(HWND hwnd, float factor){
             break;
         }
         case ESTADO_JUEGO:{
-
+            escalar_cabecera(factor);
             break;
         }
         case ESTADO_ATERRIZAJE:{
@@ -161,6 +165,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     switch (uMsg) {
         case WM_CREATE: {
             SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
+            SetTimer(hwnd, timer_IA, 10000, NULL);
+            SetTimer(hwnd, timer_segundo, 1000, NULL);
+
             break;
         }
         
@@ -219,6 +226,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         manejar_instante();
                         manejar_teclas();
                         InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    if(wParam == timer_segundo) {
+                        segundos_transcurridos++;
                     }
                     break;
                 }
@@ -384,6 +394,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_DESTROY: {
             KillTimer(hwnd, timer_TICK_juego);
             KillTimer(hwnd, timer_IA);
+            KillTimer(hwnd, timer_segundo);
             PostQuitMessage(0);
             return 0;
         }
@@ -412,7 +423,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     inicializar_puntos();
     inicializar_aleatoriedad();
     iniciar_nueva_partida(hwnd);
-        
+
     if (!hwnd) return 0;
     ShowWindow(hwnd, nCmdShow);
     
