@@ -9,6 +9,8 @@
 #include "../data/variables_juego.h"
 
 #include "menus/cabecera_juego.h"
+#include "menus/menu_aterrizaje.h"
+
 
 
 #define fuel_por_moneda 500
@@ -61,7 +63,7 @@ void escalar_escena_partida(float factor_x, float factor_y){
 
 uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	uint16_t puntuacion = 0;
-
+	tipo_aterrizaje = COLISION;
 	if(es_arista_aterrizable == 1){
 		if(nave->velocidad[1] > -aterrizaje_perfecto_vel &&
 			(aterrizaje_perfecto_vel > nave->velocidad[0] &&
@@ -72,6 +74,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			printf("Aterrizaje perfecto\n");
 			puntuacion = 50 * bonificador;
 			combustible += 50;
+			tipo_aterrizaje = PERFECTO;
 		}
 		else if(nave->velocidad[1] > -aterrizaje_brusco_vel &&
 			(aterrizaje_brusco_vel > nave->velocidad[0] &&
@@ -81,6 +84,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			// Aterrizaje brusco
 			printf("Aterrizaje brusco\n");
 			puntuacion = 15 * bonificador;
+			tipo_aterrizaje = BRUSCO;
 		}
 		else{
 			// Colision
@@ -97,7 +101,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	return puntuacion;
 }
 
-void se_ha_aterrizado(){
+void se_ha_aterrizado(uint16_t puntos){
 	nave->velocidad[0] = 0;
 	nave->velocidad[1] = 0;
 	nave->aceleracion[0] = 0;
@@ -105,6 +109,13 @@ void se_ha_aterrizado(){
 	fisicas = DESACTIVADAS;
 	printf("Combustible restante: %d\n", combustible);
 	actualizar_puntuacion_cabecera();
+	if(combustible < combustible_motor) {
+		estado_actual = ESTADO_FIN_PARTIDA;
+	}
+	else{
+		generar_mensaje_aterrizaje(puntos);
+		estado_actual = ESTADO_ATERRIZAJE;
+	}	
 }
 
 void gestionar_colisiones() {
@@ -134,7 +145,7 @@ void gestionar_colisiones() {
 		uint16_t puntos_conseguidos = evaluar_aterrizaje(bonificador, es_arista_aterrizable);
 		puntuacion_partida += puntos_conseguidos;
 		printf("Has conseguido %d puntos en este aterrizaje\n", puntos_conseguidos);
-		se_ha_aterrizado();
+		se_ha_aterrizado(puntos_conseguidos);
 			
 	}
 }

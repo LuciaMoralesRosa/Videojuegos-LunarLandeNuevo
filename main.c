@@ -5,6 +5,7 @@
 #include "code/menus/menu_insertar_moneda.h"
 #include "code/menus/menu_opciones.h"
 #include "code/menus/cabecera_juego.h"
+#include "code/menus/menu_aterrizaje.h"
 
 #include "resources/superficie_lunar.h"
 
@@ -108,7 +109,7 @@ void escalar_textos(HWND hwnd, float factor){
             break;
         }
         case ESTADO_ATERRIZAJE:{
-
+            escalar_menu_aterrizaje(factor);
             break;
         }
         case ESTADO_FIN_PARTIDA:{
@@ -269,6 +270,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_ATERRIZAJE: {
+                    printf("ESTADO_ATERRIZAJE\n\n");
+                    pintar_pantalla(hdcMem);
+                    dibujar_mensajes_aterrizaje(hdcMem);
                     break;
                 }
                 case ESTADO_FIN_PARTIDA: {
@@ -337,6 +341,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case ESTADO_ATERRIZAJE: {
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+                    if(wParam == VK_SPACE) {
+                        // seguir jugando
+                        printf("Se quiere seguir jugando");
+                        //estado_actual = ESTADO_JUEGO;
+                    }
                     break;
                 }
 

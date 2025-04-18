@@ -121,6 +121,12 @@ struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto orig
             case '*': agregar_letra(txt, &Checkbox_Base); break;
             case '+': agregar_letra(txt, &Checkbox_Base_Check); break;
             case '-': agregar_letra(txt, &Menos_Base); break;
+            case '\'': agregar_letra(txt, &Apostrofe_Base); break;
+            case '?': agregar_letra(txt, &Interrogante_Base); break;
+            case ',': agregar_letra(txt, &Coma_Base); break;
+
+
+
             // Agnadir mas simbolos
             default: break;
         }

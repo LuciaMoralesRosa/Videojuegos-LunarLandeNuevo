@@ -588,3 +588,42 @@ const struct DibujableConstante Menos_Base  = {
     2,
     1
 };
+
+const struct DibujableConstante Apostrofe_Base  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {ANCHURA_CARACTER_MAX/2, ALTURA_CARACTER_MAX},
+        {2, 6}
+    },
+    (struct UnionAristas[]){
+        {0,1}
+    },
+    2,
+    1
+};
+
+const struct DibujableConstante Interrogante_Base  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {0, 0}, {ANCHURA_CARACTER_MAX, 0}, {ANCHURA_CARACTER_MAX, ALTURA_CARACTER_MAX/2},
+        {0, ALTURA_CARACTER_MAX/2}, {0, ALTURA_CARACTER_MAX}
+    },
+    (struct UnionAristas[]){
+        {0,1}, {1, 2}, {2, 3}, {3, 4}
+    },
+    5,
+    4
+};
+
+const struct DibujableConstante Coma_Base  = {
+    CENTRO_CONST_CARACTER,
+    (struct Punto[]){
+        {ANCHURA_CARACTER_MAX/2, 15},
+        {0, ALTURA_CARACTER_MAX}
+    },
+    (struct UnionAristas[]){
+        {0,1}
+    },
+    2,
+    1
+};

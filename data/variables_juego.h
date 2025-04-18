@@ -10,8 +10,14 @@ typedef enum {
     ESTADO_FIN_PARTIDA
 } estado_aplicacion;
 
-extern estado_aplicacion estado_actual;
+typedef enum {
+    PERFECTO,
+    BRUSCO, 
+    COLISION
+} Aterrizaje;
 
+extern estado_aplicacion estado_actual;
+extern Aterrizaje tipo_aterrizaje;
 
 extern int combustible;
 extern int puntuacion_partida;
