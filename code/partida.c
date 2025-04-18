@@ -10,6 +10,7 @@
 
 #include "menus/cabecera_juego.h"
 #include "menus/menu_aterrizaje.h"
+#include "menus/menu_final_partida.h"
 
 
 
@@ -110,9 +111,12 @@ void se_ha_aterrizado(uint16_t puntos){
 	printf("Combustible restante: %d\n", combustible);
 	actualizar_puntuacion_cabecera();
 	if(combustible < combustible_motor) {
+		printf("Liada\n");
+		generar_mensaje_final_partida(puntos);
 		estado_actual = ESTADO_FIN_PARTIDA;
 	}
 	else{
+		printf("Generando menu aterrizaje\n");
 		generar_mensaje_aterrizaje(puntos);
 		estado_actual = ESTADO_ATERRIZAJE;
 	}	

@@ -6,6 +6,7 @@
 #include "code/menus/menu_opciones.h"
 #include "code/menus/cabecera_juego.h"
 #include "code/menus/menu_aterrizaje.h"
+#include "code/menus/menu_final_partida.h"
 
 #include "resources/superficie_lunar.h"
 
@@ -276,6 +277,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_FIN_PARTIDA: {
+                    dibujar_mensajes_final_partida(hdcMem);
                     break;
                 }
                 default: break;
