@@ -251,7 +251,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 case ESTADO_OPCIONES: {
                     printf("Pintando en ESTADO_OPCIONES\n\n");
-                    dibujarMenuEnBuffer(hdcMem, hwnd);
+                    dibujar_menu_opciones(hdcMem, hwnd);
                     break;
                 }
                 case ESTADO_JUEGO: {
@@ -279,10 +279,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_KEYDOWN: {
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
-                    printf("Estoy presionando una tecla en ESTADO_PIDIENDO_MONEDA\n\n");
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
                         monedas_introducidas = 1;
-                        printf("Moneda insertada en ESTADO_PIDIENDO_MONEDA\n\n");
                         inicializar_menu_nueva_partida();
                         estado_actual = ESTADO_OPCIONES;
                         repintar_ventana(hwnd);
@@ -292,28 +290,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_OPCIONES: {
-                    printf("\n\nESTADO_OPCIONES: Estoy dentro\n\n");
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        printf("ESTADO_OPCIONES: Añadiendo moneda\n\n");
                         monedas_introducidas++;
                     }
-                    procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
-                    if(wParam == VK_RETURN) {
-                        printf("ESTADO_OPCIONES: Presionando enter\n\n");
+                    else if(wParam == VK_DOWN || wParam == VK_UP) {
+                        procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
+                    }
+                    else if(wParam == VK_RETURN) {
                         gestionar_opcion_seleccionada();
-                        OpcionMenu op = obtenerOpcionSeleccionada();
+                        OpcionMenu op = obtener_opcion_seleccionada();
                         if(op == EXIT) {
-                            printf("Exit seleccionado\n");
                             PostQuitMessage(0); // Terminar el proceso
                         }
                         repintar_ventana(hwnd);
                     }
-                    if (wParam == VK_SPACE) {
-                        printf("ESTADO_OPCIONES: Presionando espacio\n\n");
+                    else if (wParam == VK_SPACE) {
                         pulsar_tecla(ESPACIO);
                         iniciar_partida(monedas_introducidas);
                         estado_actual = ESTADO_JUEGO;
                         repintar_ventana(hwnd);
+                        destruir_menu_opciones();
                     }
                     break;
                 }

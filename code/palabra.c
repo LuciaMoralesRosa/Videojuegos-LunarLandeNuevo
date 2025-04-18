@@ -87,7 +87,7 @@ void destruir_palabra(struct Palabra* palabra) {
     free(palabra);
 }
 
-struct Palabra* crearPalabraDesdeCadena(const char* cadena, struct Punto origen) {
+struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen) {
     struct Palabra* txt = crear_palabra(origen);
     for (int i = 0; cadena[i] != '\0'; i++) {
         char c = cadena[i];

@@ -47,6 +47,6 @@ void dibujar_palabra(struct Palabra* palabra, HDC hdc);
  */
 void destruir_palabra(struct Palabra* palabra);
 
-struct Palabra* crearPalabraDesdeCadena(const char* cadena, struct Punto origen);
+struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen);
 
 #endif // PALABRA_H

@@ -6,7 +6,7 @@
 
 struct Palabra* insertar_moneda = NULL;
 void crear_palabra_insertar_moneda(void){
-    insertar_moneda = crearPalabraDesdeCadena("INSERTE UNA MONEDA PARA CONTINUAR",
+    insertar_moneda = crear_palabra_desde_cadena("INSERTE UNA MONEDA PARA CONTINUAR",
         (struct Punto){280, tamano_inicial_pantalla_Y-300});
 }
 

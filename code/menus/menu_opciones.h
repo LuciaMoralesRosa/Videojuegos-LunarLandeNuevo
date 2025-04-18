@@ -20,12 +20,13 @@ typedef enum {
 
 void inicializar_menu_nueva_partida(void);
 
-void dibujarMenuEnBuffer(HDC hdc, HWND hwndReal);
+void dibujar_menu_opciones(HDC hdc, HWND hwndReal);
 
+void destruir_menu_opciones(void);
 
 LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-OpcionMenu obtenerOpcionSeleccionada(void);
+OpcionMenu obtener_opcion_seleccionada(void);
 
 void gestionar_opcion_seleccionada(void);
 
