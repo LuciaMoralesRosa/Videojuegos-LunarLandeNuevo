@@ -199,6 +199,12 @@ void inicializar_partida(){
 	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, 350});
 }
 
+void continuar_tras_aterrizaje_partida(){
+	terreno = crearDibujable(&Terreno);
+	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);
+	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, 350});
+}
+
 void anyadirMoneda(){
     combustible += fuel_por_moneda;
 }

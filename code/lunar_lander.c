@@ -112,3 +112,9 @@ void iniciar_partida(int monedas_introducidas) {
     comenzarPartida();
     escalar_escena_partida(factor_escalado, factor_escalado);
 }
+
+void continuar_tras_aterrizaje(void){
+    continuar_tras_aterrizaje_partida();
+    comenzarPartida();
+    escalar_escena_partida(factor_escalado, factor_escalado);
+}

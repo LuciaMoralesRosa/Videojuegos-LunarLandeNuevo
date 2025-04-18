@@ -40,4 +40,6 @@ void escalar_escena(float factor_x, float factor_y);
 
 void iniciar_partida(int monedas);
 
+void continuar_tras_aterrizaje(void);
+
 #endif // LUNAR_LANDER_H

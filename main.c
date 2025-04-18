@@ -344,7 +344,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if(wParam == VK_SPACE) {
                         // seguir jugando
                         printf("Se quiere seguir jugando");
-                        //estado_actual = ESTADO_JUEGO;
+                        continuar_tras_aterrizaje();
+                        estado_actual = ESTADO_JUEGO;
                     }
                     break;
                 }
