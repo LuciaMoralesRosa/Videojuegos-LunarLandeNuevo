@@ -2,6 +2,7 @@
 #include "../palabra.h"
 #include "../../resources/caracteres.h"
 #include "../../code/transformaciones.h"
+#include "../../data/variables_globales.h"
 #include <stdio.h>
 #include <windows.h>
 
@@ -33,6 +34,7 @@ void inicializar_menu_nueva_partida(void) {
         campos_menu[i] = crear_palabra_desde_cadena(campos_cadenas[i], (struct Punto){350, y});
         y = y + ALTURA_CARACTER_MAX + 30;
     }
+    escalar_menu_opciones(factor_escalado);
 
 }
 
@@ -83,6 +85,14 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 OpcionMenu obtener_opcion_seleccionada() {
     return campo_seleccionado;
+}
+
+void escalar_menu_opciones(float factor){
+    for(uint8_t i = 0; i < NUM_OPCIONES; i++) {
+        escalar_palabra_en_escena_dados_ejes(campos_menu[i], factor, factor);
+    }
+    escalar_palabra_en_escena_dados_ejes(titulo_menu, factor, factor);
+    escalar_palabra_en_escena_dados_ejes(indicador, factor, factor);
 }
 
 void gestionar_opcion_seleccionada(void) {

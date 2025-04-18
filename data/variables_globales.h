@@ -4,6 +4,7 @@
 
 extern float tam_ventana_x;
 extern float tam_ventana_y;
+extern float factor_escalado; 
 
 
 

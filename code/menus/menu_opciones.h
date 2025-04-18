@@ -28,6 +28,8 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 OpcionMenu obtener_opcion_seleccionada(void);
 
+void escalar_menu_opciones(float factor);
+
 void gestionar_opcion_seleccionada(void);
 
 #endif // MENU_OPCIONES_H

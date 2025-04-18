@@ -19,19 +19,15 @@
 
 // ---------------------------- VARIABLES ESCALADO -----------------------------
 // Factor por el que escalar la escena
-float factor_escalado = 1.0f; 
 uint8_t fullscreen = 0;
 uint8_t esc_presionado = 0;
 // Rectangulo que contiene la ventana anterior al resize de pantalla completa
 RECT rectVentanaAnterior;
 // -----------------------------------------------------------------------------
 
-
 // VARIABLES MAQUINA ESTADOS JUEGO
 uint8_t moneda_presionada = 0;
 uint8_t monedas_introducidas = 0;
-
-
 
 
 struct Punto* p1 = NULL;
@@ -53,9 +49,10 @@ void repintar_ventana(HWND hwnd) {
     InvalidateRect(hwnd, NULL, TRUE); // Enviar mensaje WM_PAINT para repintar
 }
 
+
+
 // Funcion utilizada en la opcion de test de dibujables
 void pruebasDibujables(HDC hdcMem) {
-
 }
 
 void inicializar_puntos() {
@@ -91,14 +88,15 @@ void dibujar_bordes(HDC hdc) {
     dibujar_linea(hdc, p3->x, p3->y, p4->x, p4->y, RGB(255, 255, 255));
 }
 
-void escalar_textos(float factor_escalado){
+void escalar_textos(HWND hwnd, float factor){
+
     switch(estado_actual) {
         case ESTADO_PIDIENDO_MONEDA:{
-            escalar_menu_insertar_moneda(factor_escalado);
+            escalar_menu_insertar_moneda(factor);
             break;
         }
         case ESTADO_OPCIONES:{
-
+            escalar_menu_opciones(factor);
             break;
         }
         case ESTADO_JUEGO:{
@@ -114,6 +112,7 @@ void escalar_textos(float factor_escalado){
             break;
         }
     }
+    repintar_ventana(hwnd);
 }
 
 
@@ -131,10 +130,10 @@ void escalar_ventana(HWND hwnd) {
     float factor_resized_y = (float)alto_cliente / tamano_inicial_pantalla_Y;
     
     escalar_escena(1/factor_escalado, 1/factor_escalado);
-    escalar_textos(1/factor_escalado);
+    escalar_textos(hwnd, 1/factor_escalado);
     factor_escalado = minimo(factor_resized_x, factor_resized_y);
     escalar_escena(factor_escalado, factor_escalado);
-    escalar_textos(factor_escalado);
+    escalar_textos(hwnd, factor_escalado);
     
     int tam_escena_x = (int)(tamano_inicial_pantalla_X * factor_escalado);
     int tam_escena_y = (int)(tamano_inicial_pantalla_Y * factor_escalado);
@@ -267,6 +266,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 default: break;
             }
+
+            pruebasDibujables(hdcMem);
                         
             BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
             SelectObject(hdcMem, hOld);
@@ -411,8 +412,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     inicializar_puntos();
     inicializar_aleatoriedad();
     iniciar_nueva_partida(hwnd);
-    
-    
+        
     if (!hwnd) return 0;
     ShowWindow(hwnd, nCmdShow);
     

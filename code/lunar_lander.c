@@ -2,6 +2,8 @@
 #include "partida.h"
 #include "fisicas.h"
 #include "../data/variables_juego.h"
+#include "../data/variables_globales.h"
+
 
 static int estado = PEDIR;
 static int estado_teclas[5] = {
@@ -108,4 +110,5 @@ void iniciar_partida(int monedas_introducidas) {
     inicializar_partida();
     insertar_monedas(monedas_introducidas);
     comenzarPartida();
+    escalar_escena_partida(factor_escalado, factor_escalado);
 }
