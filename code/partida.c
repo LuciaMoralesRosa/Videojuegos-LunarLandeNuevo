@@ -1,6 +1,7 @@
 #include "partida.h"
 #include "gestor_colisiones.h"
 #include "gestor_plataformas.h"
+#include "gestor_zoom.h"
 
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
@@ -21,6 +22,10 @@
 #define aterrizaje_brusco_vel 1
 #define aterrizaje_perfecto_rot 5
 #define aterrizaje_brusco_rot 10
+
+#define entrada_modo_zoom_nave 1
+#define entrada_modo_zoom_terreno 1.7
+
 
 int inicio = 0;
 
@@ -44,21 +49,30 @@ struct Plataforma* plataformas_partida = NULL;
 uint8_t numero_plataformas = 0;
 
 static uint8_t fisicas = DESACTIVADAS;
+static uint8_t modo_zoom = 0;
 
+
+void escalar_nave_partida(float factor_x, float factor_y){
+	escalar_dibujable_en_escena_dados_ejes(motor_fuerte, factor_x, factor_y);
+	escalar_dibujable_en_escena_dados_ejes(motor_medio, factor_x, factor_y);
+	escalar_dibujable_en_escena_dados_ejes(motor_debil, factor_x, factor_y);
+	escalar_dibujable_en_escena_dados_ejes(nave->objeto, factor_x, factor_y);
+}
+
+void escalar_terreno_partida(float factor_x, float factor_y) {
+	escalar_dibujable_en_escena_dados_ejes(terreno, factor_x, factor_y);
+	for(uint8_t i = 0; i < numero_plataformas; i++) {
+		escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].linea, factor_x, factor_y);
+		for(uint8_t j = 0; j < plataformas_partida[i].palabra->num_letras; j++){
+			escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].palabra->letras[j], factor_x, factor_y);
+		}
+	}
+}
 
 void escalar_escena_partida(float factor_x, float factor_y){
 	if(inicio == 1) {
-		escalar_dibujable_en_escena_dados_ejes(terreno, factor_x, factor_y);
-		escalar_dibujable_en_escena_dados_ejes(motor_fuerte, factor_x, factor_y);
-		escalar_dibujable_en_escena_dados_ejes(motor_medio, factor_x, factor_y);
-		escalar_dibujable_en_escena_dados_ejes(motor_debil, factor_x, factor_y);
-		escalar_dibujable_en_escena_dados_ejes(nave->objeto, factor_x, factor_y);
-		for(uint8_t i = 0; i < numero_plataformas; i++) {
-			escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].linea, factor_x, factor_y);
-			for(uint8_t j = 0; j < plataformas_partida[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].palabra->letras[j], factor_x, factor_y);
-			}
-		}
+		escalar_nave_partida(factor_x, factor_y);
+		escalar_terreno_partida(factor_x, factor_y);
 	}
 }
 
@@ -188,10 +202,28 @@ void rotar_nave(uint8_t direccion){
 	rotarDibujable(motor_fuerte, direccion);
 }
 
+
 void manejar_instante_partida(){
     if(fisicas == ACTIVADAS) {
 		calcularFisicas(nave);
-		gestionar_colisiones();
+		if(modo_zoom == 0) { // Zoom no activado
+			if(hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno)) {
+				// Activar zoom
+				modo_zoom = 1;
+				escalar_nave_partida(entrada_modo_zoom_nave, entrada_modo_zoom_nave);
+				escalar_terreno_partida(entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
+			}
+		}
+		else if(modo_zoom == 1) {
+			if(no_hay_arista_en_radio_desactivar_zoom(nave->objeto->origen, terreno)) {
+				modo_zoom = 0;
+				escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
+				escalar_terreno_partida(1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
+			}
+		}
+		if(modo_zoom == 1){
+			gestionar_colisiones();
+		}
 	}
 }
 
