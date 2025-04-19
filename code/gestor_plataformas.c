@@ -108,11 +108,11 @@ void barajar(uint8_t* arr, uint8_t n) {
  * @param num_valores Cantidad de números aleatorios a generar.
  * @param max_valor Valor máximo del rango (exclusivo).
  *
- * @note La función asume que el tamaño de `resultado` es al menos `num_valores`.
+ * @note La función asume que el tamaño de resultado es al menos num_valores.
  * @note Se asume que la semilla del generador de números aleatorios ha sido 
  *       inicializada previamente con srand().
  * 
- * @warning Si `num_valores` es mayor que `max_valor`, la función no generará
+ * @warning Si num_valores es mayor que max_valor, la función no generará
  * valores y retornará sin hacer nada.
  */
 void generar_aleatorios(uint8_t* resultado, uint8_t num_valores, uint8_t max_valor) {
@@ -162,12 +162,12 @@ struct Palabra* generar_palabra_plataforma(struct Arista arista, uint8_t* bonifi
  * @brief Genera una línea para una plataforma basándose en una arista y un punto de origen.
  *
  * @param arista La arista que define la línea.
- * @param linea Puntero a una estructura `DibujableConstante` donde se almacenará la línea generada.
+ * @param linea Puntero a una estructura DibujableConstante donde se almacenará la línea generada.
  * @param origen_terreno El punto de origen para la línea sobre el terreno.
  *
- * @return Un puntero a la estructura `DibujableConstante` generada, o `NULL` en caso de error.
+ * @return Un puntero a la estructura DibujableConstante generada, o NULL en caso de error.
  *
- * @note Si ocurre un error en la asignación de memoria, la función retorna `NULL` y libera los recursos ya asignados.
+ * @note Si ocurre un error en la asignación de memoria, la función retorna NULL y libera los recursos ya asignados.
  */
 struct DibujableConstante* generar_linea_plataforma(struct Arista arista, struct DibujableConstante* linea, struct Punto origen_terreno) {
     // Guardar espacio para los componentes de la línea (4 puntos, 2 aristas)
@@ -226,7 +226,7 @@ struct Plataforma* generar_plataforma_dada_arista(struct Arista arista, struct P
     // Calculo del bonificador y generacion de la palabra
     uint8_t bonificador;
     struct Palabra* palabra = generar_palabra_plataforma(arista, &bonificador);
-    struct Dibujable* linea_dibujable = crearDibujable(linea);
+    struct Dibujable* linea_dibujable = crear_dibujable(linea);
     // Creacion de la estrcutura plataforma
     plataforma->linea = linea_dibujable;
     plataforma->bonificador = bonificador;
@@ -235,6 +235,20 @@ struct Plataforma* generar_plataforma_dada_arista(struct Arista arista, struct P
     return plataforma;
 }
 
+/**
+ * @brief Genera una plataforma a partir de una arista.
+ *
+ * Esta función construye una estructura Plataforma usando una arista como base. 
+ * Utiliza un DibujableConstante para crear la línea correspondiente, genera la
+ * palabra asociada a la plataforma y calcula el bonificador.
+ *
+ * @param arista Arista desde la cual se genera la plataforma.
+ * @param origen_terreno Punto de referencia para colocar la plataforma en el
+ *                       terreno.
+ * 
+ * @return Puntero a la estructura Plataforma generada. Retorna NULL si ocurre
+ *         algún error de memoria.
+ */
 struct Plataforma* generar_plataformas(const struct DibujableConstante* terreno, uint8_t* num_plataformas){
     uint8_t num_aristas_posibles = 0;
     
@@ -287,5 +301,5 @@ struct Plataforma* generar_plataformas(const struct DibujableConstante* terreno,
 
 void dibujar_plataforma(HDC hdc, struct Plataforma plataforma){
     dibujar_palabra(plataforma.palabra, hdc);
-    dibujarDibujable(hdc, plataforma.linea);
+    dibujar_dibujable(hdc, plataforma.linea);
 }

@@ -6,18 +6,40 @@
 #include <stdio.h>
 #include <windows.h>
 
-// Variable internas para el menu
-static OpcionMenu campo_seleccionado = MISSION;
+/**
+ * @brief Variables internas del menú de opciones.
+ *
+ * Estas variables controlan el estado y el contenido visual del menú de
+ * configuración de partida.
+ */
+
+// Opción actualmente seleccionada por el jugador en el menú.
+static Opcion_Menu campo_seleccionado = MISSION;
+
+// Tipo de misión actualmente seleccionado.
 static Tipo_Mision tipo_mision = TRAINING;
+
+// Flag que indica si los asteroides están activados (1) o no (0).
 static uint8_t asteroides_activados = 0;
+
+// Flag que indica si las torretas están activadas (1) o no (0).
 static uint8_t torretas_activadas = 0;
 
-// Número de opciones definido en el header (NUM_OPCIONES)
+
+// Arreglo de punteros a las palabras que representan las opciones del menú.
 static struct Palabra* campos_menu[NUM_OPCIONES] = {0};
+
+// Título principal del menú 
 static struct Palabra* titulo_menu = {0};
+
+// Indicador gráfico que señala la opción actualmente seleccionada.
 static struct Palabra* indicador = {0};
 
-// Cadena de cada campo en mayúsculas.
+/**
+ * @brief Cadenas de texto utilizadas para crear cada opción del menú.
+ * 
+ * Cambian en tiempo de ejecucion segun las selecciones del jugador
+ */
 static char* campos_cadenas[NUM_OPCIONES] = {
     "MISSION: TRAINING MISSION",
     "*  ACTIVE ASTEROIDS",
@@ -26,26 +48,25 @@ static char* campos_cadenas[NUM_OPCIONES] = {
 };
 
 void inicializar_menu_nueva_partida(void) {
-    titulo_menu = crear_palabra_desde_cadena("LUNAR LANDER", (struct Punto){420, 200});
     campo_seleccionado = MISSION;
     float y = tamano_inicial_pantalla_Y / 2 - 100;
-    indicador = crear_palabra_desde_cadena(">", (struct Punto){350 - 2 * ANCHURA_CARACTER_MAX, y});
+    
+    titulo_menu = crear_palabra_desde_cadena("LUNAR LANDER", (struct Punto){
+        420, 200
+    });
+    indicador = crear_palabra_desde_cadena(">", (struct Punto){
+        350 - 2 * ANCHURA_CARACTER_MAX, y
+    });
+    
     for (int i = 0; i < NUM_OPCIONES; i++) {
-        campos_menu[i] = crear_palabra_desde_cadena(campos_cadenas[i], (struct Punto){350, y});
+        campos_menu[i] = crear_palabra_desde_cadena(campos_cadenas[i],
+            (struct Punto){350, y}
+        );
         y = y + ALTURA_CARACTER_MAX + 30;
     }
+
     escalar_menu_opciones(factor_escalado);
 
-}
-
-void destruir_menu_opciones(void) {
-    // Libera cada objeto creado para las opciones.
-    for (int i = 0; i < NUM_OPCIONES; i++) {
-        if (campos_menu[i]) {
-            destruir_palabra(campos_menu[i]);
-            campos_menu[i] = NULL;
-        }
-    }
 }
 
 void dibujar_menu_opciones(HDC hdc, HWND hwndReal) {    
@@ -55,6 +76,15 @@ void dibujar_menu_opciones(HDC hdc, HWND hwndReal) {
     // Dibujar cada opción del menú
     for (uint8_t i = 0; i < NUM_OPCIONES; i++) {
         dibujar_palabra(campos_menu[i], hdc);
+    }
+}
+
+void escalar_menu_opciones(float factor){
+    escalar_palabra_en_escena_dados_ejes(titulo_menu, factor, factor);
+    escalar_palabra_en_escena_dados_ejes(indicador, factor, factor);
+
+    for(uint8_t i = 0; i < NUM_OPCIONES; i++) {
+        escalar_palabra_en_escena_dados_ejes(campos_menu[i], factor, factor);
     }
 }
 
@@ -78,27 +108,23 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                 break;
         }
     }
-    colocar_palabra(indicador, (struct Punto){campos_menu[campo_seleccionado]->origen.x - 2 * ANCHURA_CARACTER_MAX, campos_menu[campo_seleccionado]->origen.y});
+    colocar_palabra(indicador, (struct Punto){
+        campos_menu[campo_seleccionado] -> origen.x - 2 * ANCHURA_CARACTER_MAX,
+        campos_menu[campo_seleccionado] -> origen.y
+    });
 
     return 0;
 }
 
-OpcionMenu obtener_opcion_seleccionada() {
+Opcion_Menu obtener_opcion_seleccionada() {
     return campo_seleccionado;
 }
 
-void escalar_menu_opciones(float factor){
-    for(uint8_t i = 0; i < NUM_OPCIONES; i++) {
-        escalar_palabra_en_escena_dados_ejes(campos_menu[i], factor, factor);
-    }
-    escalar_palabra_en_escena_dados_ejes(titulo_menu, factor, factor);
-    escalar_palabra_en_escena_dados_ejes(indicador, factor, factor);
-}
 
 void gestionar_opcion_seleccionada(void) {
     switch (campo_seleccionado) {
     case MISSION:{
-        struct Punto p = campos_menu[0]->origen;
+        struct Punto p = campos_menu[0] -> origen;
         destruir_palabra(campos_menu[0]);
         switch (tipo_mision) {
         case TRAINING:
@@ -127,7 +153,7 @@ void gestionar_opcion_seleccionada(void) {
         break;
     }
     case ASTEROIDS: {
-        struct Punto p1 = campos_menu[1]->origen;
+        struct Punto p1 = campos_menu[1] -> origen;
         destruir_palabra(campos_menu[1]);
         if(asteroides_activados == 0) {
             campos_cadenas[1] = "+  ACTIVE ASTEROIDS";
@@ -141,7 +167,7 @@ void gestionar_opcion_seleccionada(void) {
         break; 
     }       
     case TURRETS: {
-        struct Punto p2 = campos_menu[2]->origen;
+        struct Punto p2 = campos_menu[2] -> origen;
         destruir_palabra(campos_menu[2]);
         if(torretas_activadas == 0) {
             campos_cadenas[2] = "+  ACTIVE TURRETS";
@@ -157,4 +183,17 @@ void gestionar_opcion_seleccionada(void) {
     default:
         break;
     }
+}
+
+
+void destruir_menu_opciones(void) {
+    // Libera cada objeto creado para las opciones.
+    for (int i = 0; i < NUM_OPCIONES; i++) {
+        if (campos_menu[i]) {
+            destruir_palabra(campos_menu[i]);
+            campos_menu[i] = NULL;
+        }
+    }
+    destruir_palabra(titulo_menu);
+    destruir_palabra(indicador);
 }

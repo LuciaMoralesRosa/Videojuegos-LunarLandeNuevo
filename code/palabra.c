@@ -29,7 +29,7 @@ void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* let
     palabra->letras = temporal;
     
     // Crear el objeto Dibujable correspondiente al carácter
-    struct Dibujable* letraDibujable = crearDibujable(letra);
+    struct Dibujable* letraDibujable = crear_dibujable(letra);
     if (!letraDibujable) {
         fprintf(stderr, "Error al crear el objeto dibujable.\n");
         exit(EXIT_FAILURE);
@@ -58,7 +58,7 @@ int16_t calcular_centro_x_palabra(struct Palabra* palabra) {
 void dibujar_palabra(struct Palabra* palabra, HDC hdc) {
     if (palabra == NULL || palabra->num_letras == 0) return;
     for (uint8_t i = 0; i < palabra->num_letras; i++) {
-        dibujarDibujable(hdc, palabra->letras[i]);
+        dibujar_dibujable(hdc, palabra->letras[i]);
     }
 }
 
@@ -66,7 +66,7 @@ void destruir_palabra(struct Palabra* palabra) {
     if (palabra == NULL) return;
     if (palabra->letras != NULL) {
         for (uint8_t i = 0; i < palabra->num_letras; i++) {
-            destruirDibujable(palabra->letras[i]);
+            destruir_dibujable(palabra->letras[i]);
         }
         free(palabra->letras);
     }

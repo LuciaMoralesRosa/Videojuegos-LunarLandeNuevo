@@ -2,11 +2,11 @@
 
 #include "../../data/constantes.h"
 
-
-const struct Punto origen_msj_1 = {100, tamano_inicial_pantalla_Y/2-50};
-const struct Punto origen_msj_2 = {100, tamano_inicial_pantalla_Y/2-25};
+// Posiciones de los mensajes
+const struct Punto origen_msj_1 = {100, tamano_inicial_pantalla_Y/2-60};
+const struct Punto origen_msj_2 = {100, tamano_inicial_pantalla_Y/2-30};
 const struct Punto origen_msj_3 = {100, tamano_inicial_pantalla_Y/2};
-const struct Punto origen_msj_4 = {100, tamano_inicial_pantalla_Y/2+50};
+const struct Punto origen_msj_4 = {100, tamano_inicial_pantalla_Y/2+60};
 const struct Punto origen_msj_5 = {100, tamano_inicial_pantalla_Y/2+200};
 
 

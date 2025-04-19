@@ -8,10 +8,6 @@ static uint8_t propulsor = 0;
 static uint8_t orden_girar_izquierda = 0;
 static uint8_t orden_girar_derecha = 0;
 
-void destruirObjetoFisico(struct objetoFisico* objeto){
-    destruirDibujable(objeto -> objeto);
-    free(objeto);
-}
 
 struct Punto calcularFisicas(struct objetoFisico* elemento){
 	if(orden_girar_izquierda && !orden_girar_derecha && (elemento -> rotacion <= 90 || elemento -> rotacion >= 270 + ANGULO_ROTACION)){
@@ -49,9 +45,6 @@ struct Punto calcularFisicas(struct objetoFisico* elemento){
 	velocidad_horizontal = elemento -> velocidad[0];
 	velocidad_vertical = elemento -> velocidad[1];
 
-    // Trasladar el objeto
-	//trasladar_elementos_escena(nueva_posicion);
-
 	elemento -> aceleracion[0] = 0;
 	elemento -> aceleracion[1] = 0;
 	
@@ -68,7 +61,7 @@ struct Punto calcularFisicas(struct objetoFisico* elemento){
 	return nueva_posicion;
 }
 
-void propulsar(){
+void propulsar(void){
 	switch(propulsor){
 		case 3:
 			propulsor--;
@@ -79,22 +72,27 @@ void propulsar(){
 	}
 }
 
-void activar_propulsor(){
+void activar_propulsor(void){
 	propulsor_activado = 1;
 }
 
-void desactivar_propulsor(){
+void desactivar_propulsor(void){
 	propulsor_activado = 0;
 }
 
-void girar_izquierda(){
+void girar_izquierda(void){
 	orden_girar_izquierda = 1;
 }
 
-void girar_derecha(){
+void girar_derecha(void){
 	orden_girar_derecha = 1;
 }
 
-uint8_t obtener_propulsor(){
+uint8_t obtener_propulsor(void){
 	return propulsor;
+}
+
+void destruir_objeto_fisico(struct objetoFisico* objeto){
+    destruir_dibujable(objeto -> objeto);
+    free(objeto);
 }

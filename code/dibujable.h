@@ -85,26 +85,38 @@ struct DibujableConstante {
  * 
  * @return struct Dibujable* Puntero al objeto dibujable creado
  */
-struct Dibujable* crearDibujable(const struct DibujableConstante* constante);
-
-
-/**
- * @brief Libera la memoria ocupada por un objeto Dibujable
- * 
- * @param dibujable Puntero al objeto dibujable a liberar
- */
-void destruirDibujable(struct Dibujable* dibujable);
-
-void destruirArista(struct Arista* arista);
+struct Dibujable* crear_dibujable(const struct DibujableConstante* constante);
 
 /**
  * @brief Dibuja por pantalla un dibujable
  *
  * @param dibujable Dibujable a pintar por pantalla
  */
-void dibujarDibujable(HDC hdc, const struct Dibujable* dibujable);
+void dibujar_dibujable(HDC hdc, const struct Dibujable* dibujable);
 
-
+/**
+ * @brief Verifica si una arista es horizontal.
+ *
+ * @param arista_colision La arista que se desea evaluar.
+ * @return uint8_t 1 si es horizontal, 0 en caso contrario.
+ */
 uint8_t es_horizontal(struct Arista arista_colision);
+
+/**
+ * @brief Libera la memoria ocupada por un objeto Dibujable
+ * 
+ * @param dibujable Puntero al objeto dibujable a liberar
+ */
+void destruir_dibujable(struct Dibujable* dibujable);
+
+/**
+ * @brief Libera la memoria de una arista.
+ *
+ * @param arista Puntero a la arista que se desea liberar.
+ *
+ * @note Esta función asume que los puntos de la arista fueron asignados con malloc. 
+ * Si no lo fueron, no se debe usar esta función.
+ */
+void destruir_arista(struct Arista* arista);
 
 #endif // DIBUJABLE_H

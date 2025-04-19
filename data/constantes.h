@@ -14,5 +14,6 @@ extern const float COS_TABLA[360];
 #define tamano_inicial_pantalla_Y 768
 #define anchura_minima_ventana 512
 #define altura_minima_ventana 384
+#define combustible_motor 1
 
 #endif // TABLAS_TRIGONOMETRICAS_H

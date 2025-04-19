@@ -6,14 +6,18 @@
 #include "../transformaciones.h"
 #include "../../data/variables_globales.h"
 
+// Palabras que contienen los mensajes a mostrar
 struct Palabra* primer_mensaje = {0};
 struct Palabra* segundo_mensaje = {0};
 struct Palabra* tercer_mensaje = {0};
 struct Palabra* puntuacion_mensaje = {0};
 struct Palabra* presione_espacio = {0};
 
+// Contador para variar el mensaje al colisionar
 int opcion_colision = 0;
+// Contador para variar el mensaje al aterrizar bruscamente
 int opcion_brusco = 0;
+// Contador para variar el mensaje al aterrizar perfectamente
 int opcion_perfecto = 0;
 
 void generar_mensaje_aterrizaje(int puntuacion) {
@@ -92,9 +96,10 @@ void escalar_menu_aterrizaje(float factor){
 }
 
 
-void borrar_menu_aterrizaje() {
+void destruir_menu_aterrizaje() {
 	destruir_palabra(primer_mensaje);
 	destruir_palabra(segundo_mensaje);
 	destruir_palabra(tercer_mensaje);
 	destruir_palabra(puntuacion_mensaje);
+	destruir_palabra(presione_espacio);
 }

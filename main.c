@@ -315,7 +315,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     else if(wParam == VK_RETURN) {
                         gestionar_opcion_seleccionada();
-                        OpcionMenu op = obtener_opcion_seleccionada();
+                        Opcion_Menu op = obtener_opcion_seleccionada();
                         if(op == EXIT) {
                             PostQuitMessage(0); // Terminar el proceso
                         }
@@ -346,8 +346,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if(wParam == VK_SPACE) {
                         // seguir jugando
                         printf("Se quiere seguir jugando");
-                        continuar_tras_aterrizaje();
-                        estado_actual = ESTADO_JUEGO;
+                        if(combustible < combustible_motor) {
+                            generar_mensaje_final_partida(puntuacion_partida);
+                            estado_actual = ESTADO_FIN_PARTIDA;
+                        }
+                        else {
+                            continuar_tras_aterrizaje();
+                            estado_actual = ESTADO_JUEGO;
+                        }
+                        repintar_ventana(hwnd);
                     }
                     break;
                 }

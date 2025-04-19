@@ -8,9 +8,12 @@
 #include "../../data/variables_juego.h"
 #include "../../resources/caracteres.h"
 
-
+// Escalado inicial de la cabecera (para que se vea a un tamaño acorde de la pantalla)
+// Si se cambia el valor por defecto (0.7), se deben actualizar las posciones de
+// las palabras dadas en inicializar_cabecera()
 #define escalado_cabecera 0.7
 
+// Palabras para las variables mostradas por cabecera
 struct Palabra* score = {0};
 struct Palabra* score_valor = {0};
 struct Palabra* time = {0};
@@ -24,50 +27,39 @@ struct Palabra* horizontal_speed_valor = {0};
 struct Palabra* vertical_speed = {0};
 struct Palabra* vertical_speed_valor = {0};
 
+// Contador de minutos trasncurridos en la partida
 int minutos = 0;
+// Contador de segundos trasncurridos en la partida
 int segundos = 0;
 
 
 
+// ----------------------------- METODOS PRIVADOS ------------------------------
 
-
+/**
+ * @brief Aplica un escalado inicial a una palabra de la cabecera.
+ * 
+ * Escala la palabra con el factor global factor_escalado y el factor adicional
+ * escalado_cabecera para ajustarse al diseño de la interfaz.
+ * 
+ * @param palabra Puntero a la palabra a escalar.
+ */
 void escalado_inicial(struct Palabra* palabra){
 	escalar_palabra_en_escena_dados_ejes(palabra, factor_escalado, factor_escalado);
 	escalar_palabra_en_escena_dados_ejes(palabra, escalado_cabecera, escalado_cabecera);
 }
 
-void actualizar_segundos_cabecera(void) {
-	if(segundos == 59) {
-		segundos = 0;
-		minutos++;
-	}
-	else {
-		segundos++;
-	}
-	char buffer[6];
-	buffer[0] = '0' + ((minutos / 10) % 10);     // Decena
-    buffer[1] = '0' + (minutos % 10);            // Unidad
-	buffer[2] = ':';
-	buffer[3] = '0' + ((segundos / 10) % 10);     // Decena
-    buffer[4] = '0' + (segundos % 10);            // Unidad
-	buffer[5] = '\0';                          // Terminador nulo para cadena
-	time_valor = crear_palabra_desde_cadena(buffer, time_valor->origen);
-	escalado_inicial(time_valor);
-}
-
-void actualizar_puntuacion_cabecera(void) {
-	char buffer[5];
-	crear_cadena_dado_valor_4_digitos(puntuacion_partida, buffer);
-	score_valor = crear_palabra_desde_cadena(buffer, score_valor->origen); 
-	escalado_inicial(score_valor);
-
-}
-
+/**
+ * @brief Actualiza los valores numéricos de combustible, altitud y velocidades.
+ * 
+ * Convierte los valores a texto, los recrea como palabras y les aplica escalado
+ * para su correcta visualización en la cabecera.
+ */
 void actualizar_dibujables(void) {
 	char buffer[5];
 	
-	crear_cadena_dado_valor_4_digitos(combustible, buffer);
-	fuel_valor = crear_palabra_desde_cadena(buffer, fuel_valor->origen); 
+	crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
+	fuel_valor = crear_palabra_desde_cadena(buffer, fuel_valor -> origen); 
 	escalado_inicial(fuel_valor);
 
 	int valor = (int)(velocidad_horizontal* 10);
@@ -80,7 +72,7 @@ void actualizar_dibujables(void) {
 		crear_cadena_dado_valor_3_digitos(valor, buffer);
 		buffer[0] = '0';
 	}
-	horizontal_speed_valor = crear_palabra_desde_cadena(buffer, horizontal_speed_valor->origen); 
+	horizontal_speed_valor = crear_palabra_desde_cadena(buffer, horizontal_speed_valor -> origen); 
 	escalado_inicial(horizontal_speed_valor);
 
 	valor = (int)(velocidad_vertical * 10);
@@ -93,17 +85,17 @@ void actualizar_dibujables(void) {
 		crear_cadena_dado_valor_3_digitos(valor, buffer);
 		buffer[0] = '0';
 	}
-	vertical_speed_valor = crear_palabra_desde_cadena(buffer, vertical_speed_valor->origen); 
+	vertical_speed_valor = crear_palabra_desde_cadena(buffer, vertical_speed_valor -> origen); 
 	escalado_inicial(vertical_speed_valor);
 
 	int valor_altitud = tamano_inicial_pantalla_Y - altitud - 130;
 	crear_cadena_dado_valor_4_digitos(valor_altitud, buffer);
-	altitude_valor = crear_palabra_desde_cadena(buffer, altitude_valor->origen); 
+	altitude_valor = crear_palabra_desde_cadena(buffer, altitude_valor -> origen); 
 	escalado_inicial(altitude_valor);
-	
 }
 
 
+// ----------------------------- METODOS PUBLICOS ------------------------------
 void inicializar_cabecera(void) {
 	minutos = 0;
 	segundos = 0;
@@ -119,7 +111,7 @@ void inicializar_cabecera(void) {
 	time = crear_palabra_desde_cadena("TIME", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	time_valor = crear_palabra_desde_cadena("00:00", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
 	fuel = crear_palabra_desde_cadena("FUEL", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
-	crear_cadena_dado_valor_4_digitos(combustible, buffer);
+	crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
 	fuel_valor = crear_palabra_desde_cadena(buffer, (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
 	origen_x_izda = tamano_inicial_pantalla_X + 100;
@@ -151,13 +143,8 @@ void escalar_cabecera(float factor) {
 }
 
 
-
-
-
 void dibujar_cabecera(HDC hdc){
-
 	actualizar_dibujables();
-
 	dibujar_palabra(score, hdc);
 	dibujar_palabra(score_valor, hdc);
 	dibujar_palabra(time, hdc);
@@ -170,4 +157,46 @@ void dibujar_cabecera(HDC hdc){
 	dibujar_palabra(horizontal_speed_valor, hdc);
 	dibujar_palabra(vertical_speed, hdc);
 	dibujar_palabra(vertical_speed_valor, hdc);
+}
+
+void actualizar_segundos_cabecera(void) {
+	if(segundos == 59) {
+		segundos = 0;
+		minutos++;
+	}
+	else {
+		segundos++;
+	}
+	char buffer[6];
+	buffer[0] = '0' + ((minutos / 10) % 10);     // Decena
+    buffer[1] = '0' + (minutos % 10);            // Unidad
+	buffer[2] = ':';
+	buffer[3] = '0' + ((segundos / 10) % 10);     // Decena
+    buffer[4] = '0' + (segundos % 10);            // Unidad
+	buffer[5] = '\0';                          // Terminador nulo para cadena
+	time_valor = crear_palabra_desde_cadena(buffer, time_valor -> origen);
+	escalado_inicial(time_valor);
+}
+
+void actualizar_puntuacion_cabecera(void) {
+	char buffer[5];
+	crear_cadena_dado_valor_4_digitos(puntuacion_partida, buffer);
+	score_valor = crear_palabra_desde_cadena(buffer, score_valor -> origen); 
+	escalado_inicial(score_valor);
+
+}
+
+void destruir_cabecera(void){
+	destruir_palabra(score);
+	destruir_palabra(score_valor);
+	destruir_palabra(time);
+	destruir_palabra(time_valor);
+	destruir_palabra(fuel);
+	destruir_palabra(fuel_valor);
+	destruir_palabra(altitude);
+	destruir_palabra(altitude_valor);
+	destruir_palabra(horizontal_speed);
+	destruir_palabra(horizontal_speed_valor);
+	destruir_palabra(vertical_speed);
+	destruir_palabra(vertical_speed_valor);
 }

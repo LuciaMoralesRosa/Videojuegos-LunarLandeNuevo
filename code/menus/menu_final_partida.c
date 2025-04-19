@@ -4,6 +4,8 @@
 #include "../dibujable.h"
 #include "../transformaciones.h"
 #include "../../data/variables_globales.h"
+
+// Palabras para almacenar los mensajes a mostrar
 struct Palabra* mensaje_1 = {0};
 struct Palabra* mensaje_2 = {0};
 struct Palabra* mensaje_puntuacion = {0};
@@ -31,7 +33,7 @@ void escalar_menu_final_partida(float factor){
 }
 
 
-void borrar_menu_final_partida() {
+void destruir_menu_final_partida() {
 	destruir_palabra(mensaje_1);
 	destruir_palabra(mensaje_2);
 	destruir_palabra(mensaje_puntuacion);

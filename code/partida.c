@@ -15,7 +15,7 @@
 
 
 
-#define fuel_por_moneda 500
+#define fuel_por_moneda 1500
 #define masa_nave 1000
 
 #define aterrizaje_perfecto_vel 0.5
@@ -132,18 +132,9 @@ void se_ha_aterrizado(uint16_t puntos){
 	nave->aceleracion[0] = 0;
 	nave->aceleracion[1] = 0;
 	fisicas = DESACTIVADAS;
-	printf("Combustible restante: %d\n", combustible);
 	actualizar_puntuacion_cabecera();
-	if(combustible < combustible_motor) {
-		printf("Liada\n");
-		generar_mensaje_final_partida(puntos);
-		estado_actual = ESTADO_FIN_PARTIDA;
-	}
-	else{
-		printf("Generando menu aterrizaje\n");
-		generar_mensaje_aterrizaje(puntos);
-		estado_actual = ESTADO_ATERRIZAJE;
-	}	
+	generar_mensaje_aterrizaje(puntos);
+	estado_actual = ESTADO_ATERRIZAJE;
 }
 
 void gestionar_colisiones() {
@@ -181,23 +172,23 @@ void gestionar_colisiones() {
 
 void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
-    dibujarDibujable(hdc, nave -> objeto);
-	dibujarDibujable(hdc, terreno);
+    dibujar_dibujable(hdc, nave -> objeto);
+	dibujar_dibujable(hdc, terreno);
 	for(uint8_t i = 0; i < numero_plataformas; i++){
 		dibujar_plataforma(hdc, plataformas_partida[i]);
 	}
 	switch(obtener_propulsor()){
 		case 1:
 			colocar_dibujable(motor_debil, nave -> objeto -> origen);
-			dibujarDibujable(hdc, motor_debil);
+			dibujar_dibujable(hdc, motor_debil);
 			break;
 		case 2:
 			colocar_dibujable(motor_medio, nave -> objeto -> origen);
-			dibujarDibujable(hdc, motor_medio);
+			dibujar_dibujable(hdc, motor_medio);
 			break;
 		case 3:
 			colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
-			dibujarDibujable(hdc, motor_fuerte);
+			dibujar_dibujable(hdc, motor_fuerte);
 			break;
 		default:
 			break;
@@ -258,14 +249,14 @@ void manejar_instante_partida(){
 void inicializar_partida(){
 	inicializar_cabecera();
     combustible = 0;
-	terreno = crearDibujable(&Terreno);
+	terreno = crear_dibujable(&Terreno);
 	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);
 	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, 350});
 }
 
 void continuar_tras_aterrizaje_partida(){
 	modo_zoom = DESACTIVADO;
-	terreno = crearDibujable(&Terreno);
+	terreno = crear_dibujable(&Terreno);
 	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);
 	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, 350});
 }
@@ -280,7 +271,7 @@ void insertar_monedas(int monedas) {
 
 void comenzarPartida(){
     nave = (struct objetoFisico*)malloc(sizeof(struct objetoFisico));
-    nave -> objeto = crearDibujable(&Nave_Base);
+    nave -> objeto = crear_dibujable(&Nave_Base);
     nave -> velocidad[0] = 0;
     nave -> velocidad[1] = 0;
     nave -> aceleracion[0] = 0;
@@ -289,9 +280,9 @@ void comenzarPartida(){
 	nave -> rotacion = 0;
     trasladarDibujable(nave -> objeto, (struct Punto){50, 50});
 
-	motor_debil = crearDibujable(&Nave_Propulsion_Minima);
-	motor_medio = crearDibujable(&Nave_Propulsion_Media);
-	motor_fuerte = crearDibujable(&Nave_Propulsion_Maxima);
+	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
+	motor_medio = crear_dibujable(&Nave_Propulsion_Media);
+	motor_fuerte = crear_dibujable(&Nave_Propulsion_Maxima);
 
     fisicas = ACTIVADAS;
 	inicio = 1;
@@ -299,7 +290,7 @@ void comenzarPartida(){
 }
 
 void finalizarPartida(){
-    destruirObjetoFisico(nave);
+    destruir_objeto_fisico(nave);
     nave -> objeto = NULL;
     fisicas = DESACTIVADAS;
 }
