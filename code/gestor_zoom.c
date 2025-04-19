@@ -1,8 +1,13 @@
 #include "gestor_zoom.h"
 #include <math.h>
+#include <stdio.h>
+
+#include "../data/constantes.h"
+#include "../data/variables_globales.h"
 
 #define DISTANCIA_ACTIVAR_ZOOM 150.0f
 #define DISTANCIA_DESACTIVAR_ZOOM 450.0f
+#define DISTANCIA_BORDE_INFERIOR 200.0f
 
 // Devuelve la distancia mínima entre el punto P y el segmento AB
 float distancia_punto_a_segmento(struct Punto P, struct Punto A, struct Punto B) {
@@ -68,4 +73,14 @@ uint8_t no_hay_arista_en_radio_desactivar_zoom(struct Punto nave, struct Dibujab
 		}
     }
     return 1;
+}
+
+uint8_t nave_proxima_a_borde_inferior(struct Punto nave) {
+	if(nave.y >= tam_ventana_y - (DISTANCIA_BORDE_INFERIOR * factor_escalado)) {
+		printf("Posicion de la nave = %f\n\n", nave.y);
+		return 1;
+	}
+	else{
+		return 0;
+	}
 }

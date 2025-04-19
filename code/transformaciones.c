@@ -105,12 +105,25 @@ void escalar_dibujable_en_escena_dados_ejes(struct Dibujable* dibujable, float f
     }
 }
 
+
+void escalar_dibujable_en_escena_dados_ejes_y_punto(struct Dibujable* dibujable, struct Punto punto, float factorX, float factorY) {
+    if (!dibujable->puntos) return;
+    // Modificar el origen del dibujable para que haga el escalado respecto a este punto
+    for (uint8_t i = 0; i < dibujable->num_puntos; i++) {
+        dibujable->puntos[i].x = punto.x + (dibujable->puntos[i].x - punto.x) * factorX;
+        dibujable->puntos[i].y = punto.y + (dibujable->puntos[i].y - punto.y) * factorY;
+    }
+
+    // Escalar también el origen si querés mantenerlo relativo al punto
+    dibujable->origen.x = punto.x + (dibujable->origen.x - punto.x) * factorX;
+    dibujable->origen.y = punto.y + (dibujable->origen.y - punto.y) * factorY;
+}
+
 void escalar_palabra_en_escena_dados_ejes(struct Palabra* palabra, float factorX, float factorY) {
     if (!palabra->letras) return;
     for(uint8_t i = 0; i < palabra->num_letras; i++){
         escalar_dibujable_en_escena_dados_ejes(palabra->letras[i], factorX, factorY);
     }
-
 }
 
 void escalarDibujableDadosEjes(struct Dibujable* dibujable, float factorX, float factorY){

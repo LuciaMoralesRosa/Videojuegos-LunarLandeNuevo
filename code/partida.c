@@ -49,8 +49,8 @@ struct Plataforma* plataformas_partida = NULL;
 uint8_t numero_plataformas = 0;
 
 static uint8_t fisicas = DESACTIVADAS;
-static uint8_t modo_zoom = 0;
-
+static int traslacion_dibujables_por_borde_inferior = 0;
+struct Punto origen_terreno = {0};
 
 void escalar_nave_partida(float factor_x, float factor_y){
 	escalar_dibujable_en_escena_dados_ejes(motor_fuerte, factor_x, factor_y);
@@ -65,6 +65,16 @@ void escalar_terreno_partida(float factor_x, float factor_y) {
 		escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].linea, factor_x, factor_y);
 		for(uint8_t j = 0; j < plataformas_partida[i].palabra->num_letras; j++){
 			escalar_dibujable_en_escena_dados_ejes(plataformas_partida[i].palabra->letras[j], factor_x, factor_y);
+		}
+	}
+}
+
+void escalar_terreno_partida_dado_punto(struct Punto punto, float factor_x, float factor_y){
+	escalar_dibujable_en_escena_dados_ejes_y_punto(terreno, punto, factor_x, factor_y);
+	for(uint8_t i = 0; i < numero_plataformas; i++) {
+		escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_partida[i].linea, punto, factor_x, factor_y);
+		for(uint8_t j = 0; j < plataformas_partida[i].palabra->num_letras; j++){
+			escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_partida[i].palabra->letras[j], punto, factor_x, factor_y);
 		}
 	}
 }
@@ -205,24 +215,42 @@ void rotar_nave(uint8_t direccion){
 
 void manejar_instante_partida(){
     if(fisicas == ACTIVADAS) {
-		calcularFisicas(nave);
-		if(modo_zoom == 0) { // Zoom no activado
+		struct Punto nueva_posicion = calcularFisicas(nave);
+		if(modo_zoom == DESACTIVADO) {
 			if(hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno)) {
 				// Activar zoom
-				modo_zoom = 1;
+				modo_zoom = ACTIVADO;
+				origen_terreno = nave->objeto->origen;
+				escalar_terreno_partida_dado_punto(nave->objeto->origen, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
 				escalar_nave_partida(entrada_modo_zoom_nave, entrada_modo_zoom_nave);
-				escalar_terreno_partida(entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
+				//escalar_terreno_partida(entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
 			}
 		}
-		else if(modo_zoom == 1) {
+		else if(modo_zoom == ACTIVADO) {
 			if(no_hay_arista_en_radio_desactivar_zoom(nave->objeto->origen, terreno)) {
-				modo_zoom = 0;
+				modo_zoom = DESACTIVADO;
+				trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
+				trasladarDibujable(nave->objeto, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
 				escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
-				escalar_terreno_partida(1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
+				escalar_terreno_partida_dado_punto(origen_terreno, 1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
 			}
 		}
-		if(modo_zoom == 1){
+		if(modo_zoom == ACTIVADO){
 			gestionar_colisiones();
+			if(nave_proxima_a_borde_inferior(nave->objeto->origen)) {
+				printf("Estoy proximo al borde inferior\n\n");
+				traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + nueva_posicion.y;
+				struct Punto nueva_traslacion_nave = {nueva_posicion.x, 0};
+				trasladarDibujable(nave->objeto, nueva_traslacion_nave);
+				struct Punto traslacion_terreno = {0, -nueva_posicion.y};
+				trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, traslacion_terreno);
+			}
+			else {
+				trasladarDibujable(nave->objeto, nueva_posicion);
+			}
+		}
+		else {
+			trasladarDibujable(nave->objeto, nueva_posicion);
 		}
 	}
 }
@@ -236,6 +264,7 @@ void inicializar_partida(){
 }
 
 void continuar_tras_aterrizaje_partida(){
+	modo_zoom = DESACTIVADO;
 	terreno = crearDibujable(&Terreno);
 	plataformas_partida = generar_plataformas(&Terreno, &numero_plataformas);
 	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, 350});

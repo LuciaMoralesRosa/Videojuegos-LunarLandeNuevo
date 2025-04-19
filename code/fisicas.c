@@ -13,7 +13,7 @@ void destruirObjetoFisico(struct objetoFisico* objeto){
     free(objeto);
 }
 
-void calcularFisicas(struct objetoFisico* elemento){
+struct Punto calcularFisicas(struct objetoFisico* elemento){
 	if(orden_girar_izquierda && !orden_girar_derecha && (elemento -> rotacion <= 90 || elemento -> rotacion >= 270 + ANGULO_ROTACION)){
 		elemento -> rotacion = (elemento -> rotacion - ANGULO_ROTACION + 360) % 360;
 		rotar_nave(0);
@@ -50,7 +50,7 @@ void calcularFisicas(struct objetoFisico* elemento){
 	velocidad_vertical = elemento -> velocidad[1];
 
     // Trasladar el objeto
-    trasladarDibujable(elemento -> objeto, nueva_posicion);
+	//trasladar_elementos_escena(nueva_posicion);
 
 	elemento -> aceleracion[0] = 0;
 	elemento -> aceleracion[1] = 0;
@@ -64,6 +64,8 @@ void calcularFisicas(struct objetoFisico* elemento){
 				break;
 		}
 	}
+
+	return nueva_posicion;
 }
 
 void propulsar(){

@@ -11,7 +11,7 @@
 
 #define intervalo_fisicas_ms 32
 #define pixels_por_metro 32
-#define gravedad_m_ms -0.00020625 // Aceleracion con la que cae la nave
+#define gravedad_m_ms -0.00020625 // Aceleracion con la que cae la nave  //-0.00020625
 #define propulsor_m_ms 0.001 // Potencia del motor para contrarrestar la gravedad y desplazarse
 #define combustible_motor 1
 
@@ -25,7 +25,7 @@ struct objetoFisico {
 
 void destruirObjetoFisico(struct objetoFisico* objeto);
 
-void calcularFisicas(struct objetoFisico* objeto);
+struct Punto calcularFisicas(struct objetoFisico* objeto);
 
 void propulsar();
 

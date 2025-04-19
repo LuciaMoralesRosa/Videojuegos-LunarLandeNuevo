@@ -24,6 +24,9 @@ void colocar_palabra(struct Palabra* palabra, struct Punto destio);
 void escalar_dibujable_en_escena_dados_ejes(struct Dibujable* dibujable, float factorX, float factorY);
 void escalar_palabra_en_escena_dados_ejes(struct Palabra* palabra, float factorX, float factorY);
 
+// Escala un dibujable respecto a un punto dado (usado para el zoom)
+void escalar_dibujable_en_escena_dados_ejes_y_punto(struct Dibujable* dibujable, struct Punto punto, float factorX, float factorY);
+
 /**
  * @brief Coloca un dibujable en un punto dado
  * 
