@@ -54,16 +54,23 @@ void dibujar_hasta_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable
     }
 }
 
+
+// Sirve para cuando el terreno se sale por la izquierda
 void dibujar_desde_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable, struct Plataforma* plataformas, uint8_t n){
-    for (int i = dibujable->num_puntos - 1; i >= 0; i--) {
+
+    for (int i = dibujable->num_aristas - 1; i >= 0; i--) {
         struct Arista arista = dibujable->aristas[i];
-        if (dibujable->puntos[i].x < 0) {
+        if (dibujable->aristas[i].origen->x < 0) {
+            struct Punto nuevo_punto = (struct Punto){0, dibujable->puntos[i].y};
+            arista = (struct Arista) {&nuevo_punto, dibujable->aristas[i].destino};
+            dibujar_arista_terreno(hdc, arista);
             break;
         }
         dibujar_arista_terreno(hdc, arista);
     }
+
     for(int i = 0; i < n; i++){
-        if(plataformas[i].linea[0].puntos[1].x < 0) {
+        if(plataformas[i].linea[0].puntos[1].x >= 0) {
             dibujar_plataforma(hdc, plataformas[i]);
         }
     }
