@@ -57,15 +57,13 @@ void escalado_inicial(struct Palabra* palabra){
  */
 void actualizar_dibujables(void) {
 	char buffer[5];
-	
-	printf("combustible = %d\n", combustible);
-	if(combustible >= 10000) {
+	if(combustible >= 30000) {
 		crear_cadena_dado_valor_4_digitos(9999, buffer);
 	}
-	else if(combustible < 10000) {
+	else if(combustible < 30000) {
 		crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
 	}
-	else if (combustible < 1000) {
+	else if (combustible < 3000) {
 		crear_cadena_dado_valor_3_digitos(combustible / 3, buffer);
 	}
 	fuel_valor = crear_palabra_desde_cadena(buffer, fuel_valor -> origen); 
@@ -120,7 +118,6 @@ void inicializar_cabecera(void) {
 	time = crear_palabra_desde_cadena("TIME", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	time_valor = crear_palabra_desde_cadena("00:00", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
 	fuel = crear_palabra_desde_cadena("FUEL", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
-	printf("combustible = %d\n", combustible);
 	if(combustible < 10000) {
 		crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
 	}
