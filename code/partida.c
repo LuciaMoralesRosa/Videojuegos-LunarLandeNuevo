@@ -2,6 +2,7 @@
 #include "gestor_colisiones.h"
 #include "gestor_plataformas.h"
 #include "gestor_zoom.h"
+#include "terreno.h"
 
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
@@ -172,8 +173,9 @@ void gestionar_colisiones() {
 
 void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
-    dibujar_dibujable(hdc, nave -> objeto);
-	dibujar_dibujable(hdc, terreno);
+    dibujar_dibujable(hdc, nave -> objeto);	
+	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){20, 0});
+	dibujar_dibujable_terreno(hdc, terreno);
 	for(uint8_t i = 0; i < numero_plataformas; i++){
 		dibujar_plataforma(hdc, plataformas_partida[i]);
 	}
