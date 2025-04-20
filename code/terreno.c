@@ -1,7 +1,7 @@
 #include "terreno.h"
 #include "../data/variables_globales.h"
 #include "../data/constantes.h"
-
+#include "../resources/superficie_lunar.h"
 
 
 void DrawLine2(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
@@ -36,7 +36,7 @@ void dibujar_arista_terreno(HDC hdc, struct Arista arista) {
 		RGB(255, 255, 255));
 }
 
-void dibujar_hasta_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable) {
+void dibujar_hasta_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable, struct Plataforma* plataformas, uint8_t n) {
 	for(int i = 0; i < dibujable->num_aristas; i++) {
         struct Arista arista = dibujable->aristas[i];
         if(arista.destino->x > tamano_inicial_pantalla_X * factor_escalado) {
@@ -47,15 +47,25 @@ void dibujar_hasta_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable
         }
         dibujar_arista_terreno(hdc, arista);
 	}
+    for(int i = 0; i < n; i++){
+        if(plataformas[i].linea[0].puntos[0].x <= tamano_inicial_pantalla_X * factor_escalado) {
+            dibujar_plataforma(hdc, plataformas[i]);
+        }
+    }
 }
 
-void dibujar_desde_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable){
+void dibujar_desde_primer_punto_fuera(HDC hdc, const struct Dibujable* dibujable, struct Plataforma* plataformas, uint8_t n){
     for (int i = dibujable->num_puntos - 1; i >= 0; i--) {
         struct Arista arista = dibujable->aristas[i];
         if (dibujable->puntos[i].x < 0) {
             break;
         }
         dibujar_arista_terreno(hdc, arista);
+    }
+    for(int i = 0; i < n; i++){
+        if(plataformas[i].linea[0].puntos[1].x < 0) {
+            dibujar_plataforma(hdc, plataformas[i]);
+        }
     }
 }
 
@@ -82,22 +92,30 @@ uint8_t esta_totalmente_fuera(const struct Dibujable* dibujable) {
     return 1; // Todos están fuera a la izquierda o derecha
 }
 
-void dibujar_dibujable_terreno(HDC hdc, const struct Dibujable* dibujable) {
-    if(esta_totalmente_visible(dibujable)) {
+void dibujar_plataformas(HDC hdc, struct Plataforma* plataformas, int n) {
+    for(int i = 0; i < n; i++){
+        dibujar_plataforma(hdc, plataformas[i]);
+    }
+}
+
+void dibujar_superficie_lunar(HDC hdc, struct Dibujable* terreno, struct Plataforma* plataformas, uint8_t numero_plataformas){
+    if(esta_totalmente_visible(terreno)) {
         // El dibujable esta completamente en la pantalla
-        dibujar_dibujable(hdc, dibujable);
+        dibujar_dibujable(hdc, terreno);
+        dibujar_plataformas(hdc, plataformas, numero_plataformas);
     }
 	else {
 		// Encontrar punto por donde se sale
-        if(!esta_totalmente_fuera(dibujable)) {
-            if(dibujable->puntos[0].x >= 0) {
+        if(!esta_totalmente_fuera(terreno)) {
+            if(terreno->puntos[0].x >= 0) {
                 // Se sale por el lado derecho
-                dibujar_hasta_primer_punto_fuera(hdc, dibujable);
+                dibujar_hasta_primer_punto_fuera(hdc, terreno, plataformas, numero_plataformas);
             }
             else {
                 // Se sale por el lado izquierdo
-                dibujar_desde_primer_punto_fuera(hdc, dibujable);
+                dibujar_desde_primer_punto_fuera(hdc, terreno, plataformas, numero_plataformas);
             }
         }
 	}
 }
+

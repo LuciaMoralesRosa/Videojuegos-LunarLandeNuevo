@@ -174,11 +174,8 @@ void gestionar_colisiones() {
 void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
     dibujar_dibujable(hdc, nave -> objeto);	
-	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){20, 0});
-	dibujar_dibujable_terreno(hdc, terreno);
-	for(uint8_t i = 0; i < numero_plataformas; i++){
-		dibujar_plataforma(hdc, plataformas_partida[i]);
-	}
+	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){1, 0});
+	dibujar_superficie_lunar(hdc, terreno, plataformas_partida, numero_plataformas);
 	switch(obtener_propulsor()){
 		case 1:
 			colocar_dibujable(motor_debil, nave -> objeto -> origen);

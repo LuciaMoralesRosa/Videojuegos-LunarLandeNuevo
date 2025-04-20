@@ -3,7 +3,9 @@
 
 #include <stdio.h>
 #include "dibujable.h"
+#include "gestor_plataformas.h"
 
-void dibujar_dibujable_terreno(HDC hdc, const struct Dibujable* dibujable);
+
+void dibujar_superficie_lunar(HDC hdc, struct Dibujable* dibujable, struct Plataforma* plataformas, uint8_t numero_plataformas);
 
 #endif // TERRENO_H
