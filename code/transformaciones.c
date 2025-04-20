@@ -194,7 +194,8 @@ void trasladar_palabra(struct Palabra* palabra, struct Punto traslacion){
 
 void trasladar_superficie_lunar(struct Dibujable* terreno, struct Plataforma* plataformas, uint8_t num_plataformas, struct Punto traslacion) {
     trasladarDibujable(terreno, traslacion);
-    for(uint8_t i = 0; i < num_plataformas; i++) {
+    //printf("Traslado el terreno, num_plataformas= %d\n\n", num_plataformas);
+    for(uint8_t i = 0; i < num_plataformas; i++) {        
         trasladarDibujable(plataformas[i].linea, traslacion);
         trasladar_palabra(plataformas[i].palabra, traslacion);
     }

@@ -49,4 +49,5 @@ void destruir_palabra(struct Palabra* palabra);
 
 struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen);
 
+
 #endif // PALABRA_H

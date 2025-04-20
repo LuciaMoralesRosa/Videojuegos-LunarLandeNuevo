@@ -102,6 +102,7 @@ void dibujar_dibujable(HDC hdc, const struct Dibujable* dibujable);
  */
 uint8_t es_horizontal(struct Arista arista_colision);
 
+
 /**
  * @brief Libera la memoria ocupada por un objeto Dibujable
  * 

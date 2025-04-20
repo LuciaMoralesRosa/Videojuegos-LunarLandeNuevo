@@ -32,8 +32,7 @@ void inicializar_aleatoriedad();
  * @warning Si ocurre un error de asignación de memoria, la función libera lo
  *          previamente asignado y retorna `NULL`.
  */
-struct Plataforma* generar_plataformas(const struct DibujableConstante* terreno,
-    uint8_t* num_plataformas);
+void generar_plataformas(struct Plataforma** plataformas_1, struct Plataforma** plataformas_2, const struct DibujableConstante* terreno, const struct Punto origen_terreno_2, uint8_t* num_plataformas);
 
 /**
  * @brief Dibuja la plataforma pasada como parametro

@@ -201,36 +201,53 @@ struct DibujableConstante* generar_linea_plataforma(struct Arista arista, struct
     return linea;  // Retornar la línea generada
 }
 
-struct Plataforma* generar_plataforma_dada_arista(struct Arista arista, struct Punto origen_terreno){
-    struct Plataforma* plataforma = malloc(sizeof(struct Plataforma));
-    if (!plataforma) {
-        return NULL;
-    }
-
+struct Plataforma* generar_plataforma_dada_arista(struct Plataforma* plataforma, struct Plataforma* plataforma_copia, struct Arista arista, struct Punto origen_terreno, struct Punto origen_terreno_2){
     struct DibujableConstante* linea = malloc(sizeof(struct DibujableConstante));
     if (!linea) {
         free(plataforma);
         return NULL;
     }
+
+    struct DibujableConstante* linea_copia = malloc(sizeof(struct DibujableConstante));
+    if (!linea_copia) {
+        free(plataforma);
+        free(plataforma_copia);
+        return NULL;
+    }
     
     // Llamar a generar_linea_plataforma y verificar si retorna NULL
     linea = generar_linea_plataforma(arista, linea, origen_terreno);
+    linea_copia = generar_linea_plataforma(arista, linea, origen_terreno_2);
     
     // Verificar si la función devolvió NULL y, en caso afirmativo, liberar memoria
     if (linea == NULL) {
         free(linea);  // Liberar la memoria asignada para 'linea'
         free(plataforma);
+        free(plataforma_copia);
         return NULL;
     }
-    
+    if (linea_copia == NULL) {
+        free(linea_copia);  // Liberar la memoria asignada para 'linea'
+        free(plataforma_copia);
+        free(linea); 
+        free(plataforma);
+        return NULL;
+    }
+
     // Calculo del bonificador y generacion de la palabra
     uint8_t bonificador;
     struct Palabra* palabra = generar_palabra_plataforma(arista, &bonificador);
+    struct Palabra* palabra_copia = generar_palabra_plataforma(arista, &bonificador);
     struct Dibujable* linea_dibujable = crear_dibujable(linea);
+    struct Dibujable* linea_dibujable_copia = crear_dibujable(linea_copia);
     // Creacion de la estrcutura plataforma
     plataforma->linea = linea_dibujable;
     plataforma->bonificador = bonificador;
     plataforma->palabra = palabra;
+
+    plataforma_copia->linea = linea_dibujable_copia;
+    plataforma_copia->bonificador = bonificador;
+    plataforma_copia->palabra = palabra_copia;
 
     return plataforma;
 }
@@ -249,15 +266,15 @@ struct Plataforma* generar_plataforma_dada_arista(struct Arista arista, struct P
  * @return Puntero a la estructura Plataforma generada. Retorna NULL si ocurre
  *         algún error de memoria.
  */
-struct Plataforma* generar_plataformas(const struct DibujableConstante* terreno, uint8_t* num_plataformas){
+void generar_plataformas(struct Plataforma** plataformas_1, struct Plataforma** plataformas_2, const struct DibujableConstante* terreno, const struct Punto origen_terreno_2, uint8_t* num_plataformas){
     uint8_t num_aristas_posibles = 0;
-    
+    printf("En generar plataformas\n");
     // Obtener las aristas correspondientes a plataformas potenciales
     struct Arista* aristas_posibles = obtener_aristas_posibles(terreno, &num_aristas_posibles);
-    if (aristas_posibles == NULL) return NULL;
+    if (aristas_posibles == NULL) return;
     if(num_aristas_posibles == 0) {
         free(aristas_posibles); 
-        return NULL;
+        return;
     }
 
     // Nos quedamos con el minimo entre max_posibles y MAX_PLATAFORMAS
@@ -267,35 +284,40 @@ struct Plataforma* generar_plataformas(const struct DibujableConstante* terreno,
     uint8_t* indices_plataformas = malloc(num_aristas_posibles * sizeof(uint8_t));
     if (indices_plataformas == NULL) {
         free(aristas_posibles);  // Liberamos las aristas en caso de error
-        return NULL;
+        return;
     }
     generar_aleatorios(indices_plataformas, *num_plataformas, num_aristas_posibles);
-
-    // Guardar espacio para las num_plataformas plataformas a generar
-    struct Plataforma* plataformas = malloc(*num_plataformas * sizeof(struct Plataforma));
-    if (plataformas == NULL) {
-        free(indices_plataformas);
-        free(aristas_posibles);
-        return NULL;
-    }
-
+    
+	*plataformas_1 = malloc(*num_plataformas * sizeof(struct Plataforma));
+	*plataformas_2 = malloc(*num_plataformas * sizeof(struct Plataforma));
+    
     // Meter en plataformas las plataformas seleccionadas por los indices
     for(uint8_t i = 0; i < *num_plataformas; i++){
         struct Arista arista = aristas_posibles[indices_plataformas[i]];
-        struct Plataforma* plataforma = generar_plataforma_dada_arista(arista, terreno->origen);
+        struct Plataforma* plataforma = malloc(sizeof(struct Plataforma));
+        if (!plataforma) {
+            return;
+        }
+    
+        struct Plataforma* plataforma_copia = malloc(sizeof(struct Plataforma));
+        if (!plataforma_copia) {
+            return;
+        }
+
+        generar_plataforma_dada_arista(plataforma, plataforma_copia, arista, terreno->origen, origen_terreno_2);
         if(plataforma == NULL) {
-            free(plataformas);
+            free(plataformas_1);
+            free(plataformas_2);
             free(indices_plataformas);
             free(aristas_posibles);
         }
-        plataformas[i] = *plataforma;        
+        (*plataformas_1)[i] = *plataforma;
+        (*plataformas_2)[i] = *plataforma_copia;
     }
-
+    
     // Liberar memoria
     free(indices_plataformas);  
     free(aristas_posibles);
-
-    return plataformas;
 }
 
 

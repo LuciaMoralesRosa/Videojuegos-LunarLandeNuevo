@@ -77,7 +77,6 @@ uint8_t no_hay_arista_en_radio_desactivar_zoom(struct Punto nave, struct Dibujab
 
 uint8_t nave_proxima_a_borde_inferior(struct Punto nave) {
 	if(nave.y >= tam_ventana_y - (DISTANCIA_BORDE_INFERIOR * factor_escalado)) {
-		printf("Posicion de la nave = %f\n\n", nave.y);
 		return 1;
 	}
 	else{
