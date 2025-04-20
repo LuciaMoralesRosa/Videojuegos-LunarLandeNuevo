@@ -9,6 +9,9 @@
 #include "../data/constantes.h"
 #include "../resources/superficie_lunar.h"
 
+
+void trasladar_punto(struct Punto* origen, struct Punto traslacion);
+
 /**
  * @brief Traslada un dibujable en la dirección indicada
  * 

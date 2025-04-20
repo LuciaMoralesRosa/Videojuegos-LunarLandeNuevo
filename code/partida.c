@@ -27,6 +27,12 @@
 #define entrada_modo_zoom_nave 1
 #define entrada_modo_zoom_terreno 1.7
 
+#define MARCO_IZDA 50
+#define MARCO_DCHA tamano_inicial_pantalla_X-50
+#define MARCO_SUPERIOR 50
+#define MARCO_INFERIOR 80
+
+
 
 int inicio = 0;
 
@@ -52,6 +58,10 @@ uint8_t numero_plataformas = 0;
 static uint8_t fisicas = DESACTIVADAS;
 static int traslacion_dibujables_por_borde_inferior = 0;
 struct Punto origen_terreno = {0};
+
+// Variable para contabilizar la subida de la nave y controlar el desplazamiento
+// vertical del terreno
+float desplazamiento_superior = 0;
 
 void escalar_nave_partida(float factor_x, float factor_y){
 	escalar_dibujable_en_escena_dados_ejes(motor_fuerte, factor_x, factor_y);
@@ -174,8 +184,6 @@ void gestionar_colisiones() {
 void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
     dibujar_dibujable(hdc, nave -> objeto);	
-	trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){-1, 0});
-	printf("Objeto colocado \n");
 	dibujar_superficie_lunar(hdc, terreno, plataformas_partida, numero_plataformas);
 	switch(obtener_propulsor()){
 		case 1:
@@ -204,9 +212,50 @@ void rotar_nave(uint8_t direccion){
 }
 
 
+struct Punto gestionar_posicion_nave_terreno(struct Punto nueva_posicion) {
+	struct Punto posicion_provisional = nave->objeto->origen;
+	trasladar_punto(&posicion_provisional, nueva_posicion);
+	if((posicion_provisional.x < MARCO_IZDA * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
+		// Ir hacia arriba y derecha
+		printf("Debug caso 1: nueva posicion = %f, %f y marco izda * escalado = %f\n", posicion_provisional.x, posicion_provisional.y, MARCO_IZDA*factor_escalado);
+	}
+	else if(posicion_provisional.x > MARCO_DCHA * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
+		printf("Debug caso 2\n");
+		// Ir hacia arriba e izquierda
+	}
+	else if(posicion_provisional.x < MARCO_IZDA * factor_escalado) {
+		printf("Debug caso 3\n");
+		trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){-nueva_posicion.x, 0});
+		return (struct Punto){0, nueva_posicion.y};
+	}
+	else if(posicion_provisional.x > MARCO_DCHA * factor_escalado) {
+		printf("Debug caso 4\n");
+		trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){-nueva_posicion.x, 0});
+		return (struct Punto){0, nueva_posicion.y};
+	}
+	else if(posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
+		printf("Debug caso 5\n");
+		desplazamiento_superior = desplazamiento_superior + nueva_posicion.y;
+		printf("desplazamiento superior = %f\n", desplazamiento_superior);
+		trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, -nueva_posicion.y});
+		return (struct Punto){nueva_posicion.x, 0};
+	}
+	else if(modo_zoom == DESACTIVADO && desplazamiento_superior < 0 && (posicion_provisional.y > MARCO_INFERIOR * factor_escalado)) {
+		printf("Debug caso 6\n");
+		desplazamiento_superior = desplazamiento_superior + nueva_posicion.y;
+		printf("desplazamiento superior = %f\n", desplazamiento_superior);
+
+		trasladar_superficie_lunar(terreno, plataformas_partida, numero_plataformas, (struct Punto){0, -nueva_posicion.y});
+		return (struct Punto){nueva_posicion.x, 0};
+	}
+	return nueva_posicion;
+}
+
+
+
 void manejar_instante_partida(){
     if(fisicas == ACTIVADAS) {
-		struct Punto nueva_posicion = calcularFisicas(nave);
+		struct Punto nueva_posicion = gestionar_posicion_nave_terreno(calcularFisicas(nave));
 		if(modo_zoom == DESACTIVADO) {
 			if(hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno)) {
 				// Activar zoom
@@ -278,7 +327,7 @@ void comenzarPartida(){
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;
 	nave -> rotacion = 0;
-    trasladarDibujable(nave -> objeto, (struct Punto){50, 50});
+    trasladarDibujable(nave -> objeto, (struct Punto){200, 50});
 
 	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
 	motor_medio = crear_dibujable(&Nave_Propulsion_Media);

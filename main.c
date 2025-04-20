@@ -261,7 +261,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_OPCIONES: {
-                    printf("Pintando en ESTADO_OPCIONES\n\n");
                     dibujar_menu_opciones(hdcMem, hwnd);
                     break;
                 }
@@ -271,7 +270,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_ATERRIZAJE: {
-                    printf("ESTADO_ATERRIZAJE\n\n");
                     pintar_pantalla(hdcMem);
                     dibujar_mensajes_aterrizaje(hdcMem);
                     break;
@@ -332,7 +330,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_JUEGO: {
-                    printf("ESTADO_JUEGO: Tecla pulsada\n\n");
                     if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);

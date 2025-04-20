@@ -9,16 +9,16 @@
  * @param origen Punto a trasladar
  * @param traslacion Punto de traslación
  */
-void trasladarPunto(struct Punto* origen, struct Punto traslacion){
+void trasladar_punto(struct Punto* origen, struct Punto traslacion){
     origen -> x += traslacion.x;
     origen -> y += traslacion.y;
 }
 
 void trasladarDibujable(struct Dibujable* dibujable, struct Punto traslacion){
-    trasladarPunto(&dibujable -> origen, traslacion);
+    trasladar_punto(&dibujable -> origen, traslacion);
     if (!dibujable -> puntos) return;
     for(uint8_t i = 0; i < dibujable -> num_puntos; i++){
-        trasladarPunto(&dibujable -> puntos[i], traslacion);
+        trasladar_punto(&dibujable -> puntos[i], traslacion);
     }
 }
 
@@ -186,7 +186,7 @@ void escalar_plataforma_dados_ejes(struct Plataforma* plataforma, float factorX,
 
 void trasladar_palabra(struct Palabra* palabra, struct Punto traslacion){
     if(!palabra || !palabra->letras) return;
-    trasladarPunto(&palabra->origen, traslacion);
+    trasladar_punto(&palabra->origen, traslacion);
     for(uint8_t i = 0; i < palabra->num_letras; i++) {
         trasladarDibujable(palabra->letras[i], traslacion);
     }
