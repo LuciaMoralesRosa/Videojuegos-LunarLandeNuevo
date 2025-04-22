@@ -271,40 +271,68 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 }
 
 void gestionar_posicion_nave_terreno(struct Punto posicion_provisional) {
-	if(posicion_provisional.x < MARCO_TERRENO) {
+	int nave_en_terreno = (int)(pos_real_nave_x / tamano_inicial_pantalla_X*factor_escalado) % 2;
+	int n_terreno = (int)(pos_real_nave_x / tamano_inicial_pantalla_X*factor_escalado);
+	if(pos_real_nave_x < 0) {
+		n_terreno--;
+	} 
+	//printf("Estoy en el terreno %d\n", n_terreno);
+	int terreno_auxiliar_inicial = terreno_auxiliar;
+	if(pos_real_nave_x > 0) {
+		if(nave_en_terreno == 0) {
+			// La nave esta en el terreno original, ie, terreno 0
+			terreno_auxiliar = 1;
+		}
+		else {
+			terreno_auxiliar = 0;
+		}
+	}
+	else {
+		if(nave_en_terreno == 0) {
+			// La nave esta en el terreno original, ie, terreno 0
+			terreno_auxiliar = 0;
+		}
+		else {
+			terreno_auxiliar = 1;
+		}
+	}
+	if(terreno_auxiliar != terreno_auxiliar_inicial) {
+		terreno_auxiliar_en_izda = terreno_auxiliar_en_izda == 0 ? 1 : 0;
+	}
+	//printf("mi terreno auxiliar es el terreno %d\n", terreno_auxiliar);
+
+	if(posicion_provisional.x < MARCO_TERRENO * factor_escalado) {
 		// Si la nave esta proxima al lado izquierdo -> asegurar terreno auxilizar colocado al lado izquierdo
 		if(terreno_auxiliar_en_izda == 0) {
-			// El terreno auxiliar esta en la derecha -> hay que colocarlo en la izquierda
+			printf("\tMoviendo terreno 0 a izquierda\n\n");
+			// Terreno no esta en la izquierda -> hay que colocarlo en la izquierda
 			terreno_auxiliar_en_izda = 1;
 			if(terreno_auxiliar == 0) {
 				// Debo mover el terreno_0 original
-				trasladar_superficie_lunar(terreno_0, plataformas_1, numero_plataformas, (struct Punto){(-2*tamano_inicial_pantalla_X) * factor_escalado, 0});
-				terreno_auxiliar = 1;
+				printf("\tMoviendo terreno 0 a izquierda\n\n");
+				trasladar_superficie_lunar(terreno_0, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 			}
 			else {
 				// Debo mover el terreno_1
-				trasladar_superficie_lunar(terreno_1, plataformas_2, numero_plataformas, (struct Punto){(-2*tamano_inicial_pantalla_X) * factor_escalado, 0});
-				terreno_a_colocar = 0;
+				printf("\tMoviendo terreno 1 a izquierda\n");
+				trasladar_superficie_lunar(terreno_1, plataformas_2, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
+				printf("Hemos trasladado el terreno \n");
 			}
+
 		}
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_TERRENO) * factor_escalado) {
-		printf("nave en el lado derecho\n");
 		// Si la nave esta proxima al lado derecho -> asegurar un terreno_0 colocado al lado derecho
 		if(terreno_auxiliar_en_izda == 1) {
-			printf("terreno_0 en el lado izquierdo\n");
-			// El terreno_0 esta en la izquierda -> hay que colocarlo en la derecha
+			// Terreno no en derecha -> hay que colocarlo en la derecha
 			terreno_auxiliar_en_izda = 0;
-			if(terreno_a_colocar == 0) {
+			if(terreno_auxiliar == 0) {
 				// Debo mover el terreno_0 original
-				trasladar_superficie_lunar(terreno_0, plataformas_1, numero_plataformas, (struct Punto){(2*tamano_inicial_pantalla_X) * factor_escalado, 0});
-				terreno_a_colocar = 1;
+				trasladar_superficie_lunar(terreno_0, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 			}
 			else {
-				printf("debo mover el terreno_0 2\n");
 				// Debo mover el terreno_1
-				trasladar_superficie_lunar(terreno_1, plataformas_2, numero_plataformas, (struct Punto){(2*tamano_inicial_pantalla_X) * factor_escalado, 0});
-				terreno_a_colocar = 0;
+				trasladar_superficie_lunar(terreno_1, plataformas_2, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 			}
 		}
 	}
@@ -331,7 +359,6 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 		}
 	}
 	if(modo_zoom == ACTIVADO){
-		printf("El zoom esta activado\n");
 		gestionar_colisiones();
 		if(nave_proxima_a_borde_inferior(nave->objeto->origen)) {
 			traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + traslacion_nave.y;
@@ -353,6 +380,7 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 void manejar_instante_partida(){
     if(fisicas == ACTIVADAS) {
 		struct Punto posible_traslacion_nave = calcularFisicas(nave);
+		pos_real_nave_x += posible_traslacion_nave.x * factor_escalado;
 		struct Punto posicion_provisional = nave->objeto->origen;
 		trasladar_punto(&posicion_provisional, posible_traslacion_nave);
 		struct Punto traslacion_nave = gestionar_posicion_nave_marcos(posible_traslacion_nave, posicion_provisional);
@@ -377,7 +405,6 @@ void continuar_tras_aterrizaje_partida(){
 	modo_zoom = DESACTIVADO;
 	terreno_0 = crear_dibujable(&Terreno);
 	terreno_1 = crear_dibujable(&Terreno);
-	trasladarDibujable(terreno_1, (struct Punto){-tamano_inicial_pantalla_X, 0});
 	generar_plataformas(&plataformas_1, &plataformas_2, &Terreno, terreno_1->origen, &numero_plataformas);
 	trasladar_superficie_lunar(terreno_0, plataformas_1, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_2, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
@@ -400,7 +427,8 @@ void comenzarPartida(){
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;
 	nave -> rotacion = 0;
-    trasladarDibujable(nave -> objeto, (struct Punto){80, 80});
+    trasladarDibujable(nave -> objeto, (struct Punto){valor_inicial_nave_x, 80});
+	pos_real_nave_x = valor_inicial_nave_x;
 
 	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
 	motor_medio = crear_dibujable(&Nave_Propulsion_Media);

@@ -1,5 +1,6 @@
 #include "constantes.h"
 
+const float valor_inicial_nave_x = 80;
 
 const float SIN_TABLA[360] = {
     0.0000, 0.0175, 0.0349, 0.0523, 0.0698, 0.0872, 0.1045, 0.1219, 0.1392, 0.1564, 0.1736, 0.1908, 0.2079, 0.2249, 0.2419, // 0

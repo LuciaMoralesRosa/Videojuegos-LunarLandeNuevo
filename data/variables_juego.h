@@ -34,5 +34,9 @@ extern float velocidad_horizontal;
 extern float velocidad_vertical;
 extern float altitud;
 
+extern float pos_real_nave_x;
+extern int terrenos_desplazados_a_dcha;
+
+
 
 #endif // VARIABLES_JUEGO_H

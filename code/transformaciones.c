@@ -200,3 +200,14 @@ void trasladar_superficie_lunar(struct Dibujable* terreno, struct Plataforma* pl
         trasladar_palabra(plataformas[i].palabra, traslacion);
     }
 }
+
+
+
+void colocar_superficie_lunar(struct Dibujable* terreno, struct Plataforma* plataformas, uint8_t num_plataformas, struct Punto traslacion) {
+    colocar_dibujable(terreno, traslacion);
+    //printf("Traslado el terreno, num_plataformas= %d\n\n", num_plataformas);
+    for(uint8_t i = 0; i < num_plataformas; i++) {        
+        colocar_dibujable(plataformas[i].linea, traslacion);
+        colocar_palabra(plataformas[i].palabra, traslacion);
+    }
+}

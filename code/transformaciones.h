@@ -88,4 +88,6 @@ void escalar_plataforma_dados_ejes(struct Plataforma* plataforma, float factorX,
 
 void trasladar_superficie_lunar(struct Dibujable* terreno, struct Plataforma* plataformas, uint8_t num_plataformas, struct Punto traslacion);
 
+void colocar_superficie_lunar(struct Dibujable* terreno, struct Plataforma* plataformas, uint8_t num_plataformas, struct Punto traslacion);
+
 #endif // TRANSFORMACIONES_H

@@ -9,6 +9,7 @@
 extern const float SIN_TABLA[360];
 extern const float COS_TABLA[360];
 
+extern const float valor_inicial_nave_x;
 
 #define tamano_inicial_pantalla_X 1024
 #define tamano_inicial_pantalla_Y 768
