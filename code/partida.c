@@ -249,44 +249,52 @@ void rotar_nave(uint8_t direccion){
 
 
 struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct Punto posicion_provisional) {
+	struct Punto punto_return = traslacion_nave;
 	if((posicion_provisional.x < MARCO_ZOOM * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
 		// Ir hacia arriba y derecha
+		printf("if1 - Arriba dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
-		return (struct Punto){0, 0};
+		punto_return = (struct Punto) {0,0};
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
 		// Ir hacia arriba e izquierda
+		printf("if2 - Arriba izda \n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
-		return (struct Punto){0, 0};
+		punto_return = (struct Punto) {0,0};
 	}
 	else if(posicion_provisional.x < MARCO_ZOOM * factor_escalado) {
+		// Ir solo hacia la derecha
+		printf("if3 - Dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
-		return (struct Punto){0, traslacion_nave.y};
+		punto_return = (struct Punto) {0, traslacion_nave.y};
+
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado) {
+		printf("if4 - Izda\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
-		return (struct Punto){0, traslacion_nave.y};
+		punto_return = (struct Punto){0, traslacion_nave.y};
 	}
 	else if(posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
+		printf("if5 - Arriba\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
-		return (struct Punto){traslacion_nave.x, 0};
+		punto_return = (struct Punto){punto_return.x, 0};
 	}
-	else if(modo_zoom == DESACTIVADO && desplazamiento_superior < 0 && (posicion_provisional.y > MARCO_INFERIOR * factor_escalado)) {
+	if(modo_zoom == DESACTIVADO && desplazamiento_superior < 0 && (posicion_provisional.y > MARCO_INFERIOR * factor_escalado)) {
+		printf("Deberia estar entrando aqui\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
-
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
-		return (struct Punto){traslacion_nave.x, 0};
+		punto_return = (struct Punto){punto_return.x, 0};
 	}
-	return traslacion_nave;
+	return punto_return;
 }
 
 int establecer_terreno_auxiliar(int n_terreno) {
