@@ -67,8 +67,6 @@ uint8_t nave_ha_entrado_a_centro_terreno = 1;
 
 // 1 si el terreno_0 auxiliar esta a la izquierda, 0 si el terreno_0 auxiliar esta a la derecha
 static uint8_t terreno_auxiliar_en_izda = 1;
-// 0 si es terreno_0, 1 si es terreno_1
-int terreno_a_colocar = 1;
 // 0 si el auxiliar es terreno_0, 1 si el auxiliar es terreno_1 
 int terreno_auxiliar = 1;
 
@@ -176,9 +174,11 @@ void gestionar_colisiones() {
 	struct Arista arista_colision = (struct Arista){0};
 	uint8_t bonificador = 1;
 	uint8_t es_arista_aterrizable = 0;
+	uint8_t colision_detectada = 0;
 
-	// Comprobar colision con el terreno_0
-	if(hay_colision(nave->objeto, terreno_0, &arista_colision) || hay_colision(nave->objeto, terreno_1, &arista_colision)){
+	// Comprobar colision con el primer terreno
+	if(hay_colision(nave->objeto, terreno_0, &arista_colision)){
+		colision_detectada = 1;
 		es_arista_aterrizable = es_horizontal(arista_colision);
 		if(es_arista_aterrizable == 1){
 			// Si hay colision con el terreno_0 -> evaluar si ha sido colision con plataforma
@@ -190,6 +190,23 @@ void gestionar_colisiones() {
 				}
 			}
 		}
+	}
+	// Si no hay con el primero, comprobar colison con el segundo terreno
+	else if(hay_colision(nave->objeto, terreno_1, &arista_colision)){
+		colision_detectada = 1;
+		es_arista_aterrizable = es_horizontal(arista_colision);
+		if(es_arista_aterrizable == 1){
+			// Si hay colision con el terreno_0 -> evaluar si ha sido colision con plataforma
+			for(uint8_t i = 0; i < numero_plataformas; i++) {
+				if(hay_colision(nave->objeto, plataformas_1[i].linea, &arista_colision)) {
+					// La colision ha sido con una plataforma
+					bonificador = plataformas_1[i].bonificador;
+					break;
+				}
+			}
+		}
+	}
+	if(colision_detectada == 1) {
 		// Determinar tipo de aterrizaje y puntos conseguidos
 		uint16_t puntos_conseguidos = evaluar_aterrizaje(bonificador, es_arista_aterrizable);
 		puntuacion_partida += puntos_conseguidos;
@@ -277,7 +294,6 @@ int establecer_terreno_auxiliar(int n_terreno) {
 	if(pos_real_nave_x < 0) {
 		n_terreno--;
 	} 
-	//printf("Estoy en el terreno %d\n", n_terreno);
 	int terreno_auxiliar_inicial = terreno_auxiliar;
 	if(pos_real_nave_x > 0) {
 		if(nave_en_terreno == 0) {
@@ -309,6 +325,7 @@ void comprobar_si_nave_entra_a_centro_izda(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
+		printf("En centro de terreno izquierda\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -317,6 +334,7 @@ void comprobar_si_nave_entra_a_centro_dcha(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
+		printf("En centro de terreno derecha\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -324,8 +342,6 @@ void comprobar_si_nave_entra_a_centro_dcha(int n_terreno) {
 void gestionar_posicion_nave_terreno() {
 	int n_terreno = (int)(pos_real_nave_x / tamano_inicial_pantalla_X*factor_escalado);
 	n_terreno = establecer_terreno_auxiliar(n_terreno);
-
-	//printf("Mi terreno auxiliar es el terreno %d\n", terreno_auxiliar);
 
 	if(pos_real_nave_x < 0) {
 		// La nave esta en terrenos a la izquierda del original
@@ -456,13 +472,15 @@ void inicializar_partida(){
 	terreno_0 = crear_dibujable(&Terreno);
 	terreno_1 = crear_dibujable(&Terreno);
 	generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
-	printf("bonificiador = %d", plataformas_0[0].bonificador);
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
-	printf("Final inicializando\n\n");
 }
 
 void continuar_tras_aterrizaje_partida(){
+	nave_ha_entrado_a_centro_terreno = 1;
+	terreno_auxiliar_en_izda = 1;
+	terreno_auxiliar = 1;	
+	pos_real_nave_x = valor_inicial_nave_x;
 	modo_zoom = DESACTIVADO;
 	terreno_0 = crear_dibujable(&Terreno);
 	terreno_1 = crear_dibujable(&Terreno);
