@@ -1,3 +1,7 @@
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdio.h>
+
 #include "partida.h"
 #include "gestor_colisiones.h"
 #include "gestor_plataformas.h"
@@ -32,7 +36,9 @@
 #define MARCO_INFERIOR 110
 #define MARCO_TERRENO 90
 
-
+SOCKET server_socket = INVALID_SOCKET;
+SOCKET client_socket = INVALID_SOCKET;
+int puerto = 8080;
 
 int inicio = 0;
 
@@ -56,7 +62,6 @@ struct Dibujable* terreno_1 = NULL;
 struct Plataforma* plataformas_0 = NULL;
 struct Plataforma* plataformas_1 = NULL;
 uint8_t numero_plataformas = 0;
-
 
 static uint8_t fisicas = DESACTIVADAS;
 static int traslacion_dibujables_por_borde_inferior = 0;
@@ -471,6 +476,7 @@ void manejar_instante_partida(){
 		struct Punto traslacion_nave = gestionar_posicion_nave_marcos(posible_traslacion_nave, posicion_provisional);
 		gestionar_posicion_nave_terreno(posicion_provisional);
 		gestionar_zoom_aterrizaje(traslacion_nave);
+		enviar_estado_partida();
 	}
 }
 
@@ -530,4 +536,84 @@ void finalizarPartida(){
     destruir_objeto_fisico(nave);
     nave -> objeto = NULL;
     fisicas = DESACTIVADAS;
+}
+
+void iniciar_socket_servidor() {
+    WSADATA wsaData;
+    struct sockaddr_in server_addr;
+
+    // Inicializar Winsock
+    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
+        printf("Error al iniciar Winsock\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Crear socket
+    server_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (server_socket == INVALID_SOCKET) {
+        printf("Error al crear el socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+
+    // Configurar dirección
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(puerto);
+
+    // Asociar socket
+    if (bind(server_socket, (SOCKADDR*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+        printf("Error en bind: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+
+    // Escuchar
+    if (listen(server_socket, SOMAXCONN) == SOCKET_ERROR) {
+        printf("Error en listen: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Servidor esperando conexión en el puerto %d...\n", puerto);
+
+    // Aceptar conexión entrante
+    client_socket = accept(server_socket, NULL, NULL);
+    if (client_socket == INVALID_SOCKET) {
+        printf("Error en accept: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        exit(EXIT_FAILURE);
+    }
+
+    printf("¡Conexión establecida!\n");
+}
+
+void recibir_accion_ia(){
+    // Creamos un buffer para recibir los datos
+    int input_buffer[5];  // Array para almacenar los 5 estados de las teclas
+    
+    int len = recibir_datos((char *)input_buffer, sizeof(input_buffer));  // Función para recibir los datos
+    if (len == sizeof(input_buffer)) {
+        // Asignamos el estado de las teclas recibido en el array
+        for (int i = 0; i < 5; i++) {
+            if(input_buffer[i] == 1) pulsar_tecla(i);
+			else levantar_tecla(i);
+        }
+    } else {
+        // Manejar error en la recepción de los datos
+        printf("Error al recibir los datos de la IA.\n");
+    }
+}
+
+void enviar_estado_partida(){
+
+}
+
+void cerrar_socket() {
+	closesocket(client_socket);
+	closesocket(server_socket);
+	WSACleanup();
 }

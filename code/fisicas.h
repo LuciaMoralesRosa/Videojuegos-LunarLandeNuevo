@@ -100,5 +100,8 @@ uint8_t obtener_propulsor(void);
  */
 void destruir_objeto_fisico(struct objetoFisico* objeto);
 
+void activar_ia(void);
+void desactivar_ia(void);
+uint8_t ia_activada(void);
 
 #endif // FISICAS_H

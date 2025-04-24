@@ -4,37 +4,33 @@ CC = gcc
 # Flags de compilación
 CFLAGS = -Wall -Wextra -Wpedantic -g -mwindows
 
-# Directorios de código fuente
+# Flags de enlace
+LDFLAGS = -lws2_32 -lgdi32
+
+# Directorios
 SRC_DIR = code
 RES_DIR = resources
 DATA_DIR = data
 MENU_DIR = menus
 
-# Archivos fuente (todos los .c en code/ y resources/)
+# Fuentes y objetos
 SRCS = $(wildcard $(SRC_DIR)/*.c $(DATA_DIR)/*.c $(RES_DIR)/*.c $(SRC_DIR)/$(MENU_DIR)/*.c) main.c
-
-# Archivos objeto (se reemplaza .c por .o)
 OBJS = $(SRCS:.c=.o)
 
-# Ejecutable final
+# Target
 TARGET = lunar_lander.exe
 
-# Regla principal
 all: $(TARGET)
 
-# Compilar el ejecutable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(OBJS) $(LDFLAGS) -o $@
 
-# Compilar cada archivo fuente en un objeto
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Limpiar archivos compilados
 clean:
 	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o main.o 2>nul
 
-# Recompilar todo y ejecutar
 run:
 	mingw32-make -f MakeFile clean
 	mingw32-make -f MakeFile

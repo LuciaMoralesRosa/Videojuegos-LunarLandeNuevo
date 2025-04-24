@@ -7,7 +7,7 @@ static uint8_t propulsor_activado = 0;
 static uint8_t propulsor = 0;
 static uint8_t orden_girar_izquierda = 0;
 static uint8_t orden_girar_derecha = 0;
-
+static uint8_t ia = 0;
 
 struct Punto calcularFisicas(struct objetoFisico* elemento){
 	if(orden_girar_izquierda && !orden_girar_derecha && (elemento -> rotacion <= 90 || elemento -> rotacion >= 270 + ANGULO_ROTACION)){
@@ -95,4 +95,15 @@ uint8_t obtener_propulsor(void){
 void destruir_objeto_fisico(struct objetoFisico* objeto){
     destruir_dibujable(objeto -> objeto);
     free(objeto);
+}
+
+void activar_ia(void){
+	ia = 1;
+}
+void desactivar_ia(void){
+	ia = 0;
+}
+
+uint8_t ia_activada(void){
+	return ia;
 }

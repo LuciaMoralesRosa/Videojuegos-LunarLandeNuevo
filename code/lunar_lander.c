@@ -4,7 +4,6 @@
 #include "../data/variables_juego.h"
 #include "../data/variables_globales.h"
 
-
 static int estado = PEDIR;
 static int estado_teclas[5] = {
     0,
@@ -26,6 +25,9 @@ void levantar_tecla(int tecla){
 }
 
 void manejar_teclas(){
+    recibir_accion_ia();
+    // modificar estado_teclas
+
     if(estado_teclas[ARRIBA]){
         activar_propulsor();
         propulsar();
@@ -66,6 +68,8 @@ void iniciar_partida(int monedas_introducidas) {
     insertar_monedas(monedas_introducidas);
     comenzarPartida();
     escalar_escena_partida(factor_escalado, factor_escalado);
+    iniciar_socket_servidor();
+    enviar_estado_partida();
 }
 
 void continuar_tras_aterrizaje(void){

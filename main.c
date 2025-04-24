@@ -157,9 +157,9 @@ void escalar_ventana(HWND hwnd) {
 
 
 void iniciar_nueva_partida(HWND hwnd) {
-    monedas_introducidas = 0;
-    crear_palabra_insertar_moneda();
-    estado_actual = ESTADO_PIDIENDO_MONEDA;
+    monedas_introducidas = 1;
+    iniciar_partida(monedas_introducidas);
+    estado_actual = ESTADO_JUEGO;
     repintar_ventana(hwnd);
 }
 
@@ -216,17 +216,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_TIMER: {
             switch(estado_actual) {
-                case ESTADO_PIDIENDO_MONEDA: {
-                    if(wParam == timer_IA) {
-                        // Gestionar partida ia
-                        destruir_menu_insertar_moneda();
-                    }
-                    break;
-                }
                 case ESTADO_JUEGO: {
                     if (wParam == timer_TICK_juego) {
-                        manejar_instante();
                         manejar_teclas();
+                        manejar_instante();
+                        
                         InvalidateRect(hwnd, NULL, FALSE);
                     }
                     if(wParam == timer_segundo) {
@@ -253,17 +247,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             dibujar_bordes(hdcMem);
             switch(estado_actual) {
-                case ESTADO_PIDIENDO_MONEDA: {
-                    // Gestionar IA de fondo
-
-                    // Pintar peticion
-                    mostrar_insertar_moneda(hdcMem);
-                    break;
-                }
-                case ESTADO_OPCIONES: {
-                    dibujar_menu_opciones(hdcMem, hwnd);
-                    break;
-                }
                 case ESTADO_JUEGO: {
                     //printf("Pintando en ESTADO_JUEGO\n\n");
                     pintar_pantalla(hdcMem);
@@ -288,122 +271,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             DeleteObject(hbmMem);
             DeleteDC(hdcMem);
             EndPaint(hwnd, &ps);
-            break;
-        }
-        
-        case WM_KEYDOWN: {
-            switch(estado_actual) {
-                case ESTADO_PIDIENDO_MONEDA: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        monedas_introducidas = 1;
-                        inicializar_menu_nueva_partida();
-                        estado_actual = ESTADO_OPCIONES;
-                        repintar_ventana(hwnd);
-                        destruir_menu_insertar_moneda();
-                    }
-                    break;
-                }
-
-                case ESTADO_OPCIONES: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        monedas_introducidas++;
-                    }
-                    else if(wParam == VK_DOWN || wParam == VK_UP) {
-                        procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
-                    }
-                    else if(wParam == VK_RETURN) {
-                        gestionar_opcion_seleccionada();
-                        Opcion_Menu op = obtener_opcion_seleccionada();
-                        if(op == EXIT) {
-                            PostQuitMessage(0); // Terminar el proceso
-                        }
-                        repintar_ventana(hwnd);
-                    }
-                    else if (wParam == VK_SPACE) {
-                        pulsar_tecla(ESPACIO);
-                        iniciar_partida(monedas_introducidas);
-                        estado_actual = ESTADO_JUEGO;
-                        repintar_ventana(hwnd);
-                        destruir_menu_opciones();
-                    }
-                    break;
-                }
-
-                case ESTADO_JUEGO: {
-                    if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
-                    if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
-                    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
-                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) pulsar_tecla(ESPACIO);
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
-                    break;
-                }
-
-                case ESTADO_ATERRIZAJE: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
-                    if(wParam == VK_SPACE) {
-                        // seguir jugando
-                        printf("Se quiere seguir jugando");
-                        if(combustible < combustible_motor) {
-                            generar_mensaje_final_partida(puntuacion_partida);
-                            estado_actual = ESTADO_FIN_PARTIDA;
-                        }
-                        else {
-                            continuar_tras_aterrizaje();
-                            estado_actual = ESTADO_JUEGO;
-                        }
-                        repintar_ventana(hwnd);
-                    }
-                    break;
-                }
-
-                case ESTADO_FIN_PARTIDA: {
-                    if (GetAsyncKeyState(VK_SPACE) & 0x8000) { 
-                        //resetear();
-                    }
-                    break;
-                }
-
-                default: break;
-            }
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-                esc_presionado = 1;
-                SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-            }
-        break;
-        }
-
-        case WM_KEYUP: {
-            switch(estado_actual) {
-                case ESTADO_PIDIENDO_MONEDA: {
-                    break;
-                }
-
-                case ESTADO_OPCIONES: {
-                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)){
-                        
-                    }
-                    break;
-                }
-
-                case ESTADO_JUEGO: {
-                    if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
-                    if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
-                    if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
-                    if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
-                    break;
-                }
-
-                case ESTADO_ATERRIZAJE: {
-                    break;
-                }
-
-                case ESTADO_FIN_PARTIDA: {
-                    break;
-                }
-
-                default: break;
-            }
-            
             break;
         }
 

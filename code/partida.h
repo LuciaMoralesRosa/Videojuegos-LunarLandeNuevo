@@ -36,4 +36,12 @@ void escalar_escena_partida(float factor_x, float factor_y);
 
 void continuar_tras_aterrizaje_partida();
 
+void iniciar_socket_servidor();
+
+void recibir_accion_ia();
+
+void enviar_estado_partida();
+
+void cerrar_socket();
+
 #endif // PARTIDA_H
