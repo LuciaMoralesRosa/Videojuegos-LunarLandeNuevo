@@ -512,6 +512,7 @@ void insertar_monedas(int monedas) {
 }
 
 void comenzarPartida(){
+	combustible = fuel_por_moneda;
     nave = (struct objetoFisico*)malloc(sizeof(struct objetoFisico));
     nave -> objeto = crear_dibujable(&Nave_Base);
     nave -> velocidad[0] = 0;
@@ -599,8 +600,10 @@ void recibir_accion_ia(){
     if (len == sizeof(input_buffer)) {
         // Asignamos el estado de las teclas recibido en el array
         for (int i = 0; i < 5; i++) {
-            if(input_buffer[i] == 1) pulsar_tecla(i);
-			else levantar_tecla(i);
+			if(i != MONEDA) {
+				if(input_buffer[i] == 1) pulsar_tecla(i);
+				else levantar_tecla(i);
+			}
         }
     } else {
         // Manejar error en la recepción de los datos
@@ -608,9 +611,83 @@ void recibir_accion_ia(){
     }
 }
 
-void enviar_estado_partida(){
+#pragma pack(push, 1) // Alinear la estructura a 1 byte
+typedef struct {
+    float velocidad[2];
+    float aceleracion[2];
+    float rotacion;
+    float posicion_nave[2];
+    float puntos_terreno[280];
+    float puntos_plataformas[8];
+} EstadoPartida;
+#pragma pack(pop) // Restaurar alineación anterior
 
+void enviar_estado_partida(){
+	EstadoPartida estado_partida;
+	
+	// Definimos los datos del estado
+	estado_partida.velocidad[0] = nave -> velocidad[0];
+	estado_partida.velocidad[1] = nave -> velocidad[1];
+
+	estado_partida.aceleracion[0] = nave -> aceleracion[0];
+	estado_partida.aceleracion[1] = nave -> aceleracion[1];
+
+	estado_partida.rotacion = nave -> rotacion;
+
+	estado_partida.posicion_nave[0] = nave -> objeto -> origen.x;
+	estado_partida.posicion_nave[1] = nave -> objeto -> origen.y;
+
+	for(int i = 0; i < 140; i++){
+		estado_partida.puntos_terreno[i] = terreno_0->puntos[i].x;
+		estado_partida.puntos_terreno[i + 140] = terreno_0->puntos[i].y;
+	}
+
+	for(int i = 0; i < 4; i++){
+		estado_partida.puntos_plataformas[i] = plataformas_0[i].linea -> puntos[0].x;
+		estado_partida.puntos_plataformas[i + 4] = plataformas_0[i].linea -> puntos[0].y;
+	}
+
+	// Creamos un buffer para enviar los datos
+	uint8_t buffer[sizeof(estado_partida)];
+
+	memcpy(buffer, &estado_partida, sizeof(estado_partida));
+
+	// Ahora enviamos el buffer con todos los datos (esto depende de tu función de envío de datos)
+	int len = enviar_datos((char *)buffer, sizeof(buffer));  // Esta es tu función para enviar los datos
+
+	if (len != sizeof(buffer)) {
+		printf("Error al enviar los datos de estado de la partida.\n");
+	}
 }
+
+int enviar_datos(char *buffer, int len) {
+	int total_enviados = 0;
+	while (total_enviados < len) {
+		int enviados = send(client_socket, buffer + total_enviados, len - total_enviados, 0);
+		if (enviados == SOCKET_ERROR) {
+			printf("Error al enviar datos: %d\n", WSAGetLastError());
+			return -1;
+		}
+		total_enviados += enviados;
+	}
+	return total_enviados;
+}
+
+
+int recibir_datos(char *buffer, int len) {
+	int total_recibidos = 0;
+	while (total_recibidos < len) {
+		int recibidos = recv(client_socket, buffer + total_recibidos, len - total_recibidos, 0);
+		if (recibidos == SOCKET_ERROR) {
+			printf("Error al recibir datos: %d\n", WSAGetLastError());
+			return -1;
+		}
+		if (recibidos == 0) break; // conexión cerrada
+		total_recibidos += recibidos;
+	}
+	return total_recibidos;
+}
+
 
 void cerrar_socket() {
 	closesocket(client_socket);

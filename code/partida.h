@@ -42,6 +42,10 @@ void recibir_accion_ia();
 
 void enviar_estado_partida();
 
+int enviar_datos(char *buffer, int len);
+
+int recibir_datos(char *buffer, int len);
+
 void cerrar_socket();
 
 #endif // PARTIDA_H

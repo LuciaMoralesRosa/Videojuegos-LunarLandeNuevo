@@ -26,7 +26,6 @@ void levantar_tecla(int tecla){
 
 void manejar_teclas(){
     recibir_accion_ia();
-    // modificar estado_teclas
 
     if(estado_teclas[ARRIBA]){
         activar_propulsor();
