@@ -42,15 +42,13 @@ void manejar_teclas(){
 }
 
 void manejar_instante(){
+    manejar_instante_partida();
     if(estado_actual == ESTADO_JUEGO){
-        manejar_instante_partida();
     }
 }
 
 void pintar_pantalla(HDC hdc){
-    if(estado_actual == ESTADO_JUEGO) {
-        dibujar_escena(hdc);
-    }
+    dibujar_escena(hdc);
 }
 
 void cambiar_estado(int nuevo_estado){

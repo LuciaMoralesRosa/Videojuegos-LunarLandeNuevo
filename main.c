@@ -21,6 +21,7 @@
 #define timer_TICK_juego 1
 #define timer_IA 2
 #define timer_segundo 3
+#define timer_mostrar_mensajes 4
 
 
 // ---------------------------- VARIABLES ESCALADO -----------------------------
@@ -34,6 +35,7 @@ RECT rectVentanaAnterior;
 // VARIABLES MAQUINA ESTADOS JUEGO
 uint8_t moneda_presionada = 0;
 uint8_t monedas_introducidas = 0;
+int timestamp_pintar_mensaje = 0;
 
 
 struct Punto* p1 = NULL;
@@ -160,6 +162,8 @@ void iniciar_nueva_partida(HWND hwnd) {
     monedas_introducidas = 0;
     crear_palabra_insertar_moneda();
     estado_actual = ESTADO_PIDIENDO_MONEDA;
+    pulsar_tecla(ESPACIO);
+    iniciar_partida(monedas_introducidas);
     repintar_ventana(hwnd);
 }
 
@@ -169,7 +173,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
             SetTimer(hwnd, timer_IA, 10000, NULL);
             SetTimer(hwnd, timer_segundo, 1000, NULL);
-
             break;
         }
         
@@ -219,7 +222,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_PIDIENDO_MONEDA: {
                     if(wParam == timer_IA) {
                         // Gestionar partida ia
+                        printf("Se destruye el menu de moneda y daremos paso a la ia\n");
                         destruir_menu_insertar_moneda();
+                    }
+                    if (wParam == timer_TICK_juego) {
+                        printf("Manejando instante por el timer\n");
+                        manejar_instante();
+                        InvalidateRect(hwnd, NULL, FALSE);
                     }
                     break;
                 }
@@ -255,9 +264,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     // Gestionar IA de fondo
-
+                    pintar_pantalla(hdcMem);
                     // Pintar peticion
-                    mostrar_insertar_moneda(hdcMem);
+                    if((timestamp_pintar_mensaje % 25) > 7) {
+                        mostrar_insertar_moneda(hdcMem);
+                    }
+                    timestamp_pintar_mensaje++;
                     break;
                 }
                 case ESTADO_OPCIONES: {

@@ -3,6 +3,7 @@
 #include "gestor_plataformas.h"
 #include "gestor_zoom.h"
 #include "terreno.h"
+#include "fragmentacion_nave.h"
 
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
@@ -32,20 +33,7 @@
 #define MARCO_INFERIOR 110
 #define MARCO_TERRENO 90
 
-
-
 int inicio = 0;
-
-/**
- * @brief Enumeración para el estado de las fisicas
- * 
- * DESACTIVADAS: 0
- * ACTIVADAS: 1
- */
-enum fisicas {
-    DESACTIVADAS,
-    ACTIVADAS
-};
 
 struct objetoFisico* nave = NULL;
 struct Dibujable* motor_debil = NULL;
@@ -58,7 +46,6 @@ struct Plataforma* plataformas_1 = NULL;
 uint8_t numero_plataformas = 0;
 
 
-static uint8_t fisicas = DESACTIVADAS;
 static int traslacion_dibujables_por_borde_inferior = 0;
 struct Punto posicion_nave_cuando_zoom = {0};
 
@@ -147,12 +134,14 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		else{
 			// Colision
 			printf("Colision\n");
+			gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
 		}
 	}
 	else {
 		// Colision
 		printf("Colision\n");
+		gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
 	}
 	
@@ -463,7 +452,9 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 }
 
 void manejar_instante_partida(){
-    if(fisicas == ACTIVADAS) {
+	printf("Manejando instante\n\n");
+	if(fisicas == ACTIVADAS) {
+		printf("estoy manejando las fisicas\n\n");
 		struct Punto posible_traslacion_nave = calcularFisicas(nave);
 		pos_real_nave_x += posible_traslacion_nave.x * factor_escalado;
 		struct Punto posicion_provisional = nave->objeto->origen;
@@ -506,9 +497,10 @@ void insertar_monedas(int monedas) {
 }
 
 void comenzarPartida(){
+	printf("se está comenzando partida\n");
     nave = (struct objetoFisico*)malloc(sizeof(struct objetoFisico));
     nave -> objeto = crear_dibujable(&Nave_Base);
-    nave -> velocidad[0] = 0;
+    nave -> velocidad[0] = 2;
     nave -> velocidad[1] = 0;
     nave -> aceleracion[0] = 0;
     nave -> aceleracion[1] = 0;
