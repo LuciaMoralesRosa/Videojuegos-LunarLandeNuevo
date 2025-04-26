@@ -20,7 +20,8 @@
 
 
 
-#define fuel_por_moneda 50
+
+#define fuel_por_moneda 100
 #define masa_nave 1000
 
 #define aterrizaje_perfecto_vel 0.5
@@ -29,7 +30,7 @@
 #define aterrizaje_brusco_rot 10
 
 #define entrada_modo_zoom_nave 1
-#define entrada_modo_zoom_terreno 1.7
+#define entrada_modo_zoom_terreno 2.2
 
 #define MARCO_ZOOM 80
 #define MARCO_SUPERIOR 80
@@ -141,7 +142,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
 			printf("Aterrizaje perfecto\n");
-			puntuacion = (50 * bonificador) / velocidad_vertical_nave;
+			puntuacion = (50 * bonificador * 10) / velocidad_vertical_nave;
 			combustible += 50;
 			tipo_aterrizaje = PERFECTO;
 		}
@@ -152,19 +153,19 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
 			printf("Aterrizaje brusco\n");
-			puntuacion = 15 * bonificador / velocidad_vertical_nave;
+			puntuacion = 15 * bonificador * 10 / velocidad_vertical_nave;
 			tipo_aterrizaje = BRUSCO;
 		}
 		else{
 			// Colision
 			printf("Colision\n");
-			puntuacion = 5 * bonificador / velocidad_vertical_nave;
+			puntuacion = 5 * bonificador * 10 / velocidad_vertical_nave;
 		}
 	}
 	else {
 		// Colision
 		printf("Colision\n");
-		puntuacion = 0;
+		puntuacion = bonificador * 10 / velocidad_vertical_nave;
 	}
 	
 	return puntuacion;
@@ -201,7 +202,7 @@ void gestionar_colisiones() {
 
 	// Comprobar colision con el primer terreno
 	if(hay_colision(nave->objeto, terreno_0, &arista_colision)){
-		colision_detectada = 0;
+		colision_detectada = 1;
 		es_arista_aterrizable = es_horizontal(arista_colision);
 		if(es_arista_aterrizable == 1){
 			// Si hay colision con el terreno_0 -> evaluar si ha sido colision con plataforma
@@ -459,7 +460,7 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 		}
 	}
 	if(modo_zoom == ACTIVADO){
-		printf("DEBUG: Modo zoom activado\n");
+		//printf("DEBUG: Modo zoom activado\n");
 		gestionar_colisiones();
 		if(nave_proxima_a_borde_inferior(nave->objeto->origen)) {
 			traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + traslacion_nave.y;
@@ -530,14 +531,14 @@ void comenzarPartida(){
 	combustible = fuel_por_moneda;
     nave = (struct objetoFisico*)malloc(sizeof(struct objetoFisico));
     nave -> objeto = crear_dibujable(&Nave_Base);
-    nave -> velocidad[0] = 0;
+    nave -> velocidad[0] = 2;
     nave -> velocidad[1] = 0;
     nave -> aceleracion[0] = 0;
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;
 	nave -> rotacion = 0;
-    trasladarDibujable(nave -> objeto, (struct Punto){valor_inicial_nave_x, 80});
-	pos_real_nave_x = valor_inicial_nave_x;
+    trasladarDibujable(nave -> objeto, (struct Punto){151, 80});
+	pos_real_nave_x = 151;
 
 	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
 	motor_medio = crear_dibujable(&Nave_Propulsion_Media);

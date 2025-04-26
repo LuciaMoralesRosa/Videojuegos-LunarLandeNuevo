@@ -10,7 +10,7 @@ import entrenador_ia  # Importa tu entorno personalizado
 ENV_NAME = "LunarIA-v0"
 NUM_EPISODIOS = 10_000
 DISPOSITIVO = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-GUARDAR_MODELO_CADA = 500
+GUARDAR_MODELO_CADA = 100
 RUTA_MODELOS = "modelos"
 
 os.makedirs(RUTA_MODELOS, exist_ok=True)
