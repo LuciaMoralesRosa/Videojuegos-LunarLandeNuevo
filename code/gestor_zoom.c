@@ -6,7 +6,7 @@
 #include "../data/variables_globales.h"
 
 #define DISTANCIA_ACTIVAR_ZOOM 150.0f
-#define DISTANCIA_DESACTIVAR_ZOOM 450.0f
+#define DISTANCIA_DESACTIVAR_ZOOM 350.0f
 #define DISTANCIA_BORDE_INFERIOR 200.0f
 
 // Devuelve la distancia mínima entre el punto P y el segmento AB

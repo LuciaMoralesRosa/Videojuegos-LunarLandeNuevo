@@ -27,9 +27,9 @@
 #define aterrizaje_brusco_rot 10
 
 #define entrada_modo_zoom_nave 1
-#define entrada_modo_zoom_terreno 1.7
+#define entrada_modo_zoom_terreno 2.2
 
-#define MARCO_ZOOM 80
+#define MARCO_DESPLAZAMIENTO 150
 #define MARCO_SUPERIOR 80
 #define MARCO_INFERIOR 110
 #define MARCO_TERRENO 90
@@ -244,28 +244,28 @@ void rotar_nave(uint8_t direccion){
 
 struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct Punto posicion_provisional) {
 	struct Punto punto_return = traslacion_nave;
-	if((posicion_provisional.x < MARCO_ZOOM * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
+	if((posicion_provisional.x < MARCO_DESPLAZAMIENTO * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
 		// Ir hacia arriba y derecha
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		punto_return = (struct Punto) {0,0};
 	}
-	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
+	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_DESPLAZAMIENTO) * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
 		// Ir hacia arriba e izquierda
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		punto_return = (struct Punto) {0,0};
 	}
-	else if(posicion_provisional.x < MARCO_ZOOM * factor_escalado) {
+	else if(posicion_provisional.x < MARCO_DESPLAZAMIENTO * factor_escalado) {
 		// Ir solo hacia la derecha
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto) {0, traslacion_nave.y};
 
 	}
-	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado) {
+	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_DESPLAZAMIENTO) * factor_escalado) {
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto){0, traslacion_nave.y};
@@ -500,8 +500,8 @@ void comenzarPartida(){
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;
 	nave -> rotacion = 0;
-    trasladarDibujable(nave -> objeto, (struct Punto){valor_inicial_nave_x, 80});
-	pos_real_nave_x = valor_inicial_nave_x;
+    trasladarDibujable(nave -> objeto, (struct Punto){MARCO_DESPLAZAMIENTO + 1, 80});
+	pos_real_nave_x = MARCO_DESPLAZAMIENTO + 1;
 
 	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
 	motor_medio = crear_dibujable(&Nave_Propulsion_Media);
