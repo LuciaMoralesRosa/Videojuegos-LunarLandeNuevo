@@ -17,7 +17,7 @@ static int estado_teclas[5] = {
 void pulsar_tecla(int tecla){
     estado_teclas[tecla] = 1;
     if(tecla == MONEDA) {
-        insertar_monedas(1);
+        anyadirMoneda();
     }
 }
 
@@ -60,11 +60,14 @@ void escalar_escena(float factor_x, float factor_y) {
 }
 
 void iniciar_partida(int monedas_introducidas) {
-    combustible = 0;
-    insertar_monedas(monedas_introducidas);
     inicializar_partida();
+    insertar_monedas(monedas_introducidas);
+    comenzarPartida();
+    escalar_escena_partida(factor_escalado, factor_escalado);
 }
 
 void continuar_tras_aterrizaje(void){
-    comenzar_nueva_ronda();
+    continuar_tras_aterrizaje_partida();
+    comenzarPartida();
+    escalar_escena_partida(factor_escalado, factor_escalado);
 }

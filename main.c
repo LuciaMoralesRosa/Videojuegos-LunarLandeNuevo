@@ -1,5 +1,5 @@
 #include "code/lunar_lander.h"
-#include "code/plataformas.h"
+#include "code/gestor_plataformas.h"
 #include "code/palabra.h"
 
 #include "code/menus/menu_insertar_moneda.h"
