@@ -1,0 +1,6 @@
+#include "resources.h"
+
+IDR_SOUND_MOTOR WAVE "resources/sounds/motor.wav"
+IDR_SOUND_COLISION WAVE "resources/sounds/colision.wav"
+IDR_SOUND_PERFECT WAVE "resources/sounds/perfect.wav"
+IDR_SOUND_FORCED WAVE "resources/sounds/forced.wav"

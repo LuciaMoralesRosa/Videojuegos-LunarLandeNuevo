@@ -1,0 +1,9 @@
+#ifndef RESOURCES_H
+#define RESOURCES_H
+
+#define IDR_SOUND_MOTOR    101
+#define IDR_SOUND_COLISION 102
+#define IDR_SOUND_PERFECT  103
+#define IDR_SOUND_FORCED   104
+
+#endif

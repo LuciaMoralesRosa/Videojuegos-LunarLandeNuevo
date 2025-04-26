@@ -5,6 +5,7 @@
 #include "terreno.h"
 #include "fragmentacion_nave.h"
 
+#include "../resources.h"
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
 
@@ -15,7 +16,7 @@
 #include "menus/menu_aterrizaje.h"
 #include "menus/menu_final_partida.h"
 
-
+#pragma comment(lib, "winmm.lib")
 
 #define fuel_por_moneda 1500
 #define masa_nave 1000
@@ -116,7 +117,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion < aterrizaje_perfecto_rot ||
 			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
-			PlaySound(TEXT("perfect.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("Aterrizaje perfecto\n");
 			puntuacion = 50 * bonificador;
 			combustible += 50;
@@ -128,7 +129,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion < aterrizaje_brusco_rot ||
 			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
-			PlaySound(TEXT("forced.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("Aterrizaje brusco\n");
 			puntuacion = 15 * bonificador;
 			tipo_aterrizaje = BRUSCO;
@@ -136,7 +137,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		else{
 			// Colision
 			printf("Colision\n");
-			PlaySound(TEXT("colision.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
 		}
@@ -144,7 +145,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	else {
 		// Colision
 		printf("Colision\n");
-		PlaySound(TEXT("colision.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 		gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
 	}

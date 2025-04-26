@@ -9,6 +9,7 @@
 #include "code/menus/menu_final_partida.h"
 
 #include "resources/superficie_lunar.h"
+#include "resources.h"
 
 #include "data/variables_globales.h"
 #include "data/constantes.h"
@@ -18,6 +19,8 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <stdlib.h>
+
+#pragma comment(lib, "winmm.lib")
 
 #define timer_TICK_juego 1
 #define timer_IA 2
@@ -345,7 +348,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_JUEGO: {
                     if (GetAsyncKeyState(VK_UP) & 0x8000) { 
                         pulsar_tecla(ARRIBA);
-                        PlaySound(TEXT("motor.wav"), NULL, SND_FILENAME | SND_ASYNC);
+                        if (!PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC)) {
+                            MessageBox(NULL, "Error reproduciendo sonido!", "Error", MB_ICONERROR);
+                        }
                     }
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
