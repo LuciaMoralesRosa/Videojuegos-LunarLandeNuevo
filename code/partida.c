@@ -21,7 +21,7 @@
 #define masa_nave 1000
 
 #define aterrizaje_perfecto_vel 0.5
-#define aterrizaje_brusco_vel 1
+#define aterrizaje_brusco_vel 1.5
 #define aterrizaje_perfecto_rot 5
 #define aterrizaje_brusco_rot 10
 
@@ -116,6 +116,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion < aterrizaje_perfecto_rot ||
 			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
+			PlaySound(TEXT("perfect.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			printf("Aterrizaje perfecto\n");
 			puntuacion = 50 * bonificador;
 			combustible += 50;
@@ -127,6 +128,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion < aterrizaje_brusco_rot ||
 			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
+			PlaySound(TEXT("forced.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			printf("Aterrizaje brusco\n");
 			puntuacion = 15 * bonificador;
 			tipo_aterrizaje = BRUSCO;
@@ -134,6 +136,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		else{
 			// Colision
 			printf("Colision\n");
+			PlaySound(TEXT("colision.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
 		}
@@ -141,6 +144,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	else {
 		// Colision
 		printf("Colision\n");
+		PlaySound(TEXT("colision.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
 	}
@@ -241,7 +245,6 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	struct Punto punto_return = traslacion_nave;
 	if((posicion_provisional.x < MARCO_ZOOM * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
 		// Ir hacia arriba y derecha
-		printf("if1 - Arriba dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
@@ -249,7 +252,6 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
 		// Ir hacia arriba e izquierda
-		printf("if2 - Arriba izda \n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
@@ -257,27 +259,23 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	}
 	else if(posicion_provisional.x < MARCO_ZOOM * factor_escalado) {
 		// Ir solo hacia la derecha
-		printf("if3 - Dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto) {0, traslacion_nave.y};
 
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado) {
-		printf("if4 - Izda\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto){0, traslacion_nave.y};
 	}
 	else if(posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
-		printf("if5 - Arriba\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		punto_return = (struct Punto){punto_return.x, 0};
 	}
 	if(modo_zoom == DESACTIVADO && desplazamiento_superior < 0 && (posicion_provisional.y > MARCO_INFERIOR * factor_escalado)) {
-		printf("Deberia estar entrando aqui\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
@@ -322,7 +320,6 @@ void comprobar_si_nave_entra_a_centro_izda(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
-		printf("En centro de terreno izquierda\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -331,7 +328,6 @@ void comprobar_si_nave_entra_a_centro_dcha(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
-		printf("En centro de terreno derecha\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -378,7 +374,6 @@ void gestionar_posicion_nave_terreno() {
 	else {
 		// La nave esta en el terreno original o en terrenos a su derecha
 		if(nave_ha_entrado_a_centro_terreno == 1) {
-			//printf("En entrado al centro \n");
 			if(pos_real_nave_x * factor_escalado < (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado) {
 				// La nave ha pasado el limite izquierdo de su terreno y quiere cruzar al terreno anterior (ie, a la izda)
 				if(terreno_auxiliar_en_izda == 0) {
@@ -452,9 +447,7 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 }
 
 void manejar_instante_partida(){
-	printf("Manejando instante\n\n");
 	if(fisicas == ACTIVADAS) {
-		printf("estoy manejando las fisicas\n\n");
 		struct Punto posible_traslacion_nave = calcularFisicas(nave);
 		pos_real_nave_x += posible_traslacion_nave.x * factor_escalado;
 		struct Punto posicion_provisional = nave->objeto->origen;

@@ -4,6 +4,9 @@ CC = gcc
 # Flags de compilación
 CFLAGS = -Wall -Wextra -Wpedantic -g -mwindows
 
+# Flags de enlazado
+LDFLAGS = -lwinmm
+
 # Directorios de código fuente
 SRC_DIR = code
 RES_DIR = resources
@@ -24,7 +27,7 @@ all: $(TARGET)
 
 # Compilar el ejecutable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 # Compilar cada archivo fuente en un objeto
 %.o: %.c

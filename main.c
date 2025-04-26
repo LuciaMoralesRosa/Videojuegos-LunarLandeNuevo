@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include <mmsystem.h>
 #include <stdlib.h>
 
 #define timer_TICK_juego 1
@@ -342,7 +343,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_JUEGO: {
-                    if (GetAsyncKeyState(VK_UP) & 0x8000) pulsar_tecla(ARRIBA);
+                    if (GetAsyncKeyState(VK_UP) & 0x8000) { 
+                        pulsar_tecla(ARRIBA);
+                        PlaySound(TEXT("motor.wav"), NULL, SND_FILENAME | SND_ASYNC);
+                    }
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) pulsar_tecla(ESPACIO);
@@ -398,7 +402,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_JUEGO: {
-                    if (!(GetAsyncKeyState(VK_UP) & 0x8000)) levantar_tecla(ARRIBA);
+                    if (!(GetAsyncKeyState(VK_UP) & 0x8000)) {
+                        printf("Estoy dejando de pulsar\n");
+                        PlaySound(NULL, NULL, 0);
+                        levantar_tecla(ARRIBA);
+                    }
                     if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
                     if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
