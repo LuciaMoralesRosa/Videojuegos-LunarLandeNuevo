@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "dibujable.h"
-#include "gestor_plataformas.h"
+#include "plataformas.h"
 
 
 void dibujar_superficie_lunar(HDC hdc, struct Dibujable* dibujable, struct Plataforma* plataformas, uint8_t numero_plataformas);
