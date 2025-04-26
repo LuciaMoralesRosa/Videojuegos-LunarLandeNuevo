@@ -32,7 +32,7 @@
 #define MARCO_DESPLAZAMIENTO 150
 #define MARCO_SUPERIOR 80
 #define MARCO_INFERIOR 110
-#define MARCO_TERRENO 90
+#define MARCO_TERRENO 150
 
 int inicio = 0;
 
