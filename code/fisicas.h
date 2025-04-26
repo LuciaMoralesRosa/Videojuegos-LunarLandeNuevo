@@ -13,6 +13,8 @@
 #include "dibujable.h"
 #include "transformaciones.h"
 
+#include "gestores_partida/elementos_partida.h"
+
 // Intervalo de tiempo entre actualizaciones de físicas (en milisegundos).
 #define intervalo_fisicas_ms 32
 
@@ -25,22 +27,6 @@
 // Potencia del propulsor en m/ms².
 #define propulsor_m_ms 0.001
 
-/**
- * @brief Representa un objeto físico que se mueve según leyes básicas de física
- * 
- * @param objeto Puntero al objeto dibujable asociado.
- * @param velocidad Vector de velocidad [vx, vy].
- * @param aceleracion Vector de aceleración [ax, ay].
- * @param masa Masa del objeto.
- * @param rotacion Ángulo de rotación del objeto (en grados).
- */
-struct objetoFisico {
-    struct Dibujable* objeto;
-    float velocidad[2];
-    float aceleracion[2];
-    int masa;
-	int16_t rotacion;
-};
 
 /**
  * @brief Calcula la nueva posición de un objeto físico según las leyes del
