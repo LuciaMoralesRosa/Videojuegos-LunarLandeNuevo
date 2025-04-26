@@ -5,8 +5,6 @@
 #include "terreno.h"
 #include "fragmentacion_nave.h"
 
-#include "gestores_partida/elementos_partida.h"
-
 #include "../resources.h"
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
@@ -36,6 +34,21 @@
 #define MARCO_INFERIOR 110
 #define MARCO_TERRENO 90
 
+int inicio = 0;
+
+struct objetoFisico* nave = NULL;
+struct Dibujable* motor_debil = NULL;
+struct Dibujable* motor_medio = NULL;
+struct Dibujable* motor_fuerte = NULL;
+struct Dibujable* terreno_0 = NULL;
+struct Dibujable* terreno_1 = NULL;
+struct Plataforma* plataformas_0 = NULL;
+struct Plataforma* plataformas_1 = NULL;
+uint8_t numero_plataformas = 0;
+
+
+static int traslacion_dibujables_por_borde_inferior = 0;
+struct Punto posicion_nave_cuando_zoom = {0};
 
 // Indica si la nave ha cruzado los marcos del terreno
 uint8_t nave_ha_entrado_a_centro_terreno = 1;
@@ -396,31 +409,23 @@ void gestionar_posicion_nave_terreno() {
 }
 
 
-void desactivar_zoom() {
-	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
-	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
-	trasladarDibujable(nave->objeto, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
-	escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
-	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, 1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
-}
-
-void activar_zoom() {
-	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
-	escalar_nave_partida(entrada_modo_zoom_nave, entrada_modo_zoom_nave);
-}
-
 void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 	if(modo_zoom == DESACTIVADO) {
 		if(hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno_0) || hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno_1)) {
 			modo_zoom = ACTIVADO;
 			posicion_nave_cuando_zoom = nave->objeto->origen;
-			activar_zoom();
+			escalar_terreno_partida_dado_punto(nave->objeto->origen, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
+			escalar_nave_partida(entrada_modo_zoom_nave, entrada_modo_zoom_nave);
 		}
 	}
 	else if(modo_zoom == ACTIVADO) {
 		if(no_hay_arista_en_radio_desactivar_zoom(nave->objeto->origen, terreno_0) && no_hay_arista_en_radio_desactivar_zoom(nave->objeto->origen, terreno_1)) {
 			modo_zoom = DESACTIVADO;
-			desactivar_zoom();
+			trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
+			trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
+			trasladarDibujable(nave->objeto, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
+			escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
+			escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, 1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
 		}
 	}
 	if(modo_zoom == ACTIVADO){
