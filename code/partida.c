@@ -20,7 +20,7 @@
 
 
 
-#define fuel_por_moneda 1500
+#define fuel_por_moneda 50
 #define masa_nave 1000
 
 #define aterrizaje_perfecto_vel 0.5
@@ -126,6 +126,12 @@ void escalar_escena_partida(float factor_x, float factor_y){
 
 uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	uint16_t puntuacion = 0;
+	float velocidad_vertical_nave = nave->velocidad[1];
+	if(velocidad_vertical_nave < 0) {
+		// Si la velocidad vertical es negativa, se toma el valor absoluto
+		velocidad_vertical_nave = -velocidad_vertical_nave;
+	}
+	velocidad_vertical_nave += 0.01; // Evitar division por cero
 	tipo_aterrizaje = COLISION;
 	if(es_arista_aterrizable == 1){
 		if(nave->velocidad[1] > -aterrizaje_perfecto_vel &&
@@ -135,7 +141,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
 			printf("Aterrizaje perfecto\n");
-			puntuacion = 50 * bonificador;
+			puntuacion = (50 * bonificador) / velocidad_vertical_nave;
 			combustible += 50;
 			tipo_aterrizaje = PERFECTO;
 		}
@@ -146,22 +152,32 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
 			printf("Aterrizaje brusco\n");
-			puntuacion = 15 * bonificador;
+			puntuacion = 15 * bonificador / velocidad_vertical_nave;
 			tipo_aterrizaje = BRUSCO;
 		}
 		else{
 			// Colision
 			printf("Colision\n");
-			puntuacion = 5 * bonificador;
+			puntuacion = 5 * bonificador / velocidad_vertical_nave;
 		}
 	}
 	else {
 		// Colision
 		printf("Colision\n");
-		puntuacion = 5 * bonificador;
+		puntuacion = 0;
 	}
 	
 	return puntuacion;
+}
+
+void iniciar_nueva_partida_tras_aterrizar_ia(){
+	printf("DEBUG: Se ha aterrizado - Se va a continuar tras aterrizaje\n");
+	continuar_tras_aterrizaje_partida();
+	estado_actual = ESTADO_JUEGO;
+	printf("DEBUG: Se ha aterrizado - Estado actual = JUEGO\n");
+	comenzarPartida();
+	escalar_escena_partida(factor_escalado, factor_escalado);
+	printf("DEBUG: Se ha aterrizado - Se ha comenzado la partida y escalado la escena\n");
 }
 
 void se_ha_aterrizado(uint16_t puntos){
@@ -173,6 +189,8 @@ void se_ha_aterrizado(uint16_t puntos){
 	actualizar_puntuacion_cabecera();
 	generar_mensaje_aterrizaje(puntos);
 	estado_actual = ESTADO_ATERRIZAJE;
+	enviar_puntuacion_final(puntos);
+	iniciar_nueva_partida_tras_aterrizar_ia();
 }
 
 void gestionar_colisiones() {
@@ -183,7 +201,7 @@ void gestionar_colisiones() {
 
 	// Comprobar colision con el primer terreno
 	if(hay_colision(nave->objeto, terreno_0, &arista_colision)){
-		colision_detectada = 1;
+		colision_detectada = 0;
 		es_arista_aterrizable = es_horizontal(arista_colision);
 		if(es_arista_aterrizable == 1){
 			// Si hay colision con el terreno_0 -> evaluar si ha sido colision con plataforma
@@ -257,7 +275,6 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	struct Punto punto_return = traslacion_nave;
 	if((posicion_provisional.x < MARCO_ZOOM * factor_escalado) && (posicion_provisional.y < MARCO_SUPERIOR * factor_escalado)) {
 		// Ir hacia arriba y derecha
-		printf("if1 - Arriba dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
@@ -265,7 +282,6 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado && posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
 		// Ir hacia arriba e izquierda
-		printf("if2 - Arriba izda \n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, -traslacion_nave.y});
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
@@ -273,27 +289,23 @@ struct Punto gestionar_posicion_nave_marcos(struct Punto traslacion_nave, struct
 	}
 	else if(posicion_provisional.x < MARCO_ZOOM * factor_escalado) {
 		// Ir solo hacia la derecha
-		printf("if3 - Dcha\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto) {0, traslacion_nave.y};
 
 	}
 	else if(posicion_provisional.x > (tamano_inicial_pantalla_X - MARCO_ZOOM) * factor_escalado) {
-		printf("if4 - Izda\n");
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-traslacion_nave.x, 0});
 		punto_return = (struct Punto){0, traslacion_nave.y};
 	}
 	else if(posicion_provisional.y < MARCO_SUPERIOR * factor_escalado) {
-		printf("if5 - Arriba\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		punto_return = (struct Punto){punto_return.x, 0};
 	}
 	if(modo_zoom == DESACTIVADO && desplazamiento_superior < 0 && (posicion_provisional.y > MARCO_INFERIOR * factor_escalado)) {
-		printf("Deberia estar entrando aqui\n");
 		desplazamiento_superior = desplazamiento_superior + traslacion_nave.y;
 		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
 		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_nave.y});
@@ -338,7 +350,6 @@ void comprobar_si_nave_entra_a_centro_izda(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
-		printf("En centro de terreno izquierda\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -347,7 +358,6 @@ void comprobar_si_nave_entra_a_centro_dcha(int n_terreno) {
 	float marco_derecho = (tamano_inicial_pantalla_X * (n_terreno + 1) - MARCO_TERRENO) * factor_escalado;
 	float marco_izquierdo = (tamano_inicial_pantalla_X * n_terreno + MARCO_TERRENO) * factor_escalado;
 	if(pos_real_nave_x * factor_escalado < marco_derecho && pos_real_nave_x * factor_escalado > marco_izquierdo) {
-		printf("En centro de terreno derecha\n");
 		nave_ha_entrado_a_centro_terreno = 1;
 	}
 }
@@ -449,6 +459,7 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_nave) {
 		}
 	}
 	if(modo_zoom == ACTIVADO){
+		printf("DEBUG: Modo zoom activado\n");
 		gestionar_colisiones();
 		if(nave_proxima_a_borde_inferior(nave->objeto->origen)) {
 			traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + traslacion_nave.y;
@@ -491,6 +502,7 @@ void inicializar_partida(){
 }
 
 void continuar_tras_aterrizaje_partida(){
+	combustible = fuel_por_moneda;
 	nave_ha_entrado_a_centro_terreno = 1;
 	terreno_auxiliar_en_izda = 1;
 	terreno_auxiliar = 1;	
@@ -498,9 +510,12 @@ void continuar_tras_aterrizaje_partida(){
 	modo_zoom = DESACTIVADO;
 	terreno_0 = crear_dibujable(&Terreno);
 	terreno_1 = crear_dibujable(&Terreno);
+	printf("DEBUG: Continuar tras aterrizaje - Terrenos creados\n");
 	generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
+	printf("DEBUG: Continuar tras aterrizaje - Plataformas generadas\n");
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
+	printf("DEBUG: Continuar tras aterrizaje - Terrenos trasladados\n");
 }
 
 void anyadirMoneda(){
@@ -597,18 +612,14 @@ void recibir_accion_ia(){
     int input_buffer[5];  // Array para almacenar los 5 estados de las teclas
     
     int len = recibir_datos((char *)input_buffer, sizeof(input_buffer));  // Función para recibir los datos
-    if (len == sizeof(input_buffer)) {
-        // Asignamos el estado de las teclas recibido en el array
-        for (int i = 0; i < 5; i++) {
+	if (len == sizeof(input_buffer)) {
+		for (int i = 0; i < 5; i++) {
 			if(i != MONEDA) {
 				if(input_buffer[i] == 1) pulsar_tecla(i);
 				else levantar_tecla(i);
 			}
-        }
-    } else {
-        // Manejar error en la recepción de los datos
-        printf("Error al recibir los datos de la IA.\n");
-    }
+		}
+	}
 }
 
 #pragma pack(push, 1) // Alinear la estructura a 1 byte
@@ -616,9 +627,11 @@ typedef struct {
     float velocidad[2];
     float aceleracion[2];
     float rotacion;
+	float combustible;
     float posicion_nave[2];
     float puntos_terreno[280];
     float puntos_plataformas[8];
+	float valor_plataformas[4];
 } EstadoPartida;
 #pragma pack(pop) // Restaurar alineación anterior
 
@@ -634,6 +647,8 @@ void enviar_estado_partida(){
 
 	estado_partida.rotacion = nave -> rotacion;
 
+	estado_partida.combustible = combustible;
+
 	estado_partida.posicion_nave[0] = nave -> objeto -> origen.x;
 	estado_partida.posicion_nave[1] = nave -> objeto -> origen.y;
 
@@ -645,6 +660,7 @@ void enviar_estado_partida(){
 	for(int i = 0; i < 4; i++){
 		estado_partida.puntos_plataformas[i] = plataformas_0[i].linea -> puntos[0].x;
 		estado_partida.puntos_plataformas[i + 4] = plataformas_0[i].linea -> puntos[0].y;
+		estado_partida.valor_plataformas[i] = plataformas_0[i].bonificador;
 	}
 
 	// Creamos un buffer para enviar los datos
@@ -673,6 +689,15 @@ int enviar_datos(char *buffer, int len) {
 	return total_enviados;
 }
 
+void enviar_puntuacion_final(float puntuacion_final) {
+    int len = sizeof(puntuacion_final);
+    if (enviar_datos((char *)&puntuacion_final, len) != len) {
+        printf("Error al enviar la puntuación final.\n");
+    } else {
+        printf("Puntuación final enviada: %.2f\n", puntuacion_final);
+    }
+	Sleep(20);
+}
 
 int recibir_datos(char *buffer, int len) {
 	int total_recibidos = 0;
@@ -687,7 +712,6 @@ int recibir_datos(char *buffer, int len) {
 	}
 	return total_recibidos;
 }
-
 
 void cerrar_socket() {
 	closesocket(client_socket);

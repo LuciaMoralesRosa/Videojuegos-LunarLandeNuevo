@@ -35,6 +35,8 @@ RECT rectVentanaAnterior;
 uint8_t moneda_presionada = 0;
 uint8_t monedas_introducidas = 0;
 
+int continuar = 1;
+
 
 struct Punto* p1 = NULL;
 struct Punto* p2 = NULL;
@@ -217,16 +219,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_TIMER: {
             switch(estado_actual) {
                 case ESTADO_JUEGO: {
-                    if (wParam == timer_TICK_juego) {
-                        manejar_teclas();
-                        manejar_instante();
-                        
-                        InvalidateRect(hwnd, NULL, FALSE);
+                    if (continuar == 1){
+                        if (wParam == timer_TICK_juego) {
+                            continuar = 0;
+                            manejar_teclas();
+                            continuar = 1;
+                            manejar_instante();
+                            
+                            InvalidateRect(hwnd, NULL, FALSE);
+                        }
+                        if(wParam == timer_segundo) {
+                            actualizar_segundos_cabecera();
+                        }
+                        break;
                     }
-                    if(wParam == timer_segundo) {
-                        actualizar_segundos_cabecera();
-                    }
-                    break;
                 }
                 default: break;
             }

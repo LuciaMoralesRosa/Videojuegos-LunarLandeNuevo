@@ -44,6 +44,8 @@ void enviar_estado_partida();
 
 int enviar_datos(char *buffer, int len);
 
+void enviar_puntuacion_final(float puntuacion_final);
+
 int recibir_datos(char *buffer, int len);
 
 void cerrar_socket();
