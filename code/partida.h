@@ -50,4 +50,6 @@ int recibir_datos(char *buffer, int len);
 
 void cerrar_socket();
 
+void pasar_tiempo_episodio();
+
 #endif // PARTIDA_H

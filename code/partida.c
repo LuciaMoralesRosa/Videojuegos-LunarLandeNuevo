@@ -40,6 +40,7 @@
 SOCKET server_socket = INVALID_SOCKET;
 SOCKET client_socket = INVALID_SOCKET;
 int puerto = 8080;
+int tiempo_episodio = 0;
 
 int inicio = 0;
 
@@ -128,11 +129,18 @@ void escalar_escena_partida(float factor_x, float factor_y){
 uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 	uint16_t puntuacion = 0;
 	float velocidad_vertical_nave = nave->velocidad[1];
+	float velocidad_horizontal_nave = nave->velocidad[0];
 	if(velocidad_vertical_nave < 0) {
 		// Si la velocidad vertical es negativa, se toma el valor absoluto
 		velocidad_vertical_nave = -velocidad_vertical_nave;
 	}
+	if(velocidad_horizontal_nave < 0) {
+		// Si la velocidad horizontal es negativa, se toma el valor absoluto
+		velocidad_horizontal_nave = -velocidad_horizontal_nave;
+	}
 	velocidad_vertical_nave += 0.01; // Evitar division por cero
+	velocidad_horizontal_nave += 0.01; // Evitar division por cero
+	float velocidad_nave = velocidad_horizontal_nave * velocidad_vertical_nave;
 	tipo_aterrizaje = COLISION;
 	if(es_arista_aterrizable == 1){
 		if(nave->velocidad[1] > -aterrizaje_perfecto_vel &&
@@ -142,7 +150,7 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
 			printf("Aterrizaje perfecto\n");
-			puntuacion = (50 * bonificador * 10) / velocidad_vertical_nave;
+			puntuacion = (50 * bonificador * 10) / velocidad_nave;
 			combustible += 50;
 			tipo_aterrizaje = PERFECTO;
 		}
@@ -153,19 +161,19 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
 			printf("Aterrizaje brusco\n");
-			puntuacion = 15 * bonificador * 10 / velocidad_vertical_nave;
+			puntuacion = 15 * bonificador * 10 / velocidad_nave;
 			tipo_aterrizaje = BRUSCO;
 		}
 		else{
 			// Colision
 			printf("Colision\n");
-			puntuacion = 5 * bonificador * 10 / velocidad_vertical_nave;
+			puntuacion = 5 * bonificador * 10 / velocidad_nave;
 		}
 	}
 	else {
 		// Colision
 		printf("Colision\n");
-		puntuacion = bonificador * 10 / velocidad_vertical_nave;
+		puntuacion = bonificador * 10 / velocidad_nave;
 	}
 	
 	return puntuacion;
@@ -236,7 +244,19 @@ void gestionar_colisiones() {
 		puntuacion_partida += puntos_conseguidos;
 		printf("Has conseguido %d puntos en este aterrizaje\n", puntos_conseguidos);
 		se_ha_aterrizado(puntos_conseguidos);
+		tiempo_episodio = 0;
 	}
+	else if (tiempo_episodio >= 2000){
+		// Cortar el episodio si no hay colision y ha pasado mucho tiempo (BUG)
+		evaluar_aterrizaje(0, 0);
+		printf("Has conseguido %d puntos en este aterrizaje\n", 0);
+		se_ha_aterrizado(0);
+		tiempo_episodio = 0;
+	}
+}
+
+void pasar_tiempo_episodio(){
+	tiempo_episodio++;
 }
 
 
@@ -719,3 +739,5 @@ void cerrar_socket() {
 	closesocket(server_socket);
 	WSACleanup();
 }
+
+

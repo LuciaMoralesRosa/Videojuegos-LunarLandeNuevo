@@ -225,6 +225,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                             manejar_teclas();
                             continuar = 1;
                             manejar_instante();
+                            pasar_tiempo_episodio();
                             
                             InvalidateRect(hwnd, NULL, FALSE);
                         }
