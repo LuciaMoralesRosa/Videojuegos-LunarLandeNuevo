@@ -231,7 +231,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         destruir_menu_insertar_moneda();
                     }
                     if (wParam == timer_TICK_juego) {
-                        printf("Manejando instante por el timer\n");
                         manejar_instante();
                         InvalidateRect(hwnd, NULL, FALSE);
                     }
@@ -357,9 +356,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_JUEGO: {
                     if (GetAsyncKeyState(VK_UP) & 0x8000) { 
                         pulsar_tecla(ARRIBA);
-                        if (!PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC)) {
-                            MessageBox(NULL, "Error reproduciendo sonido!", "Error", MB_ICONERROR);
-                        }
+                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     }
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
@@ -417,7 +414,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case ESTADO_JUEGO: {
                     if (!(GetAsyncKeyState(VK_UP) & 0x8000)) {
-                        printf("Estoy dejando de pulsar\n");
                         PlaySound(NULL, NULL, 0);
                         levantar_tecla(ARRIBA);
                     }
