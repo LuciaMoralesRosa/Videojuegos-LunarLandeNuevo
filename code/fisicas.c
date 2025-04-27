@@ -29,12 +29,16 @@ struct Punto calcularFisicas(struct objetoFisico* elemento){
 	}
 
     // Calculo de la aceleracion
-    elemento -> aceleracion[1] += gravedad_m_ms;
-
+	elemento -> aceleracion[1] += gravedad_m_ms;
+	
     // Calculo de la velocidad en cada eje
-    elemento -> velocidad[0] += elemento -> aceleracion[0] * intervalo_fisicas_ms;
-    elemento -> velocidad[1] += elemento -> aceleracion[1] * intervalo_fisicas_ms;
-
+	elemento -> velocidad[0] += elemento -> aceleracion[0] * intervalo_fisicas_ms;
+	elemento -> velocidad[1] += elemento -> aceleracion[1] * intervalo_fisicas_ms;
+	if(friccion_atmosfera_activada) {
+		elemento -> velocidad[0] += -FRICCION_ATMOSFERA * elemento->velocidad[0];
+		elemento -> velocidad[1] += -FRICCION_ATMOSFERA * elemento->velocidad[1];
+	}
+	
     // Calculo de la nueva posicion dadas las velocidades
     struct Punto nueva_posicion = {
         elemento -> velocidad[0] * intervalo_fisicas_ms / pixels_por_metro,

@@ -62,15 +62,20 @@ void escalar_escena(float factor_x, float factor_y) {
 void iniciar_partida(int monedas_introducidas, Tipo_Mision mision) {
     switch(mision) {
         case TRAINING:
+            printf("MISSION: TRAINNING\n");
             gravedad_m_ms = GRAVEDAD_TRAINING;
+            friccion_atmosfera_activada = 1;
         break;
         case CADET:
+            printf("MISSION: CADET\n");
             gravedad_m_ms = GRAVEDAD_CADET;
         break;
         case PRIME:
+            printf("MISSION: PRIME\n");
             gravedad_m_ms = GRAVEDAD_PRIME;
         break;
         case COMMAND:
+            printf("MISSION: COMMAND\n");
             gravedad_m_ms = GRAVEDAD_COMMAND;
         break;
     }

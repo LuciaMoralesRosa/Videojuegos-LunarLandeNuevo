@@ -8,7 +8,7 @@
 #define GRAVEDAD_PRIME -0.0010625
 #define GRAVEDAD_COMMAND -0.0007625
 
-#define FRICCION_ATMOSFERA 0.1
+#define FRICCION_ATMOSFERA 0.001
 
 // Angulo de la rotacion de la nave por cada pulsacion de las teclas
 #define ANGULO_ROTACION 10 
