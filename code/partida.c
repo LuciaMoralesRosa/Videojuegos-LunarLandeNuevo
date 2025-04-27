@@ -349,10 +349,10 @@ void desactivar_zoom() {
 
 void gestionar_posicion_nave_terreno() {
 
-	if(modo_zoom == ACTIVADO && !nave_proxima_borde_inferior) {
-		printf("Se ha desactivado desde if en gestionar terreno. Pos nave antes desactivar (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
-		desactivar_zoom();
-	}
+	//if(modo_zoom == ACTIVADO && !nave_proxima_borde_inferior) {
+	//	printf("Se ha desactivado desde if en gestionar terreno. Pos nave antes desactivar (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	//	desactivar_zoom();
+	//}
 
 	int n_terreno = (int)(pos_real_nave_x / tamano_inicial_pantalla_X*factor_escalado);
 	n_terreno = establecer_terreno_auxiliar(n_terreno);
@@ -427,10 +427,10 @@ void gestionar_posicion_nave_terreno() {
 		}
 	}
 
-	if(modo_zoom == ACTIVADO && !nave_proxima_borde_inferior) {
-		activar_zoom();
-		printf("Se ha activado desde if en gestionar terreno. Pos nave despues de activar zoom (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
-	}
+	//if(modo_zoom == ACTIVADO && !nave_proxima_borde_inferior) {
+	//	activar_zoom();
+	//	printf("Se ha activado desde if en gestionar terreno. Pos nave despues de activar zoom (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	//}
 }
 
 void gestionar_zoom_aterrizaje(struct Punto traslacion_tras_marcos, struct Punto traslacion_real) {
