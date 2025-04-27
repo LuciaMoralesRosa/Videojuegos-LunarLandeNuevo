@@ -95,7 +95,7 @@ void actualizar_dibujables(void) {
 	vertical_speed_valor = crear_palabra_desde_cadena(buffer, vertical_speed_valor -> origen); 
 	escalado_inicial(vertical_speed_valor);
 
-	int valor_altitud = tamano_inicial_pantalla_Y - altitud - 130;
+	int valor_altitud = tamano_inicial_pantalla_Y - pos_real_nave_y - 130;
 	crear_cadena_dado_valor_4_digitos(valor_altitud, buffer);
 	altitude_valor = crear_palabra_desde_cadena(buffer, altitude_valor -> origen); 
 	escalado_inicial(altitude_valor);

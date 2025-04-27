@@ -47,6 +47,7 @@ extern float velocidad_vertical;
 extern float altitud;
 
 extern float pos_real_nave_x;
+extern float pos_real_nave_y;
 extern int terrenos_desplazados_a_dcha;
 
 

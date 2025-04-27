@@ -12,6 +12,8 @@ uint8_t nave_borde_inferior = 0;
 uint8_t fisicas = DESACTIVADAS;
 
 float pos_real_nave_x = 0;
+float pos_real_nave_y = 0;
+
 int terrenos_desplazados_a_dcha = 0;
 
 int combustible = 0;
