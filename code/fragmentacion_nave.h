@@ -3,7 +3,11 @@
 
 #include "dibujable.h"
 
-void gestionar_nave_fragmentada(float v_vertical, float v_horizontal, struct Punto punto_colision);
+void establecer_fragmentos_al_colisionar(float v_vertical, float v_horizontal, struct Punto punto_colision);
 
+void inicializar_nave_fragmentada();
+
+void fisicas_fragmentos();
+void dibujar_fragmentos(HDC hdc);
 
 #endif // FRAGMENTACION_NAVE_H

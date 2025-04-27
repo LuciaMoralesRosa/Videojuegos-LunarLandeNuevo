@@ -1,6 +1,7 @@
 #include "code/lunar_lander.h"
 #include "code/gestor_plataformas.h"
 #include "code/palabra.h"
+#include "code/fragmentacion_nave.h"
 
 #include "code/menus/menu_insertar_moneda.h"
 #include "code/menus/menu_opciones.h"
@@ -247,6 +248,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     break;
                 }
+                case ESTADO_ATERRIZAJE:{
+                    if (wParam == timer_TICK_juego) {
+                        fisicas_fragmentos();
+                        InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    break;
+                }
                 default: break;
             }
         break;
@@ -287,6 +295,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 case ESTADO_ATERRIZAJE: {
                     pintar_pantalla(hdcMem);
+                    dibujar_fragmentos(hdcMem);
                     dibujar_mensajes_aterrizaje(hdcMem);
                     break;
                 }

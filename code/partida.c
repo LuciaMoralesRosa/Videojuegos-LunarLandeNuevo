@@ -137,16 +137,18 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		else{
 			// Colision
 			printf("Colision\n");
+			inicializar_nave_fragmentada();
 			PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
-			gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
+			establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
 		}
 	}
 	else {
 		// Colision
 		printf("Colision\n");
+		inicializar_nave_fragmentada();
 		PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
-		gestionar_nave_fragmentada(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
+		establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
 	}
 	
