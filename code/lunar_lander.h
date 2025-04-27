@@ -8,6 +8,7 @@
 #define LUNAR_LANDER_H
 
 #include "partida.h"
+#include "menus/menu_opciones.h"
 #include <wtypes.h>
 
 enum tecla {
@@ -38,7 +39,7 @@ void cambiar_estado(int nuevo_estado);
 
 void escalar_escena(float factor_x, float factor_y);
 
-void iniciar_partida(int monedas);
+void iniciar_partida(int monedas, Tipo_Mision mision);
 
 void continuar_tras_aterrizaje(void);
 

@@ -42,6 +42,7 @@ uint8_t moneda_presionada = 0;
 uint8_t monedas_introducidas = 0;
 int timestamp_pintar_mensaje = 0;
 
+Tipo_Mision mision = TRAINING;
 
 struct Punto* p1 = NULL;
 struct Punto* p2 = NULL;
@@ -168,7 +169,7 @@ void iniciar_nueva_partida(HWND hwnd) {
     crear_palabra_insertar_moneda();
     estado_actual = ESTADO_PIDIENDO_MONEDA;
     pulsar_tecla(ESPACIO);
-    iniciar_partida(monedas_introducidas);
+    iniciar_partida(monedas_introducidas, mision);
     repintar_ventana(hwnd);
 }
 
@@ -337,15 +338,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     else if(wParam == VK_RETURN) {
                         gestionar_opcion_seleccionada();
-                        Opcion_Menu op = obtener_opcion_seleccionada();
-                        if(op == EXIT) {
+                        Opcion_Menu opcion_elegida = obtener_opcion_seleccionada();
+                        if(opcion_elegida == EXIT) {
                             PostQuitMessage(0); // Terminar el proceso
                         }
                         repintar_ventana(hwnd);
                     }
                     else if (wParam == VK_SPACE) {
                         pulsar_tecla(ESPACIO);
-                        iniciar_partida(monedas_introducidas);
+                        mision = obtener_tipo_mision();
+                        iniciar_partida(monedas_introducidas, mision);
                         estado_actual = ESTADO_JUEGO;
                         repintar_ventana(hwnd);
                         destruir_menu_opciones();

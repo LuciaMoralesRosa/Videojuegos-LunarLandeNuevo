@@ -35,6 +35,7 @@ static struct Palabra* titulo_menu = {0};
 // Indicador gráfico que señala la opción actualmente seleccionada.
 static struct Palabra* indicador = {0};
 
+static struct Palabra* espacio_continuar = {0};
 /**
  * @brief Cadenas de texto utilizadas para crear cada opción del menú.
  * 
@@ -57,7 +58,9 @@ void inicializar_menu_nueva_partida(void) {
     indicador = crear_palabra_desde_cadena(">", (struct Punto){
         350 - 2 * ANCHURA_CARACTER_MAX, y
     });
-    
+    espacio_continuar = crear_palabra_desde_cadena("PRESIONE EL ESPACIO PARA CONTINUAR", (struct Punto){
+        275, 600
+    });
     for (int i = 0; i < NUM_OPCIONES; i++) {
         campos_menu[i] = crear_palabra_desde_cadena(campos_cadenas[i],
             (struct Punto){350, y}
@@ -66,12 +69,12 @@ void inicializar_menu_nueva_partida(void) {
     }
 
     escalar_menu_opciones(factor_escalado);
-
 }
 
 void dibujar_menu_opciones(HDC hdc, HWND hwndReal) {    
     dibujar_palabra(titulo_menu, hdc);
     dibujar_palabra(indicador, hdc);
+    dibujar_palabra(espacio_continuar, hdc);
 
     // Dibujar cada opción del menú
     for (uint8_t i = 0; i < NUM_OPCIONES; i++) {
@@ -82,6 +85,7 @@ void dibujar_menu_opciones(HDC hdc, HWND hwndReal) {
 void escalar_menu_opciones(float factor){
     escalar_palabra_en_escena_dados_ejes(titulo_menu, factor, factor);
     escalar_palabra_en_escena_dados_ejes(indicador, factor, factor);
+    escalar_palabra_en_escena_dados_ejes(espacio_continuar, factor, factor);
 
     for(uint8_t i = 0; i < NUM_OPCIONES; i++) {
         escalar_palabra_en_escena_dados_ejes(campos_menu[i], factor, factor);
@@ -120,6 +124,9 @@ Opcion_Menu obtener_opcion_seleccionada() {
     return campo_seleccionado;
 }
 
+Tipo_Mision obtener_tipo_mision() {
+    return tipo_mision;
+}
 
 void gestionar_opcion_seleccionada(void) {
     switch (campo_seleccionado) {
@@ -196,4 +203,5 @@ void destruir_menu_opciones(void) {
     }
     destruir_palabra(titulo_menu);
     destruir_palabra(indicador);
+    destruir_palabra(espacio_continuar);
 }

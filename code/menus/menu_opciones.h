@@ -80,6 +80,8 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
  */
 Opcion_Menu obtener_opcion_seleccionada(void);
 
+Tipo_Mision obtener_tipo_mision(void);
+
 /**
  * @brief Gestiona la acción correspondiente a la opción actualmente seleccionada.
  * 
