@@ -19,9 +19,6 @@
 // Número de píxeles que representan un metro en pantalla.
 #define pixels_por_metro 32
 
-// Valor de la aceleración gravitatoria en m/ms² (negativa por ser hacia abajo).
-#define gravedad_m_ms -0.00020625 
-
 // Potencia del propulsor en m/ms².
 #define propulsor_m_ms 0.001
 

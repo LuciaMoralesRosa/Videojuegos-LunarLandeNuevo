@@ -2,6 +2,7 @@
 
 #include "partida.h"
 #include "../data/variables_juego.h"
+#include "../data/variables_globales.h"
 
 static uint8_t propulsor_activado = 0;
 static uint8_t propulsor = 0;

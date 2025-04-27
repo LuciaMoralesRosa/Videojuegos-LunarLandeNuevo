@@ -43,15 +43,13 @@ void manejar_teclas(){
 }
 
 void manejar_instante(){
+    manejar_instante_partida();
     if(estado_actual == ESTADO_JUEGO){
-        manejar_instante_partida();
     }
 }
 
 void pintar_pantalla(HDC hdc){
-    if(estado_actual == ESTADO_JUEGO) {
-        dibujar_escena(hdc);
-    }
+    dibujar_escena(hdc);
 }
 
 void cambiar_estado(int nuevo_estado){
@@ -62,7 +60,21 @@ void escalar_escena(float factor_x, float factor_y) {
     escalar_escena_partida(factor_x, factor_y);
 }
 
-void iniciar_partida(int monedas_introducidas) {
+void iniciar_partida(int monedas_introducidas, Tipo_Mision mision) {
+    switch(mision) {
+        case TRAINING:
+            gravedad_m_ms = GRAVEDAD_TRAINING;
+        break;
+        case CADET:
+            gravedad_m_ms = GRAVEDAD_CADET;
+        break;
+        case PRIME:
+            gravedad_m_ms = GRAVEDAD_PRIME;
+        break;
+        case COMMAND:
+            gravedad_m_ms = GRAVEDAD_COMMAND;
+        break;
+    }
     inicializar_partida();
     insertar_monedas(monedas_introducidas);
     comenzarPartida();

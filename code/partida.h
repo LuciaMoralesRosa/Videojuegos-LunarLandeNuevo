@@ -6,6 +6,8 @@
 #ifndef PARTIDA_H
 #define PARTIDA_H
 
+#include <windows.h>
+
 #include "lunar_lander.h"
 #include "fisicas.h"
 #include "transformaciones.h"

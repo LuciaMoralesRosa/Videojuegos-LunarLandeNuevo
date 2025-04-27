@@ -68,7 +68,7 @@ void destruir_palabra(struct Palabra* palabra) {
         for (uint8_t i = 0; i < palabra->num_letras; i++) {
             destruir_dibujable(palabra->letras[i]);
         }
-        free(palabra->letras);
+        //free(palabra->letras);
     }
     free(palabra);
 }
