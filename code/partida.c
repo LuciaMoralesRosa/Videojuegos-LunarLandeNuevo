@@ -59,7 +59,6 @@ static uint8_t terreno_auxiliar_en_izda = 1;
 // 0 si el auxiliar es terreno_0, 1 si el auxiliar es terreno_1 
 int terreno_auxiliar = 1;
 
-
 // Variable para contabilizar la subida de la nave y controlar el desplazamiento
 // vertical del terreno_0
 float desplazamiento_superior = 0;
@@ -117,11 +116,12 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		if(nave->velocidad[1] > -aterrizaje_perfecto_vel &&
 			(aterrizaje_perfecto_vel > nave->velocidad[0] &&
 			nave->velocidad[0] > -aterrizaje_perfecto_vel) &&
-			(nave->rotacion < aterrizaje_perfecto_rot ||
-			nave->rotacion > 360 - aterrizaje_perfecto_rot)) {
+			(nave->rotacion <= aterrizaje_perfecto_rot ||
+			nave->rotacion >= 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
 			PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("Aterrizaje perfecto\n");
+			printf("\tVelocidad: (%f, %f), Rotacion = %d\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			puntuacion = 50 * bonificador;
 			combustible += 50;
 			tipo_aterrizaje = PERFECTO;
@@ -129,30 +129,35 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		else if(nave->velocidad[1] > -aterrizaje_brusco_vel &&
 			(aterrizaje_brusco_vel > nave->velocidad[0] &&
 			nave->velocidad[0] > -aterrizaje_brusco_vel) &&
-			(nave->rotacion < aterrizaje_brusco_rot ||
-			nave->rotacion > 360 - aterrizaje_brusco_rot)) {
+			(nave->rotacion <= aterrizaje_brusco_rot ||
+			nave->rotacion >= 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
 			PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("Aterrizaje brusco\n");
+			printf("\tVelocidad: (%f, %f), Rotacion = %d\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			puntuacion = 15 * bonificador;
 			tipo_aterrizaje = BRUSCO;
 		}
 		else{
 			// Colision
-			printf("Colision\n");
+			printf("Colision (con arista aterrizable)\n");
+			printf("\tVelocidad: (%f, %f), Rotacion = %d\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			inicializar_nave_fragmentada();
 			PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
+			tipo_aterrizaje = COLISION;
 		}
 	}
 	else {
 		// Colision
-		printf("Colision\n");
+		printf("Colision (mira por donde vas)\n");
+		printf("\tVelocidad: (%f, %f), Rotacion = %d\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 		inicializar_nave_fragmentada();
 		PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 		establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
+		tipo_aterrizaje = COLISION;
 	}
 	
 	return puntuacion;
@@ -216,24 +221,26 @@ void gestionar_colisiones() {
 
 void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
-    dibujar_dibujable(hdc, nave -> objeto);	
 	dibujar_superficie_lunar(hdc, terreno_0, plataformas_0, numero_plataformas);
 	dibujar_superficie_lunar(hdc, terreno_1, plataformas_1, numero_plataformas);
-	switch(obtener_propulsor()){
-		case 1:
-			colocar_dibujable(motor_debil, nave -> objeto -> origen);
-			dibujar_dibujable(hdc, motor_debil);
-			break;
-		case 2:
-			colocar_dibujable(motor_medio, nave -> objeto -> origen);
-			dibujar_dibujable(hdc, motor_medio);
-			break;
-		case 3:
-			colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
-			dibujar_dibujable(hdc, motor_fuerte);
-			break;
-		default:
-			break;
+    if(estado_actual != ESTADO_ATERRIZAJE || tipo_aterrizaje != COLISION) {
+		dibujar_dibujable(hdc, nave -> objeto);	
+		switch(obtener_propulsor()){
+			case 1:
+				colocar_dibujable(motor_debil, nave -> objeto -> origen);
+				dibujar_dibujable(hdc, motor_debil);
+				break;
+			case 2:
+				colocar_dibujable(motor_medio, nave -> objeto -> origen);
+				dibujar_dibujable(hdc, motor_medio);
+				break;
+			case 3:
+				colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
+				dibujar_dibujable(hdc, motor_fuerte);
+				break;
+			default:
+				break;
+		}
 	}
 	
 }

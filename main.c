@@ -295,7 +295,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 case ESTADO_ATERRIZAJE: {
                     pintar_pantalla(hdcMem);
-                    dibujar_fragmentos(hdcMem);
                     dibujar_mensajes_aterrizaje(hdcMem);
                     break;
                 }

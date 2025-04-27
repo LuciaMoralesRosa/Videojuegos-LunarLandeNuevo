@@ -3,6 +3,7 @@
 #include "fisicas.h"
 #include "../data/variables_juego.h"
 #include "../data/variables_globales.h"
+#include "fragmentacion_nave.h"
 
 
 static int estado = PEDIR;
@@ -49,6 +50,9 @@ void manejar_instante(){
 
 void pintar_pantalla(HDC hdc){
     dibujar_escena(hdc);
+    if(estado_actual == ESTADO_ATERRIZAJE && tipo_aterrizaje == COLISION) {
+        dibujar_fragmentos(hdc);
+    }
 }
 
 void cambiar_estado(int nuevo_estado){
