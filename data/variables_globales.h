@@ -12,4 +12,15 @@ extern float factor_escalado;
 extern float gravedad_m_ms;
 extern int friccion_atmosfera_activada;
 
+/**
+ * @enum Tipo_Mision
+ * @brief Tipos posibles de misión seleccionables en el menú.
+ */
+typedef enum {
+    ORIGINAL, ///< Terreno original del juego.
+    FACIL     ///< Terreno bastante mas sencillo.
+} Tipo_Terreno;
+
+
+
 #endif // VARIABLES_GLOBALES_H

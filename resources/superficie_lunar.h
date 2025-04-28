@@ -24,5 +24,6 @@ struct Plataforma {
 };
 
 extern const struct DibujableConstante Terreno;
+extern const struct DibujableConstante Terreno_Casi_Plano;
 
 #endif // SUPERFICIE_LUNAR_H

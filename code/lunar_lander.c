@@ -63,7 +63,7 @@ void escalar_escena(float factor_x, float factor_y) {
     escalar_escena_partida(factor_x, factor_y);
 }
 
-void iniciar_partida(int monedas_introducidas, Tipo_Mision mision) {
+void iniciar_partida(int monedas_introducidas, Tipo_Mision mision, Tipo_Terreno terreno) {
     switch(mision) {
         case TRAINING:
             printf("MISSION: TRAINNING\n");
@@ -83,7 +83,7 @@ void iniciar_partida(int monedas_introducidas, Tipo_Mision mision) {
             gravedad_m_ms = GRAVEDAD_COMMAND;
         break;
     }
-    inicializar_partida();
+    inicializar_partida(terreno);
     insertar_monedas(monedas_introducidas);
     comenzarPartida();
     escalar_escena_partida(factor_escalado, factor_escalado);

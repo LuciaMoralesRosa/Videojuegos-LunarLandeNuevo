@@ -43,6 +43,8 @@ uint8_t monedas_introducidas = 0;
 int timestamp_pintar_mensaje = 0;
 
 Tipo_Mision mision = TRAINING;
+Tipo_Terreno terreno = ORIGINAL;
+uint8_t modo_superfacil = 0;
 
 struct Punto* p1 = NULL;
 struct Punto* p2 = NULL;
@@ -178,7 +180,7 @@ void iniciar_nueva_partida(HWND hwnd) {
     crear_palabra_insertar_moneda();
     estado_actual = ESTADO_PIDIENDO_MONEDA;
     pulsar_tecla(ESPACIO);
-    iniciar_partida(monedas_introducidas, mision);
+    iniciar_partida(monedas_introducidas, mision, terreno);
     repintar_ventana(hwnd);
 }
 
@@ -354,8 +356,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     else if (wParam == VK_SPACE) {
                         pulsar_tecla(ESPACIO);
-                        mision = obtener_tipo_mision();
-                        iniciar_partida(monedas_introducidas, mision);
+                        if(modo_superfacil) {
+                            mision = TRAINING;
+                            terreno = FACIL;
+                        }
+                        else {
+                            mision = obtener_tipo_mision();
+                            terreno = obtener_tipo_terreno();
+                        }
+                        iniciar_partida(monedas_introducidas, mision, terreno);
                         estado_actual = ESTADO_JUEGO;
                         repintar_ventana(hwnd);
                         destruir_menu_opciones();

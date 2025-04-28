@@ -13,6 +13,7 @@
 #include "transformaciones.h"
 #include "../resources/nave.h"
 #include "../resources/caracteres.h"
+#include "../data/variables_globales.h"
 
 extern int combustible;
 
@@ -22,7 +23,7 @@ void rotar_nave(uint8_t direccion);
 
 void manejar_instante_partida();
 
-void inicializar_partida();
+void inicializar_partida(Tipo_Terreno terreno);
 
 void anyadirMoneda();
 
