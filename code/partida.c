@@ -260,25 +260,24 @@ void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
 	dibujar_superficie_lunar(hdc, terreno_0, plataformas_0, numero_plataformas);
 	dibujar_superficie_lunar(hdc, terreno_1, plataformas_1, numero_plataformas);
-    if(estado_actual != ESTADO_ATERRIZAJE || tipo_aterrizaje != COLISION) {
-		dibujar_dibujable(hdc, nave -> objeto);	
-		switch(obtener_propulsor()){
-			case 1:
-				colocar_dibujable(motor_debil, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_debil);
-				break;
-			case 2:
-				colocar_dibujable(motor_medio, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_medio);
-				break;
-			case 3:
-				colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_fuerte);
-				break;
-			default:
-				break;
-		}
+	dibujar_dibujable(hdc, nave -> objeto);	
+	switch(obtener_propulsor()){
+		case 1:
+			colocar_dibujable(motor_debil, nave -> objeto -> origen);
+			dibujar_dibujable(hdc, motor_debil);
+			break;
+		case 2:
+			colocar_dibujable(motor_medio, nave -> objeto -> origen);
+			dibujar_dibujable(hdc, motor_medio);
+			break;
+		case 3:
+			colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
+			dibujar_dibujable(hdc, motor_fuerte);
+			break;
+		default:
+			break;
 	}
+	
 	
 }
 
@@ -713,33 +712,16 @@ void manejar_instante_partida(){
 	}
 }
 
-struct DibujableConstante terreno_seleccionado = {0};
 
-void establecer_terreno_seleccionado(Tipo_Terreno terreno) {
-	switch (terreno) {
-		case ORIGINAL:
-		terreno_seleccionado = Terreno;
-		break;
-		case FACIL: 
-		terreno_seleccionado = Terreno_Casi_Plano;
-		break;
-		default:
-		terreno_seleccionado = Terreno;
-		break;
-	}
-}
-
-void inicializar_partida(Tipo_Terreno terreno){
+void inicializar_partida(){
 	inicializar_cabecera();
     combustible = 0;
 
-	establecer_terreno_seleccionado(terreno);
-
-	terreno_0 = crear_dibujable(&terreno_seleccionado);
-	terreno_1 = crear_dibujable(&terreno_seleccionado);
+	terreno_0 = crear_dibujable(&Terreno);
+	terreno_1 = crear_dibujable(&Terreno);
 
 	//generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
-	generar_plataformas(&plataformas_0, &plataformas_1, &terreno_seleccionado, terreno_1->origen, &numero_plataformas);
+	generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
 }
@@ -775,9 +757,8 @@ void comenzarPartida(){
 	combustible = fuel_por_moneda;
     nave = (struct objetoFisico*)malloc(sizeof(struct objetoFisico));
     nave -> objeto = crear_dibujable(&Nave_Base);
-    //nave -> velocidad[0] = 2;
-    nave -> velocidad[0] = 0;
-	nave -> velocidad[1] = -1;
+    nave -> velocidad[0] = 2;
+	nave -> velocidad[1] = 0;
     nave -> aceleracion[0] = 0;
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;

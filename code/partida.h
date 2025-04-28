@@ -23,7 +23,7 @@ void rotar_nave(uint8_t direccion);
 
 void manejar_instante_partida();
 
-void inicializar_partida(Tipo_Terreno terreno);
+void inicializar_partida();
 
 void anyadirMoneda();
 
