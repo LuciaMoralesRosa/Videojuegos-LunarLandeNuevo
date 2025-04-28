@@ -13,16 +13,25 @@
 
 #include <windows.h>
 
+#include "../../data/variables_globales.h"
 /**
  * @enum Opcion_Menu
  * @brief Enumeración para las distintas opciones del menú.
  */
+// typedef enum {
+//     MISSION,     ///< Selección del tipo de misión.
+//     ASTEROIDS,   ///< Activación/desactivación de asteroides.
+//     TURRETS,     ///< Activación/desactivación de torretas.
+//     EXIT,        ///< Salir del menú de opciones.
+//     NUM_OPCIONES ///< Total de opciones (útil para loops o validaciones).
+// } Opcion_Menu;
+
 typedef enum {
     MISSION,     ///< Selección del tipo de misión.
-    ASTEROIDS,   ///< Activación/desactivación de asteroides.
-    TURRETS,     ///< Activación/desactivación de torretas.
+    TERRENO,   ///< Activación/desactivación de asteroides.
+    SUPERFACIL,     ///< Activación/desactivación de torretas.
     EXIT,        ///< Salir del menú de opciones.
-    NUM_OPCIONES ///< Total de opciones (útil para loops o validaciones).
+    NUM_OPCIONES ///< Total de opciones.
 } Opcion_Menu;
 
 /**
@@ -35,7 +44,6 @@ typedef enum {
     PRIME,    ///< Misión estándar.
     COMMAND   ///< Misión avanzada.
 } Tipo_Mision;
-
 
 /**
  * @brief Inicializa todos los elementos del menú de opciones.
@@ -81,6 +89,7 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 Opcion_Menu obtener_opcion_seleccionada(void);
 
 Tipo_Mision obtener_tipo_mision(void);
+Tipo_Terreno obtener_tipo_terreno(void);
 
 /**
  * @brief Gestiona la acción correspondiente a la opción actualmente seleccionada.

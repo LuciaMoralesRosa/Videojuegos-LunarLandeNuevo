@@ -268,7 +268,6 @@ struct Plataforma* generar_plataforma_dada_arista(struct Plataforma* plataforma,
  */
 void generar_plataformas(struct Plataforma** plataformas_1, struct Plataforma** plataformas_2, const struct DibujableConstante* terreno, const struct Punto origen_terreno_2, uint8_t* num_plataformas){
     uint8_t num_aristas_posibles = 0;
-    printf("En generar plataformas\n");
     // Obtener las aristas correspondientes a plataformas potenciales
     struct Arista* aristas_posibles = obtener_aristas_posibles(terreno, &num_aristas_posibles);
     if (aristas_posibles == NULL) return;
