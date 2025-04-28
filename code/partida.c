@@ -351,77 +351,108 @@ void comprobar_si_nave_entra_a_centro_dcha(int n_terreno) {
 	}
 }
 
-void activar_zoom() {			
+void activar_zoom() {	
+	printf("Activando el zoom\n");	
+	printf("\tterreno0 antes de activar zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
 	posicion_nave_cuando_zoom = nave->objeto->origen;
 	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
 	escalar_nave_partida(entrada_modo_zoom_nave, entrada_modo_zoom_nave);
 	traslacion_horizontal_terreno_cuando_zoom = 0;
 	pos_real_nave_al_terminar_el_zoom = (struct Punto) {0,0};
+	//printf("\tPosicion de la nave al haber hecho el zoom (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	printf("\tterreno0 despues de activar zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+
+}
+
+
+void recolocar_escena_al_deshacer_zoom(struct Punto posicion_nave_antes_deshacer_zoom, struct Punto posicion_nave_despues_deshacer_zoom) {
+	// Calcular diferencia de posicion entre la nave antes y despues del zoom
+	printf("\tPosicion de la nave antes de recolocar la escena (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	printf("\tPosicion del terreno_0 antes de recolocar la escena (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	printf("\tPosicion del terreno_1 antes de recolocar la escena (%f, %f)\n", terreno_1->origen.x, terreno_1->origen.y);
+	if(nave->objeto->origen.x > tamano_inicial_pantalla_X - MARCO_TERRENO || nave->objeto->origen.x < 0 + MARCO_TERRENO || nave->objeto->origen.y < 0 + MARCO_SUPERIOR) {
+		struct Punto diferencia_posicion = {posicion_nave_antes_deshacer_zoom.x - posicion_nave_despues_deshacer_zoom.x, posicion_nave_antes_deshacer_zoom.y - posicion_nave_despues_deshacer_zoom.y};
+		trasladarDibujable(nave->objeto, diferencia_posicion);
+		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, diferencia_posicion);
+		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, diferencia_posicion);
+		printf("Se han recolocado los dibujables en la escena\n");
+	}
+		printf("\tPosicion de la nave despues de recolocar la escena (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+		printf("\tPosicion del terreno_0 despues de recolocar la escena (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	printf("\tPosicion del terreno_1 despues de recolocar la escena (%f, %f)\n", terreno_1->origen.x, terreno_1->origen.y);
 }
 
 void desactivar_zoom() {
+	printf("Desctivando el zoom\n");
+	printf("\tPosicion de la nave antes de desactivar el zoom (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	printf("\tPosicion del terreno_0 antes de desactivar el zoom (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	printf("\tPosicion del terreno_1 antes de desactivar el zoom (%f, %f)\n", terreno_1->origen.x, terreno_1->origen.y);
+
+	struct Punto posicion_nave_antes_deshacer_zoom = nave->objeto->origen;
+
+	// Recolocar los terrenos en su punto original
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){traslacion_horizontal_terreno_cuando_zoom, traslacion_dibujables_por_borde_inferior});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){traslacion_horizontal_terreno_cuando_zoom, traslacion_dibujables_por_borde_inferior});
-	printf("Dibujable punto de entrada (%f, %f)\n", posicion_nave_cuando_zoom.x, posicion_nave_cuando_zoom.y);
-	printf("Dibujable traslacion durante el zoom (%f, %f)\n", pos_real_nave_al_terminar_el_zoom.x, pos_real_nave_al_terminar_el_zoom.y);
+
+	//printf("\tDibujable punto de entrada (%f, %f)\n", posicion_nave_cuando_zoom.x, posicion_nave_cuando_zoom.y);
+	//printf("\tDibujable traslacion durante el zoom (%f, %f)\n", pos_real_nave_al_terminar_el_zoom.x, pos_real_nave_al_terminar_el_zoom.y);
+	
+	// Calculo de la traslacion real de la nave (ie, lo que se ha trasladado / el zoom aplicado)
 	struct Punto traslacion_real_reescalada = (struct Punto) {
 		pos_real_nave_al_terminar_el_zoom.x / entrada_modo_zoom_terreno,
 		pos_real_nave_al_terminar_el_zoom.y / entrada_modo_zoom_terreno
 	};
+	// Calculo del punto donde quedaria la nave tras la traslacion (punto de origien + traslacion durante el zoom)
 	struct Punto punto_real_con_traslacion = (struct Punto) {traslacion_real_reescalada.x + posicion_nave_cuando_zoom.x, traslacion_real_reescalada.y + posicion_nave_cuando_zoom.y};
-	//trasladarDibujable(nave->objeto, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
 	colocar_dibujable(nave->objeto, punto_real_con_traslacion);
-	printf("Dibujable colocado en posicion (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	printf("\tDibujable colocado en posicion (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+
+	// Deshacer el escalado de los dibujables
+	//escalar_dibujable_en_escena_dados_ejes_y_punto(nave->objeto, posicion_nave_cuando_zoom, 1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
 	escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
 	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, 1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
+	
+	printf("\tPosicion de la nave despues de desactivar el zoom (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+	printf("\tPosicion del terreno_0 despues de desactivar el zoom (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	printf("\tPosicion del terreno_1 despues de desactivar el zoom (%f, %f)\n", terreno_1->origen.x, terreno_1->origen.y);
+
+
+	struct Punto posicion_nave_despues_deshacer_zoom = nave->objeto->origen;
+
+	recolocar_escena_al_deshacer_zoom(posicion_nave_antes_deshacer_zoom, posicion_nave_despues_deshacer_zoom);
+	// Mover los terrenos el espacio que se han movido durante el zoom, escalandolo al factor actual
 	//trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){traslacion_horizontal_terreno_cuando_zoom / entrada_modo_zoom_terreno, 0});
 	//trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){traslacion_horizontal_terreno_cuando_zoom / entrada_modo_zoom_terreno, 0});
 }
 
-void desactivar_zoom_terreno(int i) {
-	float f = 1/entrada_modo_zoom_terreno;
-	if(i == 0) {
-		trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
-		escalar_dibujable_en_escena_dados_ejes_y_punto(terreno_0, posicion_nave_cuando_zoom, f, f);
-		for(uint8_t i = 0; i < numero_plataformas; i++) {
-			escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_0[i].linea, posicion_nave_cuando_zoom, f, f);
-			for(uint8_t j = 0; j < plataformas_0[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_0[i].palabra->letras[j], posicion_nave_cuando_zoom, f, f);
-			}
-		}
-	} 
-	else {
-		trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
-		escalar_dibujable_en_escena_dados_ejes_y_punto(terreno_1, posicion_nave_cuando_zoom, f, f);
-		for(uint8_t i = 0; i < numero_plataformas; i++) {
-			escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_1[i].linea, posicion_nave_cuando_zoom, f, f);
-			for(uint8_t j = 0; j < plataformas_1[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_1[i].palabra->letras[j], posicion_nave_cuando_zoom, f, f);
-			}
-		}
-	}
+void desactivar_zoom_para_trasladar_terreno() {
+	printf("Desctivando el zoom para TRASLADAR EL TERRENO AUXILIAR\n");
+	// Recolocar los terrenos en su punto original
+	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
+	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, -traslacion_dibujables_por_borde_inferior});
+	printf("\tterreno0 antes de desactivar zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+
+	// Calculo del punto donde quedaria la nave tras la traslacion (punto de origien + traslacion durante el zoom)
+	trasladarDibujable(nave->objeto, (struct Punto) {0, -traslacion_dibujables_por_borde_inferior});
+	//printf("\tDibujable trasladado a posicion (%f, %f)\n", nave->objeto->origen.x, nave->objeto->origen.y);
+
+	// Deshacer el escalado de los dibujables
+	//escalar_dibujable_en_escena_dados_ejes_y_punto(nave->objeto, posicion_nave_cuando_zoom, 1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
+	escalar_nave_partida(1/entrada_modo_zoom_nave, 1/entrada_modo_zoom_nave);
+	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, 1/entrada_modo_zoom_terreno, 1/entrada_modo_zoom_terreno);
+	printf("\tterreno0 tras desactivar zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
 }
 
-void reactivar_zoom_terreno(int i) {
-	float f = entrada_modo_zoom_terreno;
-	if(i == 0) {
-		escalar_dibujable_en_escena_dados_ejes_y_punto(terreno_0, posicion_nave_cuando_zoom, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
-		for(uint8_t i = 0; i < numero_plataformas; i++) {
-			escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_0[i].linea, posicion_nave_cuando_zoom, f, f);
-			for(uint8_t j = 0; j < plataformas_0[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_0[i].palabra->letras[j], posicion_nave_cuando_zoom, f, f);
-			}
-		}
-	}
-	else {
-		escalar_dibujable_en_escena_dados_ejes_y_punto(terreno_1, posicion_nave_cuando_zoom, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
-		for(uint8_t i = 0; i < numero_plataformas; i++) {
-			escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_1[i].linea, posicion_nave_cuando_zoom, f, f);
-			for(uint8_t j = 0; j < plataformas_1[i].palabra->num_letras; j++){
-				escalar_dibujable_en_escena_dados_ejes_y_punto(plataformas_1[i].palabra->letras[j], posicion_nave_cuando_zoom, f, f);
-			}
-		}
-	}
+void activar_zoom_sin_cambiar_referencia() {
+	printf("Activando el zoom sin modificar referencia\n");		
+	printf("\tterreno0 antes de REACTIVAR zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	escalar_terreno_partida_dado_punto(posicion_nave_cuando_zoom, entrada_modo_zoom_terreno, entrada_modo_zoom_terreno);
+	escalar_dibujable_en_escena_dados_ejes_y_punto(nave->objeto, posicion_nave_cuando_zoom, entrada_modo_zoom_nave, entrada_modo_zoom_nave);
+	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
+	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){0, traslacion_dibujables_por_borde_inferior});
+	trasladarDibujable(nave->objeto, (struct Punto) {0, traslacion_dibujables_por_borde_inferior});
+	printf("\tterreno0 despues de REACTIVAR zoom en posicion (%f, %f)\n", terreno_0->origen.x, terreno_0->origen.y);
+	//printf("Posicion de la nave al haber hecho el zoom (%f, %f)");
 }
 
 void gestionar_posicion_nave_terreno() {
@@ -438,21 +469,21 @@ void gestionar_posicion_nave_terreno() {
 					// El terreno auxiliar esta a la izquierda -> moverlo a la derecha
 					if(terreno_auxiliar == 1) {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado * entrada_modo_zoom_terreno, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
 					else {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado * entrada_modo_zoom_terreno, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
@@ -465,21 +496,21 @@ void gestionar_posicion_nave_terreno() {
 					// El terreno auxiliar esta a la derecha -> moverlo a la izda
 					if(terreno_auxiliar == 1) {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado * entrada_modo_zoom_terreno, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
 					else {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado*entrada_modo_zoom_terreno, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
@@ -500,25 +531,31 @@ void gestionar_posicion_nave_terreno() {
 					// El terreno auxiliar esta a la derecha -> moverlo a la izda
 					if(terreno_auxiliar == 1) {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
-							desactivar_zoom();
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							//desactivar_zoom();
+							desactivar_zoom_para_trasladar_terreno();
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
-							activar_zoom();
+							//activar_zoom();
+							activar_zoom_sin_cambiar_referencia();
+							//trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * entrada_modo_zoom_terreno * factor_escalado, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
 					else {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
-							desactivar_zoom();
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							//desactivar_zoom();
+							desactivar_zoom_para_trasladar_terreno();
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
-							activar_zoom();
+							//activar_zoom();
+							activar_zoom_sin_cambiar_referencia();
+							//trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * entrada_modo_zoom_terreno * factor_escalado, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((-2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((-2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
@@ -531,25 +568,31 @@ void gestionar_posicion_nave_terreno() {
 					// El terreno auxiliar esta a la izquierda -> moverlo a la derecha
 					if(terreno_auxiliar == 1) {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
-							desactivar_zoom();
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							//desactivar_zoom();
+							desactivar_zoom_para_trasladar_terreno();
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
-							activar_zoom();
+							//activar_zoom();
+							activar_zoom_sin_cambiar_referencia();
+							//trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * entrada_modo_zoom_terreno * factor_escalado, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
 					else {
 						if(modo_zoom == ACTIVADO) {
-							printf("ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
-							desactivar_zoom();
+							printf("ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							//desactivar_zoom();
+							desactivar_zoom_para_trasladar_terreno();
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
-							activar_zoom();
+							//activar_zoom();
+							activar_zoom_sin_cambiar_referencia();
+							//trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * entrada_modo_zoom_terreno * factor_escalado, 0});
 						}
 						else {
-							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
+							printf("NO ZOOM - El terreno se deberia mover %f\n\n\n", ((2)*tamano_inicial_pantalla_X) * factor_escalado);
 							trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){((2)*tamano_inicial_pantalla_X) * factor_escalado, 0});
 						}
 					}
@@ -668,9 +711,15 @@ void comenzarPartida(){
     nave -> aceleracion[1] = 0;
     nave -> masa = masa_nave;
 	nave -> rotacion = 0;
-    colocar_dibujable(nave -> objeto, (struct Punto){MARCO_DESPLAZAMIENTO + 1, MARCO_SUPERIOR + 1});
-	pos_real_nave_x = MARCO_DESPLAZAMIENTO + 1;
-	pos_real_nave_y = MARCO_SUPERIOR + 1;
+    //colocar_dibujable(nave -> objeto, (struct Punto){MARCO_DESPLAZAMIENTO + 1, MARCO_SUPERIOR + 1});
+	//pos_real_nave_x = MARCO_DESPLAZAMIENTO + 1;
+	//pos_real_nave_y = MARCO_SUPERIOR + 1;
+
+	// SOLO PARA DEBUG
+	colocar_dibujable(nave -> objeto, (struct Punto){500, 300});
+	pos_real_nave_x = 500;
+	pos_real_nave_y = 300;
+
 
 	motor_debil = crear_dibujable(&Nave_Propulsion_Minima);
 	motor_medio = crear_dibujable(&Nave_Propulsion_Media);

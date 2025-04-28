@@ -57,6 +57,15 @@ void AttachConsoleToStdout() {
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
+
+    // Obtener el handle de la ventana de la consola
+    HWND consoleWindow = GetConsoleWindow();
+    if (consoleWindow != NULL) {
+        // Mover la ventana a la posición (X=100, Y=100) con ancho y alto predeterminados
+        RECT r;
+        GetWindowRect(consoleWindow, &r); // obtener el tamaño actual
+        MoveWindow(consoleWindow, 1025, 0, r.right - r.left, r.bottom - r.top, TRUE);
+    }
 }
 
 void repintar_ventana(HWND hwnd) {
