@@ -35,6 +35,8 @@ void finalizarPartida();
 
 void findeJuego();
 
+void enviar_datos_ia();
+
 void escalar_escena_partida(float factor_x, float factor_y);
 
 void continuar_tras_aterrizaje_partida();

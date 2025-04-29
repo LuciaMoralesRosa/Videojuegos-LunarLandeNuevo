@@ -21,7 +21,7 @@
 #include <mmsystem.h>
 #include <stdlib.h>
 
-#pragma comment(lib, "winmm.lib")
+#include "ia/modelo.h"
 
 #define timer_TICK_juego 1
 #define timer_IA 2
@@ -50,6 +50,8 @@ struct Punto* p1 = NULL;
 struct Punto* p2 = NULL;
 struct Punto* p3 = NULL;
 struct Punto* p4 = NULL;
+
+int ia = 1;
 
 float minimo(float a, float b) {
     return (a < b) ? a : b;
@@ -239,8 +241,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_PIDIENDO_MONEDA: {
                     if(wParam == timer_IA) {
                         // Gestionar partida ia
-                        printf("Se destruye el menu de moneda y daremos paso a la ia\n");
+                        printf("El tiempo de espera ha vencido. Pasando a piloto automatico\n");
                         destruir_menu_insertar_moneda();
+                        iniciar_partida(1, mision, terreno);
+                        modo_ia_activado = 1;
+                        estado_actual = ESTADO_JUEGO;
                     }
                     if (wParam == timer_TICK_juego) {
                         manejar_instante();
@@ -300,7 +305,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_JUEGO: {
-                    //printf("Pintando en ESTADO_JUEGO\n\n");
                     pintar_pantalla(hdcMem);
                     break;
                 }
@@ -327,12 +331,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         
         case WM_KEYDOWN: {
+            if(GetAsyncKeyState(0x49) & 0x8000) {
+                // Código cuando se presiona 'i' o 'I'
+                modo_ia_activado = modo_ia_activado == 0 ? 1 : 0;
+                if(modo_ia_activado) {
+                    printf("Cambiando control a piloto automatico (IA activada)\n");
+                }
+                else {
+                    printf("Cambiando control a manual (IA desactivada)\n");
+                }
+            }
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                        printf("\nHa insertado una moneda\n");
                         monedas_introducidas = 1;
                         inicializar_menu_nueva_partida();
                         estado_actual = ESTADO_OPCIONES;
+                        printf("\nEsta en el menu de opciones:\n\tUse la tecla enter para cambiar el tipo de mision y de terreno\n");
+                        printf("\tUse las flechas de arriba y abajo para desplazarse por el menu\n");
+                        printf("\tUse el enter para seleccionar/deseleccionar el modo superfacil\n\n");
+                        printf("\tPulse espacio para comenzar la partida\n\n");
                         repintar_ventana(hwnd);
                         destruir_menu_insertar_moneda();
                     }
@@ -341,6 +360,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case ESTADO_OPCIONES: {
                     if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                        printf("Ha insertado una moneda\n");
                         monedas_introducidas++;
                     }
                     else if(wParam == VK_DOWN || wParam == VK_UP) {
@@ -380,15 +400,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) pulsar_tecla(ESPACIO);
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
+                        printf("Ha insertado una monada\n");
+                        pulsar_tecla(MONEDA);
+                    }
                     break;
                 }
 
                 case ESTADO_ATERRIZAJE: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) pulsar_tecla(MONEDA);
+                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
+                        printf("Ha insertado una monada\n");
+                        pulsar_tecla(MONEDA);
+                    }
                     if(wParam == VK_SPACE) {
                         // seguir jugando
-                        printf("Se quiere seguir jugando");
                         if(combustible < combustible_motor) {
                             generar_mensaje_final_partida(puntuacion_partida);
                             estado_actual = ESTADO_FIN_PARTIDA;
@@ -485,8 +510,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                WS_OVERLAPPEDWINDOW, 0, 0,
                                (rc.right - rc.left), (rc.bottom - rc.top),
                                NULL, NULL, hInstance, NULL);
+    
     inicializar_puntos();
     inicializar_aleatoriedad();
+    printf("Presione '5' para insertar moneda y acceder al menu de opciones\n");
+    printf("Recuerde: Si pulsa 'i' se activara el piloto automatico\n\n");
     iniciar_nueva_partida(hwnd);
 
     if (!hwnd) return 0;

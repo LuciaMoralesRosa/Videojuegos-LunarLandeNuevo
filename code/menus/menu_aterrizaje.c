@@ -75,7 +75,6 @@ void generar_mensaje_aterrizaje(int puntuacion) {
 		}
 		break;
 	}
-	printf("generar mensaje va bien \n\n");
 	escalar_menu_aterrizaje(factor_escalado);
 }
 

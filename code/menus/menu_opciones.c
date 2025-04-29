@@ -74,7 +74,6 @@ void inicializar_menu_nueva_partida(void) {
         275, 600
     });
     for (int i = 0; i < NUM_OPCIONES; i++) {
-        printf("Campos cadenas %d = %s \n", i, campos_cadenas[i]);
         campos_menu[i] = crear_palabra_desde_cadena(campos_cadenas[i],
             (struct Punto){350, y}
         );
@@ -82,8 +81,6 @@ void inicializar_menu_nueva_partida(void) {
     }
 
     escalar_menu_opciones(factor_escalado);
-    printf("DEBUG - Buscando donde se rompe \n");
-
 }
 
 void dibujar_menu_opciones(HDC hdc, HWND hwndReal) {    

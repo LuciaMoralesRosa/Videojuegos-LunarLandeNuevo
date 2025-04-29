@@ -7,4 +7,7 @@ float factor_escalado = 1.0f;
 float gravedad_m_ms = 0;
 int friccion_atmosfera_activada = 0;
 
+int modo_ia_activado = 0;
+
+
 uint16_t segundos_transcurridos = 0;

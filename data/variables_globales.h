@@ -12,6 +12,8 @@ extern float factor_escalado;
 extern float gravedad_m_ms;
 extern int friccion_atmosfera_activada;
 
+extern int modo_ia_activado;
+
 /**
  * @enum Tipo_Mision
  * @brief Tipos posibles de misión seleccionables en el menú.
