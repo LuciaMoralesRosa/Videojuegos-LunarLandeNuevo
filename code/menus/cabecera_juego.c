@@ -12,7 +12,7 @@
 // Si se cambia el valor por defecto (0.7), se deben actualizar las posciones de
 // las palabras dadas en inicializar_cabecera()
 #define escalado_cabecera 0.7
-
+#define MULTIPLICADOR_VELOCIDADES 20
 // Palabras para las variables mostradas por cabecera
 struct Palabra* score = {0};
 struct Palabra* score_valor = {0};
@@ -69,7 +69,7 @@ void actualizar_dibujables(void) {
 	fuel_valor = crear_palabra_desde_cadena(buffer, fuel_valor -> origen); 
 	escalado_inicial(fuel_valor);
 
-	int valor = (int)(velocidad_horizontal* 10);
+	int valor = (int)(velocidad_horizontal* MULTIPLICADOR_VELOCIDADES);
 	if(valor < 0) {
 		valor = valor * -1;
 		crear_cadena_dado_valor_3_digitos(valor, buffer);
@@ -82,7 +82,7 @@ void actualizar_dibujables(void) {
 	horizontal_speed_valor = crear_palabra_desde_cadena(buffer, horizontal_speed_valor -> origen); 
 	escalado_inicial(horizontal_speed_valor);
 
-	valor = (int)(velocidad_vertical * 10);
+	valor = (int)(velocidad_vertical * MULTIPLICADOR_VELOCIDADES);
 	if(valor < 0) {
 		valor = valor * -1;
 		crear_cadena_dado_valor_3_digitos(valor, buffer);
@@ -110,14 +110,14 @@ void inicializar_cabecera(void) {
 	char buffer[5];
 
 	float separacion_altura =  ALTURA_CARACTER_MAX + ALTURA_CARACTER_MAX / 2;
-	float origen_x_izda = 20;
-	float origen_x_izda_valores = 110;
-	float origen_y = 20;
-	score = crear_palabra_desde_cadena("SCORE", (struct Punto) {origen_x_izda, origen_y});
+	float origen_x_izda = 30;
+	float origen_x_izda_valores = 200;
+	float origen_y = 30;
+	score = crear_palabra_desde_cadena("PUNTUACION", (struct Punto) {origen_x_izda, origen_y});
 	score_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y});
-	time = crear_palabra_desde_cadena("TIME", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
+	time = crear_palabra_desde_cadena("TIEMPO", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	time_valor = crear_palabra_desde_cadena("00:00", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
-	fuel = crear_palabra_desde_cadena("FUEL", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
+	fuel = crear_palabra_desde_cadena("COMBUSTIBLE", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
 	if(combustible < 10000) {
 		crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
 	}
@@ -126,13 +126,13 @@ void inicializar_cabecera(void) {
 	}
 	fuel_valor = crear_palabra_desde_cadena(buffer, (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
-	origen_x_izda = tamano_inicial_pantalla_X + 100;
-	origen_x_izda_valores = origen_x_izda + 270;
-	altitude = crear_palabra_desde_cadena("ALTITUDE", (struct Punto) {origen_x_izda, origen_y});
+	origen_x_izda = tamano_inicial_pantalla_X + 130;
+	origen_x_izda_valores = origen_x_izda + 230;
+	altitude = crear_palabra_desde_cadena("ALTITUD", (struct Punto) {origen_x_izda, origen_y});
 	altitude_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y});
-	horizontal_speed = crear_palabra_desde_cadena("HORIZONTAL SPEED", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
+	horizontal_speed = crear_palabra_desde_cadena("VEL HORIZONTAL", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	horizontal_speed_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
-	vertical_speed = crear_palabra_desde_cadena("VERTICAL SPEED", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
+	vertical_speed = crear_palabra_desde_cadena("VEL VERTICAL", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
 	vertical_speed_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
 	escalar_cabecera(factor_escalado);

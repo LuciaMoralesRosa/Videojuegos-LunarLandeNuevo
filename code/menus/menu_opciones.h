@@ -26,24 +26,6 @@
 //     NUM_OPCIONES ///< Total de opciones (útil para loops o validaciones).
 // } Opcion_Menu;
 
-typedef enum {
-    MISSION,     ///< Selección del tipo de misión.
-    TERRENO,   ///< Activación/desactivación de asteroides.
-    SUPERFACIL,     ///< Activación/desactivación de torretas.
-    EXIT,        ///< Salir del menú de opciones.
-    NUM_OPCIONES ///< Total de opciones.
-} Opcion_Menu;
-
-/**
- * @enum Tipo_Mision
- * @brief Tipos posibles de misión seleccionables en el menú.
- */
-typedef enum {
-    TRAINING, ///< Misión de entrenamiento.
-    CADET,    ///< Misión de cadete.
-    PRIME,    ///< Misión estándar.
-    COMMAND   ///< Misión avanzada.
-} Tipo_Mision;
 
 /**
  * @brief Inicializa todos los elementos del menú de opciones.
@@ -102,5 +84,8 @@ void gestionar_opcion_seleccionada(void);
  * @brief Libera la memoria utilizada por los elementos del menú.
  */
 void destruir_menu_opciones(void);
+
+
+void retornar_menu_opciones(void);
 
 #endif // MENU_OPCIONES_H

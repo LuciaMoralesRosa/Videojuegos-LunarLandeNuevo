@@ -23,10 +23,10 @@
 #define fuel_por_moneda 1500
 #define masa_nave 1000
 
-#define aterrizaje_perfecto_vel 0.5
-#define aterrizaje_brusco_vel 1.5
-#define aterrizaje_perfecto_rot 5
-#define aterrizaje_brusco_rot 10
+#define aterrizaje_perfecto_vel 1
+#define aterrizaje_brusco_vel 2
+#define aterrizaje_perfecto_rot 10
+#define aterrizaje_brusco_rot 20
 
 #define entrada_modo_zoom_nave 1
 #define entrada_modo_zoom_terreno 2.2
@@ -228,6 +228,7 @@ void dibujar_escena(HDC hdc){
 	dibujar_cabecera(hdc);
 	dibujar_superficie_lunar(hdc, terreno_0, plataformas_0, numero_plataformas);
 	dibujar_superficie_lunar(hdc, terreno_1, plataformas_1, numero_plataformas);
+	dibujar_cielo_estrellado(hdc);
     if(estado_actual != ESTADO_ATERRIZAJE || tipo_aterrizaje != COLISION) {
 		dibujar_dibujable(hdc, nave -> objeto);	
 		switch(obtener_propulsor()){

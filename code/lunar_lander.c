@@ -15,6 +15,12 @@ static int estado_teclas[5] = {
     0
 };
 
+
+void dibujar_fondo_estrellado(HDC hdc) {
+
+}
+
+
 void pulsar_tecla(int tecla){
     estado_teclas[tecla] = 1;
     if(tecla == MONEDA) {

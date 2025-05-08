@@ -2,25 +2,7 @@
 #include "../data/variables_globales.h"
 #include "../data/constantes.h"
 #include "../resources/superficie_lunar.h"
-
-
-void DrawLine2(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
-    int dx = abs(x2 - x1);
-    int dy = abs(y2 - y1);
-    int sx = (x1 < x2) ? 1 : -1;
-    int sy = (y1 < y2) ? 1 : -1;
-    int err = dx - dy;
-
-    while (1) {
-        SetPixel(hdc, x1, y1, color); // Dibuja el pixel actual
-
-        if (x1 == x2 && y1 == y2) break; // Si llegamos al final, salimos
-
-        int e2 = 2 * err;
-        if (e2 > -dy) { err -= dy; x1 += sx; }
-        if (e2 < dx) { err += dx; y1 += sy; }
-    }
-}
+#include "dibujar.h"
 
 uint8_t esta_totalmente_visible(const struct Dibujable* dibujable) {
     return (dibujable->puntos[0].x >= 0 &&
@@ -29,7 +11,7 @@ uint8_t esta_totalmente_visible(const struct Dibujable* dibujable) {
 
 
 void dibujar_arista_terreno(HDC hdc, struct Arista arista) {
-	DrawLine2(hdc, arista.origen->x,
+	DrawLine(hdc, arista.origen->x,
 		arista.origen->y,
 		arista.destino->x,
 		arista.destino->y,
@@ -126,3 +108,37 @@ void dibujar_superficie_lunar(HDC hdc, struct Dibujable* terreno, struct Platafo
 	}
 }
 
+
+void dibujar_punto_cielo(HDC hdc, int x, int y) {
+    DrawLine(hdc, x, y, x+1, y, RGB(255, 255, 255));
+    DrawLine(hdc, x, y+1, x+1, y+1, RGB(255, 255, 255));
+
+}
+
+void dibujar_cielo_estrellado(HDC hdc) {
+    dibujar_punto_cielo(hdc, 59, 91);
+    dibujar_punto_cielo(hdc, 89, 210);
+    dibujar_punto_cielo(hdc, 122, 177);
+    dibujar_punto_cielo(hdc, 127, 112);
+    dibujar_punto_cielo(hdc, 213, 196);
+    dibujar_punto_cielo(hdc, 364, 244);
+    dibujar_punto_cielo(hdc, 419, 215);
+    dibujar_punto_cielo(hdc, 435, 76);
+    dibujar_punto_cielo(hdc, 503, 265);
+    dibujar_punto_cielo(hdc, 511, 250);
+    dibujar_punto_cielo(hdc, 645, 88);
+    dibujar_punto_cielo(hdc, 601, 67);
+    dibujar_punto_cielo(hdc, 671, 233);
+    dibujar_punto_cielo(hdc, 732, 277);
+    dibujar_punto_cielo(hdc, 786, 241);
+    dibujar_punto_cielo(hdc, 823, 244);
+    dibujar_punto_cielo(hdc, 834, 122);
+    dibujar_punto_cielo(hdc, 842, 289);
+    dibujar_punto_cielo(hdc, 910, 16);
+    dibujar_punto_cielo(hdc, 978, 168);
+    dibujar_punto_cielo(hdc, 994, 121);
+    dibujar_punto_cielo(hdc, 384, 310);
+    dibujar_punto_cielo(hdc, 972, 327);
+    dibujar_punto_cielo(hdc, 147, 342);
+
+}

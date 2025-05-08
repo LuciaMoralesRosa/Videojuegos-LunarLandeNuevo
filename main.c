@@ -5,6 +5,7 @@
 
 #include "code/menus/menu_insertar_moneda.h"
 #include "code/menus/menu_opciones.h"
+#include "code/menus/menu_controles.h"
 #include "code/menus/cabecera_juego.h"
 #include "code/menus/menu_aterrizaje.h"
 #include "code/menus/menu_final_partida.h"
@@ -52,6 +53,10 @@ struct Punto* p3 = NULL;
 struct Punto* p4 = NULL;
 
 int ia = 1;
+
+// Controles personalizados
+int esperando_que_pulse_tecla = 0;
+
 
 float minimo(float a, float b) {
     return (a < b) ? a : b;
@@ -124,6 +129,10 @@ void escalar_textos(HWND hwnd, float factor){
         }
         case ESTADO_OPCIONES:{
             escalar_menu_opciones(factor);
+            break;
+        }
+        case ESTADO_CONTROLES: {
+            escalar_menu_controles(factor);
             break;
         }
         case ESTADO_JUEGO:{
@@ -304,6 +313,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     dibujar_menu_opciones(hdcMem, hwnd);
                     break;
                 }
+                case ESTADO_CONTROLES: {
+                    printf("PAINT - Estado controles\n");
+                    dibujar_menu_controles(hdcMem, hwnd);
+                    break;
+                }
                 case ESTADO_JUEGO: {
                     pintar_pantalla(hdcMem);
                     break;
@@ -343,7 +357,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
                         printf("\nHa insertado una moneda\n");
                         monedas_introducidas = 1;
                         inicializar_menu_nueva_partida();
@@ -359,7 +373,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_OPCIONES: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
+                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
                         printf("Ha insertado una moneda\n");
                         monedas_introducidas++;
                     }
@@ -371,6 +385,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         Opcion_Menu opcion_elegida = obtener_opcion_seleccionada();
                         if(opcion_elegida == EXIT) {
                             PostQuitMessage(0); // Terminar el proceso
+                        }
+                        else if(opcion_elegida == CONTROLES) {
+                            estado_actual = ESTADO_CONTROLES;
+                            inicializar_menu_controles();
+                            destruir_menu_opciones();
                         }
                         repintar_ventana(hwnd);
                     }
@@ -391,16 +410,41 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     break;
                 }
+                case ESTADO_CONTROLES: {
+                    if(esperando_que_pulse_tecla == 1) {
+                        esperando_que_pulse_tecla = 0;
+                        establecer_tecla_control(wParam);
+                        repintar_ventana(hwnd);
+                    }
+                    else if(wParam == VK_DOWN || wParam == VK_UP) {
+                        procesar_pulsado_flechas_controles(hwnd, uMsg, wParam, lParam);
+                    }
+                    else if(wParam == VK_RETURN) {
+                        //gestionar_opcion_seleccionada_controles();
+                        Opcion_Menu_Controles opcion_elegida = obtener_opcion_seleccionada_controles();
+                        if(opcion_elegida == CONTROL_VOLVER) {
+                            printf("Control volver\n");
+                            estado_actual = ESTADO_OPCIONES;
+                            retornar_menu_opciones();
+                            destruir_menu_controles();
+                        }
+                        else {
+                            esperando_que_pulse_tecla = 1;
+                        }
+                        repintar_ventana(hwnd);
+                    }
+                    break;
+                }
 
                 case ESTADO_JUEGO: {
-                    if (GetAsyncKeyState(VK_UP) & 0x8000) { 
+                    if (GetAsyncKeyState(TECLA_PROPULSOR) & 0x8000) { 
                         pulsar_tecla(ARRIBA);
                         PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     }
-                    if (GetAsyncKeyState(VK_LEFT) & 0x8000) pulsar_tecla(IZQUIERDA);
-                    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) pulsar_tecla(DERECHA);
+                    if (GetAsyncKeyState(TECLA_ROTAR_IZDA) & 0x8000) pulsar_tecla(IZQUIERDA);
+                    if (GetAsyncKeyState(TECLA_ROTAR_DCHA) & 0x8000) pulsar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) pulsar_tecla(ESPACIO);
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
+                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
                         printf("Ha insertado una monada\n");
                         pulsar_tecla(MONEDA);
                     }
@@ -408,7 +452,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_ATERRIZAJE: {
-                    if (GetAsyncKeyState(0x35) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
+                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
                         printf("Ha insertado una monada\n");
                         pulsar_tecla(MONEDA);
                     }
@@ -457,12 +501,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_JUEGO: {
-                    if (!(GetAsyncKeyState(VK_UP) & 0x8000)) {
+                    if (!(GetAsyncKeyState(TECLA_PROPULSOR) & 0x8000)) {
                         PlaySound(NULL, NULL, 0);
                         levantar_tecla(ARRIBA);
                     }
-                    if (!(GetAsyncKeyState(VK_LEFT) & 0x8000)) levantar_tecla(IZQUIERDA);
-                    if (!(GetAsyncKeyState(VK_RIGHT) & 0x8000)) levantar_tecla(DERECHA);
+                    if (!(GetAsyncKeyState(TECLA_ROTAR_IZDA) & 0x8000)) levantar_tecla(IZQUIERDA);
+                    if (!(GetAsyncKeyState(TECLA_ROTAR_DCHA) & 0x8000)) levantar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
                     break;
                 }
