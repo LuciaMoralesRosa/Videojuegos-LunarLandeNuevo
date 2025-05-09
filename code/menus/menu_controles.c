@@ -3,6 +3,9 @@
 #include "../../resources/caracteres.h"
 #include "../../code/transformaciones.h"
 #include "../../data/variables_globales.h"
+#include "../../resources.h"
+
+#include <mmsystem.h>
 #include <stdio.h>
 #include <windows.h>
 
@@ -203,13 +206,23 @@ LRESULT procesar_pulsado_flechas_controles(HWND hwnd, UINT uMsg, WPARAM wParam, 
     if(uMsg == WM_KEYDOWN) {
         switch(wParam) {
             case VK_UP:
-                if(campo_seleccionado > CONTROL_MONEDA)
+                if(campo_seleccionado > CONTROL_MONEDA){
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado--;
+                }
+                else {
+			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                }
                 InvalidateRect(hwnd, NULL, TRUE);  // repintado
                 break;
             case VK_DOWN:
-                if(campo_seleccionado < CONTROL_NUM_OPCIONES - 1)
+                if(campo_seleccionado < CONTROL_NUM_OPCIONES - 1){
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado++;
+                }
+                else{
+			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                }
                 InvalidateRect(hwnd, NULL, TRUE); // repintado
                 break;
             default:

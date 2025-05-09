@@ -4,6 +4,9 @@
 #include "../../code/transformaciones.h"
 #include "../../data/variables_globales.h"
 #include "../../data/variables_juego.h"
+#include "../../resources.h"
+
+#include <mmsystem.h>
 #include <stdio.h>
 #include <windows.h>
 
@@ -144,6 +147,7 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         switch(wParam) {
             case VK_UP:
                 if(campo_seleccionado > MISSION){
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado--;
                     if(partida_empezada == 1)  {
                         if(campo_seleccionado == SUPERFACIL){
@@ -154,10 +158,14 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                         }
                     }
                 }
+                else {
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                }
                 InvalidateRect(hwnd, NULL, TRUE);  // repintado
                 break;
             case VK_DOWN:
                 if(campo_seleccionado < NUM_OPCIONES - 1){
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado++;
                     if(partida_empezada == 1) {
                         if(campo_seleccionado == TERRENO){
@@ -167,6 +175,9 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                             campo_seleccionado++;
                         }
                     }
+                }
+                else {
+			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                 }
                 InvalidateRect(hwnd, NULL, TRUE); // repintado
                 break;
