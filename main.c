@@ -363,6 +363,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_PIDIENDO_MONEDA: {
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
                         printf("\nHa insertado una moneda\n");
+                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                         monedas_introducidas = 1;
                         inicializar_menu_nueva_partida();
                         estado_actual = ESTADO_OPCIONES;
@@ -379,6 +380,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_OPCIONES: {
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
                         printf("Ha insertado una moneda\n");
+                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                         monedas_introducidas++;
                     }
                     else if(wParam == VK_DOWN || wParam == VK_UP) {
@@ -462,6 +464,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
                         printf("Ha insertado una monada\n");
                         pulsar_tecla(MONEDA);
+                        moneda_presionada = 1;
+                        //PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     }
                     break;
                 }
@@ -470,6 +474,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000) {
                         printf("Ha insertado una monada\n");
                         pulsar_tecla(MONEDA);
+                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     }
                     if(wParam == VK_SPACE) {
                         // seguir jugando
@@ -523,6 +528,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if (!(GetAsyncKeyState(TECLA_ROTAR_IZDA) & 0x8000)) levantar_tecla(IZQUIERDA);
                     if (!(GetAsyncKeyState(TECLA_ROTAR_DCHA) & 0x8000)) levantar_tecla(DERECHA);
                     if (!(GetAsyncKeyState(VK_SPACE) & 0x8000)) levantar_tecla(ESPACIO);
+                    if (!(GetAsyncKeyState(TECLA_MONEDA) & 0x8000) && moneda_presionada) {
+                        moneda_presionada = 0;
+                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                    }
                     break;
                 }
 
@@ -555,7 +564,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)hPrevInstance; // Evita el warning
     (void)lpCmdLine; // Evita el warning
 
-    AttachConsoleToStdout();
+    //AttachConsoleToStdout();
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
