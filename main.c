@@ -129,6 +129,7 @@ void escalar_textos(HWND hwnd, float factor){
         }
         case ESTADO_OPCIONES:{
             escalar_menu_opciones(factor);
+
             break;
         }
         case ESTADO_CONTROLES: {
@@ -140,6 +141,7 @@ void escalar_textos(HWND hwnd, float factor){
             break;
         }
         case ESTADO_ATERRIZAJE:{
+            escalar_cabecera(factor);
             escalar_menu_aterrizaje(factor);
             break;
         }
@@ -275,8 +277,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
                 case ESTADO_ATERRIZAJE:{
                     if (wParam == timer_TICK_juego) {
-                        fisicas_fragmentos();
-                        InvalidateRect(hwnd, NULL, FALSE);
+                        if(tipo_aterrizaje == COLISION){
+                            fisicas_fragmentos();
+                            InvalidateRect(hwnd, NULL, FALSE);
+                        }
                     }
                     break;
                 }
@@ -403,8 +407,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                             mision = obtener_tipo_mision();
                             terreno = obtener_tipo_terreno();
                         }
-                        iniciar_partida(monedas_introducidas, mision, terreno);
+                        if(partida_empezada == 0){
+                            iniciar_partida(monedas_introducidas, mision, terreno);
+                        }
+                        else {
+                            reestablecer_mision(mision);
+                        }
                         estado_actual = ESTADO_JUEGO;
+                        partida_empezada = 1;
                         repintar_ventana(hwnd);
                         destruir_menu_opciones();
                     }
@@ -437,6 +447,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case ESTADO_JUEGO: {
+                    if(GetAsyncKeyState(TECLA_PAUSA) & 0x8000) {
+                        estado_actual = ESTADO_OPCIONES;
+                        inicializar_menu_nueva_partida();
+                        repintar_ventana(hwnd);
+                    }
                     if (GetAsyncKeyState(TECLA_PROPULSOR) & 0x8000) { 
                         pulsar_tecla(ARRIBA);
                         PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);

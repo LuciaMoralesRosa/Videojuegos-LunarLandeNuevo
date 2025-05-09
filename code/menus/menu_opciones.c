@@ -143,13 +143,31 @@ LRESULT procesar_pulsado_flechas(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     if(uMsg == WM_KEYDOWN) {
         switch(wParam) {
             case VK_UP:
-                if(campo_seleccionado > MISSION)
+                if(campo_seleccionado > MISSION){
                     campo_seleccionado--;
+                    if(partida_empezada == 1)  {
+                        if(campo_seleccionado == SUPERFACIL){
+                            campo_seleccionado--;
+                        }
+                        if(campo_seleccionado == TERRENO){
+                            campo_seleccionado--;
+                        }
+                    }
+                }
                 InvalidateRect(hwnd, NULL, TRUE);  // repintado
                 break;
             case VK_DOWN:
-                if(campo_seleccionado < NUM_OPCIONES - 1)
+                if(campo_seleccionado < NUM_OPCIONES - 1){
                     campo_seleccionado++;
+                    if(partida_empezada == 1) {
+                        if(campo_seleccionado == TERRENO){
+                            campo_seleccionado++;
+                        }
+                        if(campo_seleccionado == SUPERFACIL){
+                            campo_seleccionado++;
+                        }
+                    }
+                }
                 InvalidateRect(hwnd, NULL, TRUE); // repintado
                 break;
             default:

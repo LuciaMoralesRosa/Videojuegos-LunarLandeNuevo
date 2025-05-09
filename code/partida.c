@@ -179,7 +179,7 @@ void se_ha_aterrizado(uint16_t puntos){
 	estado_actual = ESTADO_ATERRIZAJE;
 }
 
-void gestionar_colisiones() {
+uint8_t gestionar_colisiones() {
 	struct Arista arista_colision = (struct Arista){0};
 	uint8_t bonificador = 1;
 	uint8_t es_arista_aterrizable = 0;
@@ -221,7 +221,9 @@ void gestionar_colisiones() {
 		puntuacion_partida += puntos_conseguidos;
 		printf("\nHas conseguido %d puntos en este aterrizaje\n\n", puntos_conseguidos);
 		se_ha_aterrizado(puntos_conseguidos);
+		return 1;
 	}
+	return 0;
 }
 
 void dibujar_escena(HDC hdc){
@@ -617,7 +619,7 @@ void gestionar_posicion_nave_terreno() {
 	}
 }
 
-void gestionar_zoom_aterrizaje(struct Punto traslacion_tras_marcos, struct Punto traslacion_real) {
+uint8_t gestionar_zoom_aterrizaje(struct Punto traslacion_tras_marcos, struct Punto traslacion_real) {
 	if(modo_zoom == DESACTIVADO) {
 		if(hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno_0) || hay_arista_en_radio_activar_zoom(nave->objeto->origen, terreno_1)) {
 			//printf("Estoy activando el zoom desde el gestor de zoom\n");
@@ -635,22 +637,26 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_tras_marcos, struct Punto
 		}
 	}
 	if(modo_zoom == ACTIVADO){
-		gestionar_colisiones();
-		pos_real_nave_x = pos_real_nave_x + traslacion_real.x / entrada_modo_zoom_terreno;
-		pos_real_nave_y = pos_real_nave_y + traslacion_real.y / entrada_modo_zoom_terreno;
-		pos_real_nave_al_terminar_el_zoom = (struct Punto) {pos_real_nave_al_terminar_el_zoom.x + traslacion_real.x, pos_real_nave_al_terminar_el_zoom.y + traslacion_real.y};
-		nave_proxima_borde_inferior = nave_proxima_a_borde_inferior(nave->objeto->origen);
-		if(nave_proxima_borde_inferior) {
-			//printf("Estamos en zoom cerca del borde inferior\n");
-			traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + traslacion_tras_marcos.y;
-			struct Punto nueva_traslacion_tras_marcos = {traslacion_tras_marcos.x, 0};
-			trasladarDibujable(nave->objeto, nueva_traslacion_tras_marcos);
-			struct Punto traslacion_terreno = {0, -traslacion_tras_marcos.y};
-			trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, traslacion_terreno);
-			trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, traslacion_terreno);
+		if(!gestionar_colisiones()){
+			pos_real_nave_x = pos_real_nave_x + traslacion_real.x / entrada_modo_zoom_terreno;
+			pos_real_nave_y = pos_real_nave_y + traslacion_real.y / entrada_modo_zoom_terreno;
+			pos_real_nave_al_terminar_el_zoom = (struct Punto) {pos_real_nave_al_terminar_el_zoom.x + traslacion_real.x, pos_real_nave_al_terminar_el_zoom.y + traslacion_real.y};
+			nave_proxima_borde_inferior = nave_proxima_a_borde_inferior(nave->objeto->origen);
+			if(nave_proxima_borde_inferior) {
+				//printf("Estamos en zoom cerca del borde inferior\n");
+				traslacion_dibujables_por_borde_inferior = traslacion_dibujables_por_borde_inferior + traslacion_tras_marcos.y;
+				struct Punto nueva_traslacion_tras_marcos = {traslacion_tras_marcos.x, 0};
+				trasladarDibujable(nave->objeto, nueva_traslacion_tras_marcos);
+				struct Punto traslacion_terreno = {0, -traslacion_tras_marcos.y};
+				trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, traslacion_terreno);
+				trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, traslacion_terreno);
+			}
+			else {
+				trasladarDibujable(nave->objeto, traslacion_tras_marcos);
+			}
 		}
 		else {
-			trasladarDibujable(nave->objeto, traslacion_tras_marcos);
+			return 1;
 		}
 	}
 	else {
@@ -658,6 +664,7 @@ void gestionar_zoom_aterrizaje(struct Punto traslacion_tras_marcos, struct Punto
 		pos_real_nave_x = pos_real_nave_x + traslacion_real.x;
 		pos_real_nave_y = pos_real_nave_y + traslacion_real.y;
 	}
+	return 0;
 }
 
 void manejar_instante_partida(){
@@ -670,10 +677,10 @@ void manejar_instante_partida(){
 		
 		// Traslacion de la nave al tener en cuenta los bordes
 		struct Punto traslacion_tras_marcos = gestionar_posicion_nave_marcos(traslacion_calculada_con_fisicas, posicion_provisional_tras_fisicas);
-		gestionar_zoom_aterrizaje(traslacion_tras_marcos, traslacion_calculada_con_fisicas);
-
-		// Una vez obtenida la posicion final de la nave, se gestiona el auxiliar
-		gestionar_posicion_nave_terreno();
+		if(!gestionar_zoom_aterrizaje(traslacion_tras_marcos, traslacion_calculada_con_fisicas)){
+			// Una vez obtenida la posicion final de la nave, se gestiona el auxiliar
+			gestionar_posicion_nave_terreno();
+		}
 	}
 
 	

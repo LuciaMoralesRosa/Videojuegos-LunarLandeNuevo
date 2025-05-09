@@ -224,56 +224,77 @@ LRESULT procesar_pulsado_flechas_controles(HWND hwnd, UINT uMsg, WPARAM wParam, 
 }
 
 
+uint8_t tecla_ya_asignada(WPARAM tecla) {
+    if((int)tecla == TECLA_MONEDA) {
+        return 1;
+    }
+    if((int)tecla == TECLA_PAUSA) {
+        return 1;
+    }
+    if((int)tecla == TECLA_PROPULSOR) {
+        return 1;
+    }
+    if((int)tecla == TECLA_ROTAR_DCHA) {
+        return 1;
+    }
+    if((int)tecla == TECLA_ROTAR_IZDA) {
+        return 1;
+    }
+    return 0;
+}
+
 
 void establecer_tecla_control(WPARAM tecla) {
-    switch(campo_seleccionado) {
-        case CONTROL_MONEDA: {
-            TECLA_MONEDA = tecla;
-            campos_cadenas_valores[CONTROL_MONEDA] = obtener_nombre_tecla_dado_ascii(tecla);
-            campos_controles_palabras[CONTROL_MONEDA] = crear_palabra_desde_cadena(
-                campos_cadenas_valores[CONTROL_MONEDA],
-                campos_controles_palabras[CONTROL_MONEDA]->origen
-            );
-            break;
+    if(!tecla_ya_asignada(tecla)){
+        switch(campo_seleccionado) {
+            case CONTROL_MONEDA: {
+                TECLA_MONEDA = tecla;
+                campos_cadenas_valores[CONTROL_MONEDA] = obtener_nombre_tecla_dado_ascii(tecla);
+                campos_controles_palabras[CONTROL_MONEDA] = crear_palabra_desde_cadena(
+                    campos_cadenas_valores[CONTROL_MONEDA],
+                    campos_controles_palabras[CONTROL_MONEDA]->origen
+                );
+                break;
+            }
+            case CONTROL_PROPULSOR: {
+                TECLA_PROPULSOR = tecla;
+                campos_cadenas_valores[CONTROL_PROPULSOR] = obtener_nombre_tecla_dado_ascii(tecla);
+                campos_controles_palabras[CONTROL_PROPULSOR] = crear_palabra_desde_cadena(
+                    campos_cadenas_valores[CONTROL_PROPULSOR],
+                    campos_controles_palabras[CONTROL_PROPULSOR]->origen
+                );
+                break;
+            }
+            case CONTROL_IZDA: {
+                TECLA_ROTAR_IZDA = tecla;
+                campos_cadenas_valores[CONTROL_IZDA] = obtener_nombre_tecla_dado_ascii(tecla);
+                campos_controles_palabras[CONTROL_IZDA] = crear_palabra_desde_cadena(
+                    campos_cadenas_valores[CONTROL_IZDA],
+                    campos_controles_palabras[CONTROL_IZDA]->origen
+                );
+                break;
+            }
+            case CONTROL_DCHA: {
+                TECLA_ROTAR_DCHA = tecla;
+                campos_cadenas_valores[CONTROL_DCHA] = obtener_nombre_tecla_dado_ascii(tecla);
+                campos_controles_palabras[CONTROL_DCHA] = crear_palabra_desde_cadena(
+                    campos_cadenas_valores[CONTROL_DCHA],
+                    campos_controles_palabras[CONTROL_DCHA]->origen
+                );
+                break;
+            }
+            case CONTROL_PAUSA: {
+                TECLA_PAUSA = tecla;
+                campos_cadenas_valores[CONTROL_PAUSA] = obtener_nombre_tecla_dado_ascii(tecla);
+                campos_controles_palabras[CONTROL_PAUSA] = crear_palabra_desde_cadena(
+                    campos_cadenas_valores[CONTROL_PAUSA],
+                    campos_controles_palabras[CONTROL_PAUSA]->origen
+                );
+                break;
+            }
+            default:
+                break;
         }
-        case CONTROL_PROPULSOR: {
-            TECLA_PROPULSOR = tecla;
-            campos_cadenas_valores[CONTROL_PROPULSOR] = obtener_nombre_tecla_dado_ascii(tecla);
-            campos_controles_palabras[CONTROL_PROPULSOR] = crear_palabra_desde_cadena(
-                campos_cadenas_valores[CONTROL_PROPULSOR],
-                campos_controles_palabras[CONTROL_PROPULSOR]->origen
-            );
-            break;
-        }
-        case CONTROL_IZDA: {
-            TECLA_ROTAR_IZDA = tecla;
-            campos_cadenas_valores[CONTROL_IZDA] = obtener_nombre_tecla_dado_ascii(tecla);
-            campos_controles_palabras[CONTROL_IZDA] = crear_palabra_desde_cadena(
-                campos_cadenas_valores[CONTROL_IZDA],
-                campos_controles_palabras[CONTROL_IZDA]->origen
-            );
-            break;
-        }
-        case CONTROL_DCHA: {
-            TECLA_ROTAR_DCHA = tecla;
-            campos_cadenas_valores[CONTROL_DCHA] = obtener_nombre_tecla_dado_ascii(tecla);
-            campos_controles_palabras[CONTROL_DCHA] = crear_palabra_desde_cadena(
-                campos_cadenas_valores[CONTROL_DCHA],
-                campos_controles_palabras[CONTROL_DCHA]->origen
-            );
-            break;
-        }
-        case CONTROL_PAUSA: {
-            TECLA_PAUSA = tecla;
-            campos_cadenas_valores[CONTROL_PAUSA] = obtener_nombre_tecla_dado_ascii(tecla);
-            campos_controles_palabras[CONTROL_PAUSA] = crear_palabra_desde_cadena(
-                campos_cadenas_valores[CONTROL_PAUSA],
-                campos_controles_palabras[CONTROL_PAUSA]->origen
-            );
-            break;
-        }
-        default:
-            break;
     }
 }
 
@@ -302,6 +323,9 @@ void gestionar_opcion_seleccionada_controles(void) {
 }
 
 Opcion_Menu_Controles obtener_opcion_seleccionada_controles(void) {
+    if(campo_seleccionado != CONTROL_VOLVER){
+        campos_controles_palabras[campo_seleccionado] = crear_palabra_desde_cadena("--------------", campos_controles_palabras[campo_seleccionado]->origen);
+    }
     return campo_seleccionado;
 }
 

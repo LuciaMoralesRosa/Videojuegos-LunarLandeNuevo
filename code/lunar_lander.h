@@ -41,6 +41,8 @@ void escalar_escena(float factor_x, float factor_y);
 
 void iniciar_partida(int monedas, Tipo_Mision mision, Tipo_Terreno terreno);
 
+void reestablecer_mision(Tipo_Mision mision);
+
 void continuar_tras_aterrizaje(void);
 
 #endif // LUNAR_LANDER_H

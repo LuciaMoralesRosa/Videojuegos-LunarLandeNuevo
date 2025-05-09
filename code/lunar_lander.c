@@ -54,8 +54,6 @@ void manejar_teclas(){
 
 void manejar_instante(){
     manejar_instante_partida();
-    if(estado_actual == ESTADO_JUEGO){
-    }
 }
 
 void pintar_pantalla(HDC hdc){
@@ -73,7 +71,7 @@ void escalar_escena(float factor_x, float factor_y) {
     escalar_escena_partida(factor_x, factor_y);
 }
 
-void iniciar_partida(int monedas_introducidas, Tipo_Mision mision, Tipo_Terreno terreno) {
+void reestablecer_mision(Tipo_Mision mision) {
     switch(mision) {
         case TRAINING:
             printf("MISSION: TRAINNING\n");
@@ -93,6 +91,11 @@ void iniciar_partida(int monedas_introducidas, Tipo_Mision mision, Tipo_Terreno 
             gravedad_m_ms = GRAVEDAD_COMMAND;
         break;
     }
+}
+
+
+void iniciar_partida(int monedas_introducidas, Tipo_Mision mision, Tipo_Terreno terreno) {
+    reestablecer_mision(mision);
     inicializar_partida(terreno);
     insertar_monedas(monedas_introducidas);
     comenzarPartida();

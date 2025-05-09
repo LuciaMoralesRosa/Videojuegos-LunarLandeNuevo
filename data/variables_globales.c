@@ -9,6 +9,7 @@ float gravedad_m_ms = 0;
 int friccion_atmosfera_activada = 0;
 
 int modo_ia_activado = 0;
+int partida_empezada = 0;
 
 Tipo_Terreno tipo_terreno_seleccionado = ORIGINAL;
 Tipo_Mision tipo_mision_seleccionado = TRAINING;

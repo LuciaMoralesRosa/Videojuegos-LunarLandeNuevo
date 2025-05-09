@@ -13,6 +13,7 @@ extern float gravedad_m_ms;
 extern int friccion_atmosfera_activada;
 
 extern int modo_ia_activado;
+extern int partida_empezada;
 
 /**
  * @enum Tipo_Mision

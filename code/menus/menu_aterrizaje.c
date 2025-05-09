@@ -27,9 +27,9 @@ void generar_mensaje_aterrizaje(int puntuacion) {
 		case PERFECTO:
 			switch (opcion_perfecto) {
 			case 0:
-				primer_mensaje = crear_palabra_desde_cadena("CONGRATULATIONS", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("A PERFECT LANDING", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("FELICIDADES", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("HAS CONSEGUIDO UN ATERRIZAJE PERFECTO", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena(" ", origen_msj_3);
 			break;
 			default:
 			break;
@@ -39,37 +39,37 @@ void generar_mensaje_aterrizaje(int puntuacion) {
 		case BRUSCO: 
 			switch (opcion_brusco) {
 			case 0:
-				primer_mensaje = crear_palabra_desde_cadena("NOT QUITE GRACEFUL", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("BUT HEY, YOU'RE ALIVE - I GUESS THAT COUNTS", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("YOU PROBABLY SQUASHED SOME LUNARCITOS THO", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("NO MUY ELEGANTE", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("PERO EY, ESTAS VIVO - ESO ES LO CUENTA, SUPONGO", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena("PROBABLEMENTE CHAFASTE A ALGUNOS LUNARCITOS ESO SI", origen_msj_3);
 			break;
 			
 			default:
-				primer_mensaje = crear_palabra_desde_cadena("ROUGH, BUT LANDED", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("EVER HEARD OF GENTLE", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("THERE GOES THE LANDING GEAR", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("BRUSCO, PERO EN TIERRA", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("AUNQUE DUDO QUE ALGUNA VEZ HAYAS ESCUCHADO LA PALABRA SUAVIDAD", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena("AH, ADIOS AL TREN DE ATERRIZAJE", origen_msj_3);
 			break;
 			}
 		break;
 		default: // colision
 		switch(opcion_colision) {
 			case 0:
-				primer_mensaje = crear_palabra_desde_cadena("YOU CRASHED", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("DID YOU EVEN READ THE MANUAL?", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("TIP: SLOW DOWN BEFORE THE MOON DOES IT FOR YOU", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("BIEN, YA SABES COMO NO HACERLO", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("HABIAS LLEGADO A LEER EL MANUAL?", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena("CONSEJILLO: FRENA ANTES DE QUE LA LUNA TE HAGA HACERLO", origen_msj_3);
 				opcion_colision++;
 			break;
 			case 1:
-				primer_mensaje = crear_palabra_desde_cadena("STILL CRASHING?", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("TRY USING THE BRAKE", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("OR MAYBE JUST CLOSE YOUR EYES", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("TODAVIA CHOCANDO?", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("INTENTA USAR EL FRENO", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena("O SIMPLEMENTE CIERRA LOS OJOS, DUDO QUE EL RESULTADO SEA PEOR", origen_msj_3);
 				opcion_colision++;
 			break;
 	
 			default:
-				primer_mensaje = crear_palabra_desde_cadena("SERIOUSLY?", origen_msj_1);
-				segundo_mensaje = crear_palabra_desde_cadena("STOP DESTROYING THE MOON", origen_msj_2);
-				tercer_mensaje = crear_palabra_desde_cadena("NASA IS NOT GONNA CALL YOU BACK", origen_msj_3);
+				primer_mensaje = crear_palabra_desde_cadena("EN SERIO?", origen_msj_1);
+				segundo_mensaje = crear_palabra_desde_cadena("DEJA DE DESTRUIR LA LUNA", origen_msj_2);
+				tercer_mensaje = crear_palabra_desde_cadena("LA NASA VA A ACABAR PASANDOTE FACTURA A ESTE PASO", origen_msj_3);
 				opcion_colision = 0;
 			break;
 		}
