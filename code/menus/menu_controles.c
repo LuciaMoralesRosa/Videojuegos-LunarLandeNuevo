@@ -207,21 +207,21 @@ LRESULT procesar_pulsado_flechas_controles(HWND hwnd, UINT uMsg, WPARAM wParam, 
         switch(wParam) {
             case VK_UP:
                 if(campo_seleccionado > CONTROL_MONEDA){
-                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_GO), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado--;
                 }
                 else {
-			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_CANTGO), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                 }
                 InvalidateRect(hwnd, NULL, TRUE);  // repintado
                 break;
             case VK_DOWN:
                 if(campo_seleccionado < CONTROL_NUM_OPCIONES - 1){
-                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                    PlaySound(MAKEINTRESOURCE(IDR_SOUND_GO), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                     campo_seleccionado++;
                 }
                 else{
-			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+			        PlaySound(MAKEINTRESOURCE(IDR_SOUND_CANTGO), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                 }
                 InvalidateRect(hwnd, NULL, TRUE); // repintado
                 break;
@@ -338,6 +338,7 @@ void gestionar_opcion_seleccionada_controles(void) {
 Opcion_Menu_Controles obtener_opcion_seleccionada_controles(void) {
     if(campo_seleccionado != CONTROL_VOLVER){
         campos_controles_palabras[campo_seleccionado] = crear_palabra_desde_cadena("--------------", campos_controles_palabras[campo_seleccionado]->origen);
+        PlaySound(MAKEINTRESOURCE(IDR_SOUND_SELECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
     }
     return campo_seleccionado;
 }

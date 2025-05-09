@@ -4,3 +4,7 @@ IDR_SOUND_MOTOR WAVE "resources/sounds/motor.wav"
 IDR_SOUND_COLISION WAVE "resources/sounds/colision.wav"
 IDR_SOUND_PERFECT WAVE "resources/sounds/perfect.wav"
 IDR_SOUND_FORCED WAVE "resources/sounds/forced.wav"
+IDR_SOUND_CANTGO WAVE "resources/sounds/cantgo.wav"
+IDR_SOUND_SELECT WAVE "resources/sounds/select.wav"
+IDR_SOUND_GO WAVE "resources/sounds/go.wav"
+

@@ -5,5 +5,8 @@
 #define IDR_SOUND_COLISION 102
 #define IDR_SOUND_PERFECT  103
 #define IDR_SOUND_FORCED   104
+#define IDR_SOUND_CANTGO   105
+#define IDR_SOUND_SELECT   106
+#define IDR_SOUND_GO       107
 
 #endif
