@@ -5,7 +5,7 @@ float tam_ventana_x = 1024;
 float tam_ventana_y = 768;
 float factor_escalado = 1.0f; 
 
-float gravedad_m_ms = 0;
+float gravedad_m_ms = -0.00020625;
 int friccion_atmosfera_activada = 0;
 
 int modo_ia_activado = 0;

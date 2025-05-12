@@ -9,14 +9,14 @@
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
 
+#include "ia/ia.h"
+
 #include "../data/variables_globales.h"
 #include "../data/variables_juego.h"
 
 #include "menus/cabecera_juego.h"
 #include "menus/menu_aterrizaje.h"
 #include "menus/menu_final_partida.h"
-
-#include "../ia/gestor_ia.h"
 
 #pragma comment(lib, "winmm.lib")
 
@@ -41,15 +41,11 @@ int inicio = 0;
 struct DibujableConstante terreno_seleccionado = {0};
 
 
-struct objetoFisico* nave = NULL;
 struct Dibujable* motor_debil = NULL;
 struct Dibujable* motor_medio = NULL;
 struct Dibujable* motor_fuerte = NULL;
 struct Dibujable* terreno_0 = NULL;
 struct Dibujable* terreno_1 = NULL;
-struct Plataforma* plataformas_0 = NULL;
-struct Plataforma* plataformas_1 = NULL;
-uint8_t numero_plataformas = 0;
 
 
 static int traslacion_dibujables_por_borde_inferior = 0;
@@ -681,9 +677,11 @@ void manejar_instante_partida(){
 			// Una vez obtenida la posicion final de la nave, se gestiona el auxiliar
 			gestionar_posicion_nave_terreno();
 		}
-	}
 
-	
+		if(modo_ia_activado == 1){
+			manejar_instante_ia((struct Punto){nave->velocidad[0], nave->velocidad[1]}, nave->objeto->origen);
+		}
+	}
 }
 
 void establecer_terreno_seleccionado(Tipo_Terreno terreno) {
@@ -770,7 +768,7 @@ void finalizarPartida(){
 
 
 void enviar_datos_ia() {
-	float entrada[300] = {0};
+	/*float entrada[300] = {0};
 
 	// Definimos los datos del estado
 	entrada[0] = nave -> velocidad[0];
@@ -807,5 +805,5 @@ void enviar_datos_ia() {
 		entrada[296 + i] = plataformas_0[i].bonificador;
 	}
 	
-	ejecutar_ia(entrada);
+	ejecutar_ia(entrada);*/
 }

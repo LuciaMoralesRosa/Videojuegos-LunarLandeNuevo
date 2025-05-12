@@ -10,6 +10,8 @@
 #include "code/menus/menu_aterrizaje.h"
 #include "code/menus/menu_final_partida.h"
 
+#include "code/ia/ia.h"
+
 #include "resources/superficie_lunar.h"
 #include "resources.h"
 
@@ -21,8 +23,6 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <stdlib.h>
-
-#include "ia/modelo.h"
 
 #define timer_TICK_juego 1
 #define timer_IA 2
@@ -255,6 +255,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         printf("El tiempo de espera ha vencido. Pasando a piloto automatico\n");
                         destruir_menu_insertar_moneda();
                         iniciar_partida(1, mision, terreno);
+                        inicializar_ia();
                         modo_ia_activado = 1;
                         estado_actual = ESTADO_JUEGO;
                     }
@@ -564,7 +565,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)hPrevInstance; // Evita el warning
     (void)lpCmdLine; // Evita el warning
 
-    //AttachConsoleToStdout();
+    AttachConsoleToStdout();
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;

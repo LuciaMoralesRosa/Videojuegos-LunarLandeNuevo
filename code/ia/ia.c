@@ -1,1 +1,169 @@
 #include "ia.h"
+#include "../fisicas.h"
+#include "../lunar_lander.h"
+#include "../../data/constantes.h"
+#include "../../data/variables_juego.h"
+
+#include <stdio.h>
+#include <time.h>
+#include <math.h>
+
+float A = 0.f;
+float B = 10.f;
+float C_pos = 0.f;
+float C_neg = 0.f;
+float D_pos = 0.f;
+float D_neg = 0.f;
+float E = 10.f;
+
+float delta_A = 0;
+float delta_B = 0;
+float delta_C = 0;
+float delta_D = 0;
+float delta_E = 0;
+
+int vx_positiva = 1;
+int vy_positiva = 0;
+
+int timer_recalcular = 0;
+int timer_aceleracion = 0;
+
+float angulo_grados = 0;
+struct Punto aceleracion = {0, 0};
+struct Punto objetivo = {0,0};
+
+float random_offset(float max_offset) {
+    return ((float)rand() / RAND_MAX * 2 - 1) * max_offset;
+}
+
+// Asumiendo gravedad vertical (0, g)
+struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
+
+    // Tiempo aproximado con simplificación
+    delta_A = A + random_offset(0.1f);
+    delta_B = B + random_offset(0.1f);
+    float g = gravedad_m_ms;
+    if(g == 0) g += -0.000000000001;
+    float t = (2 * v0.y * objetivo.y + gravedad_m_ms * p0.y + delta_A) / g;
+    t += delta_B;
+
+    // Aceleraciones "ideales"
+    float ax = 2.0f * (objetivo.x - p0.x - v0.x * t) / (t * t);
+    float ay = 2.0f * (objetivo.y - p0.y - v0.y * t) / (t * t);
+
+    // Aplicar offset por peso según signo de velocidad
+    vx_positiva = (v0.x >= 0) ? 1 : 0;
+    vy_positiva = (v0.y >= 0) ? 1 : 0;
+    delta_C = (vx_positiva == 1) ? (C_pos + random_offset(0.05f)) : (C_neg + random_offset(0.05f));
+    delta_D = (vy_positiva == 1) ? (D_pos + random_offset(0.05f)) : (D_neg + random_offset(0.05f));
+    ax += delta_C;
+    ay += delta_D;
+
+    // Offset para la siguiente llamada
+    delta_E = E + random_offset(0.1f);
+    timer_recalcular = delta_E;
+
+    // Calculos para el input
+    angulo_grados = atan2(aceleracion.y, aceleracion.x) * (180.0 / 3.141592);
+    timer_aceleracion = aceleracion.x / (propulsor_m_ms * SIN_TABLA[(int)angulo_grados]);
+
+    struct Punto a = { (int)ax, (int)ay };
+    return a;
+}
+
+void recompensar(int recompensa_general, int recompensa_C, int recompensa_D) {
+    float alpha = 0.01f;
+
+    A += alpha * recompensa_general * delta_A;
+    B += alpha * recompensa_general * delta_B;
+
+    if (vx_positiva == 1) C_pos += alpha * recompensa_C * delta_C;
+    else C_neg += alpha * recompensa_C * delta_C;
+
+    if (vy_positiva == 1) D_pos += alpha * recompensa_D * delta_D;
+    else D_neg += alpha * recompensa_D * delta_D;
+}
+
+void guardar_pesos() {
+    FILE * f = fopen("pesos.txt", "w");
+    if (f) {
+        fprintf(f, "%f %f %f %f %f %f %f\n",
+            A, B,
+            C_pos, C_neg,
+            D_pos, D_neg,
+            E);
+        fclose(f);
+    }
+}
+
+void cargar_pesos() {
+    FILE * f = fopen("pesos.txt", "r");
+    if (f) {
+        fscanf(f, "%f %f %f %f %f %f %f",
+            &A, &B,
+            &C_pos, &C_neg,
+            &D_pos, &D_neg,
+            &E);
+        fclose(f);
+    }
+}
+
+void inicializar_ia(){
+    srand(time(NULL));
+    cargar_pesos();
+    timer_recalcular = E;
+    int plataforma = rand() % numero_plataformas;
+    struct Punto inicio = plataformas_0[plataforma].linea->puntos[0];
+    struct Punto final = plataformas_0[plataforma].linea->puntos[1];
+    objetivo = (struct Punto) {inicio.x + ((final.x - inicio.x) / 2), tam_ventana_y-inicio.y};
+}
+
+struct Input {
+    int propulsor;
+    int derecha;
+    int izquierda;
+};
+
+struct Input calcular_input(struct Punto aceleracion){
+    timer_aceleracion--;
+    int rotacion = nave->rotacion;
+    if(rotacion > 90) rotacion -= 360;
+
+    if(rotacion < angulo_grados){ // Derecha
+        struct Input resultado = {timer_aceleracion, 1, 0};
+        return resultado;
+    }
+    if(rotacion > angulo_grados){ // Izquierda
+        struct Input resultado = {timer_aceleracion, 0, 1};
+        return resultado;
+    }
+    // No moverse
+    struct Input resultado = {timer_aceleracion, 0, 0};
+    return resultado;
+}
+
+void manejar_instante_ia(struct Punto v0, struct Punto p0){
+    timer_recalcular--;
+    timer_aceleracion--;
+
+    struct Punto posicion_coord_clasicas = (struct Punto){p0.x, tam_ventana_y-p0.y};
+
+    printf("------------------------------------\n");
+    printf("Velocidad Nave: %f, %f\n", v0.x, v0.y);
+    printf("Posición Nave: %f, %f\n", posicion_coord_clasicas.x, posicion_coord_clasicas.y);
+    printf("Objetivo: %f, %f\n", objetivo.x, objetivo.y);
+
+    if(timer_recalcular <= 0){
+        aceleracion = calcular_aceleracion(v0, posicion_coord_clasicas);
+    }
+    struct Input input = calcular_input(aceleracion);
+    if(input.propulsor > 0) {
+        pulsar_tecla(ARRIBA);
+    }
+    if(input.izquierda > 0) {
+        pulsar_tecla(IZQUIERDA);
+    }
+    if(input.derecha > 0) {
+        pulsar_tecla(DERECHA);
+    }
+}

@@ -16,7 +16,7 @@ MENU_DIR = menus
 IA_DIR = ia
 
 # Archivos fuente (todos los .c en code/ y resources/)
-SRCS = $(wildcard $(SRC_DIR)/*.c $(DATA_DIR)/*.c $(RES_DIR)/*.c $(SRC_DIR)/$(MENU_DIR)/*.c $(IA_DIR)/*.c) main.c
+SRCS = $(wildcard $(SRC_DIR)/*.c $(DATA_DIR)/*.c $(RES_DIR)/*.c $(SRC_DIR)/$(MENU_DIR)/*.c $(SRC_DIR)/$(IA_DIR)/*.c) main.c
 
 # Archivo de recursos
 RC_FILE = resources.rc
@@ -45,7 +45,7 @@ $(RES_FILE): $(RC_FILE) resources.h
 
 # Limpiar archivos compilados
 clean:
-	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o $(IA_DIR)\*.o main.o $(RES_FILE) $(TARGET) 2>nul
+	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o $(SRC_DIR)\$(IA_DIR)\*.o main.o $(RES_FILE) $(TARGET) 2>nul
 
 # Recompilar todo y ejecutar
 run:
