@@ -40,11 +40,11 @@ float random_offset(float max_offset) {
 struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
 
     // Tiempo aproximado con simplificación
-    delta_A = A + random_offset(0.1f);
-    delta_B = B + random_offset(0.1f);
-    float g = gravedad_m_ms;
+    delta_A = A + random_offset(0.000001f);
+    delta_B = B + random_offset(0.000001f);
+    float g = gravedad_m_ms / pixels_por_metro;
     if(g == 0) g += -0.000000000001;
-    float t = (2 * v0.y * objetivo.y + gravedad_m_ms * p0.y + delta_A) / g;
+    float t = (2 * v0.y * objetivo.y + g * p0.y + delta_A) / g;
     t += delta_B;
 
     // Aceleraciones "ideales"
@@ -54,8 +54,8 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
     // Aplicar offset por peso según signo de velocidad
     vx_positiva = (v0.x >= 0) ? 1 : 0;
     vy_positiva = (v0.y >= 0) ? 1 : 0;
-    delta_C = (vx_positiva == 1) ? (C_pos + random_offset(0.05f)) : (C_neg + random_offset(0.05f));
-    delta_D = (vy_positiva == 1) ? (D_pos + random_offset(0.05f)) : (D_neg + random_offset(0.05f));
+    delta_D = (vy_positiva == 1) ? (D_pos + random_offset(0.000005f)) : (D_neg + random_offset(0.000005f));
+    delta_C = (vx_positiva == 1) ? (C_pos + random_offset(0.000005f)) : (C_neg + random_offset(0.000005f));
     ax += delta_C;
     ay += delta_D;
 
@@ -65,8 +65,8 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
 
     // Calculos para el input
     if(ay < 0) ay = 0;
-    angulo_grados = atan2(ay, ax) * (180.0 / 3.141592);
-    timer_aceleracion = ax / (propulsor_m_ms * SIN_TABLA[(int)angulo_grados]);
+    angulo_grados = atan2(ax, ay) * (180.0 / 3.141592);
+    timer_aceleracion = (ax * pixels_por_metro) / propulsor_m_ms;
 
     struct Punto a = { ax, ay };
     return a;
@@ -130,12 +130,16 @@ struct Input calcular_input(){
     int rotacion = nave->rotacion;
     if(rotacion > 90) rotacion -= 360;
 
+    printf("Rotacion Nave: %d\n", rotacion);
+
     if(rotacion < angulo_grados){ // Derecha
         struct Input resultado = {timer_aceleracion, 1, 0};
+        printf("Input Direccion: Derecha\n");
         return resultado;
     }
     if(rotacion > angulo_grados){ // Izquierda
         struct Input resultado = {timer_aceleracion, 0, 1};
+        printf("Input Direccion: Izquierda\n");
         return resultado;
     }
     // No moverse
@@ -167,8 +171,11 @@ void manejar_instante_ia(struct Punto v0, struct Punto p0){
     }
     if(input.izquierda > 0) {
         pulsar_tecla(IZQUIERDA);
+        printf("Izquierda Pulsada\n");
     }
     if(input.derecha > 0) {
         pulsar_tecla(DERECHA);
+        printf("Derecha Pulsada\n");
     }
+    manejar_teclas();
 }

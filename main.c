@@ -201,7 +201,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     switch (uMsg) {
         case WM_CREATE: {
             SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
-            SetTimer(hwnd, timer_IA, 10000, NULL);
+            SetTimer(hwnd, timer_IA, 1000, NULL);
             SetTimer(hwnd, timer_segundo, 1000, NULL);
             break;
         }

@@ -33,22 +33,21 @@ void levantar_tecla(int tecla){
 }
 
 void manejar_teclas(){
-    if(modo_ia_activado == 1) {
-        enviar_datos_ia();
-    }
-
     if(estado_teclas[ARRIBA]){
         activar_propulsor();
         propulsar();
+        estado_teclas[ARRIBA] = 0;
     } else {
         desactivar_propulsor();
     }
 
     if(estado_teclas[IZQUIERDA]){
         girar_izquierda();
+        estado_teclas[IZQUIERDA] = 0;
     }
     if(estado_teclas[DERECHA]){
         girar_derecha();
+        estado_teclas[DERECHA] = 0;
     }
 }
 
