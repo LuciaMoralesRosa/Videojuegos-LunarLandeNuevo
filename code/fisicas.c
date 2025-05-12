@@ -11,7 +11,6 @@ static uint8_t orden_girar_derecha = 0;
 
 
 struct Punto calcularFisicas(struct objetoFisico* elemento){
-	printf("Calculando fisicas con orden girar derecha = %d\n", orden_girar_derecha);
 	if(orden_girar_izquierda && !orden_girar_derecha && (elemento -> rotacion <= 90 || elemento -> rotacion >= 270 + ANGULO_ROTACION)){
 		elemento -> rotacion = (elemento -> rotacion - ANGULO_ROTACION + 360) % 360;
 		rotar_nave(0);
