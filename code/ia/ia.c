@@ -9,7 +9,7 @@
 #include <math.h>
 
 float A = 0.f;
-float B = 10.f;
+float B = 0.f;
 float C_pos = 0.f;
 float C_neg = 0.f;
 float D_pos = 0.f;
@@ -40,8 +40,8 @@ float random_offset(float max_offset) {
 struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
 
     // Tiempo aproximado con simplificación
-    delta_A = A + random_offset(0.000001f);
-    delta_B = B + random_offset(0.000001f);
+    delta_A = A + random_offset(0.1f);
+    delta_B = B + random_offset(0.1f);
     float g = gravedad_m_ms / pixels_por_metro;
     if(g == 0) g += -0.000000000001;
     float t = (2 * v0.y * objetivo.y + g * p0.y + delta_A) / g;
@@ -54,8 +54,8 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
     // Aplicar offset por peso según signo de velocidad
     vx_positiva = (v0.x >= 0) ? 1 : 0;
     vy_positiva = (v0.y >= 0) ? 1 : 0;
-    delta_D = (vy_positiva == 1) ? (D_pos + random_offset(0.000005f)) : (D_neg + random_offset(0.000005f));
     delta_C = (vx_positiva == 1) ? (C_pos + random_offset(0.000005f)) : (C_neg + random_offset(0.000005f));
+    delta_D = (vy_positiva == 1) ? (D_pos + random_offset(0.000005f)) : (D_neg + random_offset(0.000005f));
     ax += delta_C;
     ay += delta_D;
 
@@ -130,6 +130,7 @@ struct Input calcular_input(){
     int rotacion = nave->rotacion;
     if(rotacion > 90) rotacion -= 360;
 
+    printf("Timer aceleracion: %d\n", timer_aceleracion);
     printf("Rotacion Nave: %d\n", rotacion);
 
     if(rotacion < angulo_grados){ // Derecha
