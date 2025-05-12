@@ -14,7 +14,7 @@ float C_pos = 0.f;
 float C_neg = 0.f;
 float D_pos = 0.f;
 float D_neg = 0.f;
-float E =100.f;
+float E = 50.f;
 
 float delta_A = 0;
 float delta_B = 0;
@@ -65,8 +65,8 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
         t = (v0.y + sqrt(discriminante)) / g;
     } else {
         t = -1.0f;
-        printf("La jodimos\n");
     }
+    t += delta_B;
 
     // Aceleraciones "ideales"
     float ax = 2.0f * (objetivo.x - p0.x - v0.x * t) / (t * t);
@@ -163,12 +163,12 @@ struct Input calcular_input(){
     //printf("Timer aceleracion: %d\n", timer_aceleracion);
     //printf("Rotacion Nave: %d\n", rotacion);
 
-    if(rotacion < angulo_grados){ // Derecha
+    if(rotacion < angulo_grados - 5){ // Derecha
         struct Input resultado = {timer_aceleracion, 1, 0};
         //printf("Input Direccion: Derecha\n");
         return resultado;
     }
-    if(rotacion > angulo_grados){ // Izquierda
+    if(rotacion > angulo_grados + 5){ // Izquierda
         struct Input resultado = {timer_aceleracion, 0, 1};
         //printf("Input Direccion: Izquierda\n");
         return resultado;
