@@ -64,10 +64,11 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
     timer_recalcular = delta_E;
 
     // Calculos para el input
-    angulo_grados = atan2(aceleracion.y, aceleracion.x) * (180.0 / 3.141592);
-    timer_aceleracion = aceleracion.x / (propulsor_m_ms * SIN_TABLA[(int)angulo_grados]);
+    if(ay < 0) ay = 0;
+    angulo_grados = atan2(ay, ax) * (180.0 / 3.141592);
+    timer_aceleracion = ax / (propulsor_m_ms * SIN_TABLA[(int)angulo_grados]);
 
-    struct Punto a = { (int)ax, (int)ay };
+    struct Punto a = { ax, ay };
     return a;
 }
 
@@ -124,7 +125,7 @@ struct Input {
     int izquierda;
 };
 
-struct Input calcular_input(struct Punto aceleracion){
+struct Input calcular_input(){
     timer_aceleracion--;
     int rotacion = nave->rotacion;
     if(rotacion > 90) rotacion -= 360;
@@ -156,7 +157,11 @@ void manejar_instante_ia(struct Punto v0, struct Punto p0){
     if(timer_recalcular <= 0){
         aceleracion = calcular_aceleracion(v0, posicion_coord_clasicas);
     }
-    struct Input input = calcular_input(aceleracion);
+
+    printf("Aceleración necesaria: %f, %f\n", aceleracion.x, aceleracion.y);
+    printf("Angulo objetivo: %f\n", angulo_grados);
+
+    struct Input input = calcular_input();
     if(input.propulsor > 0) {
         pulsar_tecla(ARRIBA);
     }
