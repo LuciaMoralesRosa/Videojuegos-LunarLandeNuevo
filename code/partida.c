@@ -160,6 +160,10 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		puntuacion = 5 * bonificador;
 		tipo_aterrizaje = COLISION;
 	}
+
+	if(modo_ia_activado){
+		recompensar(puntuacion);
+	}
 	
 	return puntuacion;
 }
@@ -764,46 +768,4 @@ void finalizarPartida(){
     destruir_objeto_fisico(nave);
     nave -> objeto = NULL;
     fisicas = DESACTIVADAS;
-}
-
-
-void enviar_datos_ia() {
-	/*float entrada[300] = {0};
-
-	// Definimos los datos del estado
-	entrada[0] = nave -> velocidad[0];
-	entrada[1] = nave -> velocidad[1];
-	entrada[2] = nave -> aceleracion[0];
-	entrada[3] = nave -> aceleracion[1];
-	entrada[4] = nave -> rotacion;
-	entrada[5] = combustible;
-	entrada[6] = nave -> objeto -> origen.x;
-	entrada[7] = nave -> objeto -> origen.y;
-
-	// Puntos del terreno: primero las X
-	for (int i = 0; i < 140; i++) {
-		entrada[8 + i] = terreno_0->puntos[i].x;
-	}
-
-	// Puntos del terreno: luego las Y
-	for (int i = 0; i < 140; i++) {
-		entrada[148 + i] = terreno_0->puntos[i].y;
-	}
-
-	// Puntos de plataformas: primero las X
-	for (int i = 0; i < 4; i++) {
-		entrada[288 + i] = plataformas_0[i].linea->puntos[0].x;
-	}
-
-	// Puntos de plataformas: luego las Y
-	for (int i = 0; i < 4; i++) {
-		entrada[292 + i] = plataformas_0[i].linea->puntos[0].y;
-	}
-
-	// Valores de las plataformas (bonificadores)
-	for (int i = 0; i < 4; i++) {
-		entrada[296 + i] = plataformas_0[i].bonificador;
-	}
-	
-	ejecutar_ia(entrada);*/
 }

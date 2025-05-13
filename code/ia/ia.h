@@ -7,6 +7,6 @@ void inicializar_ia();
 
 void manejar_instante_ia(struct Punto v0, struct Punto p0);
 
-void recompensar(int recompensa_general, int recompensa_C, int recompensa_D);
+void recompensar(int recompensa_general);
 
 #endif // IA_H

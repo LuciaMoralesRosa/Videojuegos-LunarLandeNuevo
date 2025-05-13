@@ -28,6 +28,8 @@
 #define timer_IA 2
 #define timer_segundo 3
 #define timer_mostrar_mensajes 4
+#define timer_IA_2 5
+#define timer_fin_partida 6
 
 
 // ---------------------------- VARIABLES ESCALADO -----------------------------
@@ -53,6 +55,9 @@ struct Punto* p3 = NULL;
 struct Punto* p4 = NULL;
 
 int ia = 1;
+
+int timer_ia_fin_partida_activado = 0;
+int timer_fin_partida_activado = 0;
 
 // Controles personalizados
 int esperando_que_pulse_tecla = 0;
@@ -277,11 +282,51 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_ATERRIZAJE:{
+                    if(timer_ia_fin_partida_activado == 0){
+                        SetTimer(hwnd, timer_IA_2, 5000, NULL);
+                        timer_ia_fin_partida_activado = 1;
+                    }
                     if (wParam == timer_TICK_juego) {
                         if(tipo_aterrizaje == COLISION){
                             fisicas_fragmentos();
                             InvalidateRect(hwnd, NULL, FALSE);
                         }
+                    }
+                    if (wParam == timer_IA_2){
+                        // seguir jugando
+                        if(combustible < combustible_motor) {
+                            generar_mensaje_final_partida(puntuacion_partida);
+                            estado_actual = ESTADO_FIN_PARTIDA;
+                        }
+                        else {
+                            continuar_tras_aterrizaje();
+                            estado_actual = ESTADO_JUEGO;
+                        }
+                        repintar_ventana(hwnd);
+                        timer_ia_fin_partida_activado = 0;
+                    }
+                    break;
+                }
+                case ESTADO_FIN_PARTIDA:{
+                    if(timer_fin_partida_activado == 0){
+                        SetTimer(hwnd, timer_fin_partida, 5000, NULL);
+                        timer_fin_partida_activado = 1;
+                    }
+                    if (wParam == timer_fin_partida){
+                        timer_fin_partida_activado = 0;
+                        moneda_presionada = 0;
+                        monedas_introducidas = 0;
+                        timestamp_pintar_mensaje = 0;
+                        modo_zoom = 0;
+                        puntuacion_partida = 0;
+                        friccion_atmosfera_activada = 0;
+                        modo_ia_activado = 0;
+                        partida_empezada = 0;
+                        inicializar_puntos();
+                        inicializar_aleatoriedad();
+                        iniciar_nueva_partida(hwnd);
+                        SetTimer(hwnd, timer_IA, 1000, NULL);
+                        estado_actual = ESTADO_PIDIENDO_MONEDA;
                     }
                     break;
                 }
@@ -494,7 +539,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case ESTADO_FIN_PARTIDA: {
                     if (GetAsyncKeyState(VK_SPACE) & 0x8000) { 
-                        //resetear();
                     }
                     break;
                 }
@@ -554,6 +598,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             KillTimer(hwnd, timer_TICK_juego);
             KillTimer(hwnd, timer_IA);
             KillTimer(hwnd, timer_segundo);
+            KillTimer(hwnd, timer_IA_2);
+            KillTimer(hwnd, timer_fin_partida);
             PostQuitMessage(0);
             return 0;
         }
