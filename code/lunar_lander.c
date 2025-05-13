@@ -4,7 +4,7 @@
 #include "../data/variables_juego.h"
 #include "../data/variables_globales.h"
 #include "fragmentacion_nave.h"
-
+#include "../resources.h"
 
 static int estado = PEDIR;
 static int estado_teclas[5] = {
@@ -14,12 +14,6 @@ static int estado_teclas[5] = {
     0,
     0
 };
-
-
-void dibujar_fondo_estrellado(HDC hdc) {
-
-}
-
 
 void pulsar_tecla(int tecla){
     estado_teclas[tecla] = 1;
@@ -36,18 +30,21 @@ void manejar_teclas(){
     if(estado_teclas[ARRIBA]){
         activar_propulsor();
         propulsar();
-        estado_teclas[ARRIBA] = 0;
     } else {
         desactivar_propulsor();
     }
-
+    
     if(estado_teclas[IZQUIERDA]){
         girar_izquierda();
-        estado_teclas[IZQUIERDA] = 0;
     }
     if(estado_teclas[DERECHA]){
         girar_derecha();
+    }
+
+    if(modo_ia_activado) {
+        estado_teclas[IZQUIERDA] = 0;
         estado_teclas[DERECHA] = 0;
+        estado_teclas[ARRIBA] = 0;
     }
 }
 
@@ -73,20 +70,16 @@ void escalar_escena(float factor_x, float factor_y) {
 void reestablecer_mision(Tipo_Mision mision) {
     switch(mision) {
         case TRAINING:
-            printf("MISSION: TRAINNING\n");
             gravedad_m_ms = GRAVEDAD_TRAINING;
             friccion_atmosfera_activada = 1;
         break;
         case CADET:
-            printf("MISSION: CADET\n");
             gravedad_m_ms = GRAVEDAD_CADET;
         break;
         case PRIME:
-            printf("MISSION: PRIME\n");
             gravedad_m_ms = GRAVEDAD_PRIME;
         break;
         case COMMAND:
-            printf("MISSION: COMMAND\n");
             gravedad_m_ms = GRAVEDAD_COMMAND;
         break;
     }

@@ -8,7 +8,7 @@
 #define IDR_SOUND_CANTGO   105
 #define IDR_SOUND_SELECT   106
 #define IDR_SOUND_GO       107
-#define IDR_SOUND_COIN       108
+#define IDR_SOUND_COIN     108
 
 
 #endif

@@ -5,12 +5,13 @@
 #include "../../data/variables_juego.h"
 
 #include "../menus/menu_final_partida.h"
+#include "../../resources.h"
 
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 
-float B = 0.f;
+float B = 1.f;
 float C_pos = 0.f;
 float C_neg = 0.f;
 float D_pos = 0.f;
@@ -35,6 +36,7 @@ struct Punto aceleracion = {0, 0};
 struct Punto objetivo = {0,0};
 
 int plataforma_objetivo = 0;
+int primera_pulsacion_propulsor = 1;
 
 float random_offset(float max_offset) {
     return ((float)rand() / RAND_MAX * 2 - 1) * max_offset;
@@ -48,18 +50,16 @@ void obtener_posicion_objetivo() {
 }
 
 void aleatorizar_pesos(){
-    delta_B = B + random_offset(0.1f);
-    delta_C_pos = C_pos + random_offset(0.000005f); 
-    delta_D_pos = D_pos + random_offset(0.000005f); 
-    delta_C_neg = C_neg + random_offset(0.000005f);
-    delta_D_neg = D_neg + random_offset(0.000005f);
-    delta_E = E + random_offset(0.1f);
+    delta_B = B; //+ random_offset(0.1f);
+    delta_C_pos = C_pos; //+ random_offset(0.000005f); 
+    delta_D_pos = D_pos; //+ random_offset(0.000005f); 
+    delta_C_neg = C_neg; //+ random_offset(0.000005f);
+    delta_D_neg = D_neg; //+ random_offset(0.000005f);
+    delta_E = E; //+ random_offset(0.1f);
 }
 
 // Asumiendo gravedad vertical (0, g)
 struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
-    printf("En calcular_aceleracion\n");
-
     obtener_posicion_objetivo();
 
     if (p0.y < objetivo.y){
@@ -103,9 +103,7 @@ struct Punto calcular_aceleracion(struct Punto v0, struct Punto p0) {
     float angulo_grados_pos = angulo_grados < 0 ? angulo_grados + 360 : angulo_grados;
     float sen_abs = SIN_TABLA[(int) angulo_grados_pos] < 0 ? -SIN_TABLA[(int) angulo_grados_pos]: SIN_TABLA[(int) angulo_grados_pos];
     sen_abs = sen_abs == 0 ? 0.00001 : sen_abs;
-    timer_aceleracion = (mod_ax * pixels_por_metro) / (propulsor_m_ms * sen_abs);
-    
-    printf("Aceleración necesaria: %f, %f\n\n", ax, ay);
+    timer_aceleracion = 0.9 * (mod_ax * pixels_por_metro) / (propulsor_m_ms * sen_abs);
     
     struct Punto a = { ax, ay };
     return a;
@@ -146,13 +144,13 @@ void recompensar(int recompensa_general) {
     D_pos += alpha * recompensa_general * delta_D_pos;
     D_neg += alpha * recompensa_general * delta_D_neg;
 
-    guardar_pesos();
+    //guardar_pesos();
     aleatorizar_pesos();
 }
 
 void inicializar_ia(){
     srand(time(NULL));
-    cargar_pesos();
+    //cargar_pesos();
     timer_recalcular = E;
     plataforma_objetivo = rand() % numero_plataformas;
     aleatorizar_pesos();
@@ -207,15 +205,23 @@ void manejar_instante_ia(struct Punto v0, struct Punto p0){
 
     struct Input input = calcular_input();
     if(input.propulsor > 0) {
-        pulsar_tecla(ARRIBA);
+        if(combustible >= combustible_motor){
+            pulsar_tecla(ARRIBA);
+            if(primera_pulsacion_propulsor == 1) {
+                primera_pulsacion_propulsor = 0;
+                PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+            }
+        }
+    }
+    else {
+        primera_pulsacion_propulsor = 1;
+        PlaySound(NULL, 0, 0);
     }
     if(input.izquierda > 0) {
         pulsar_tecla(IZQUIERDA);
-        //printf("Izquierda Pulsada\n");
     }
     if(input.derecha > 0) {
         pulsar_tecla(DERECHA);
-        //printf("Derecha Pulsada\n");
     }
     manejar_teclas();
 }

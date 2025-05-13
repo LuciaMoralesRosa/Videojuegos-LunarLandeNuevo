@@ -86,8 +86,6 @@ void repintar_ventana(HWND hwnd) {
     InvalidateRect(hwnd, NULL, TRUE); // Enviar mensaje WM_PAINT para repintar
 }
 
-
-
 // Funcion utilizada en la opcion de test de dibujables
 void pruebasDibujables(HDC hdcMem) {
 }
@@ -206,7 +204,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     switch (uMsg) {
         case WM_CREATE: {
             SetTimer(hwnd, timer_TICK_juego, intervalo_fisicas_ms, NULL);
-            SetTimer(hwnd, timer_IA, 1000, NULL);
+            SetTimer(hwnd, timer_IA, 8000, NULL);
             SetTimer(hwnd, timer_segundo, 1000, NULL);
             break;
         }
@@ -307,29 +305,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     break;
                 }
-                case ESTADO_FIN_PARTIDA:{
-                    if(timer_fin_partida_activado == 0){
-                        SetTimer(hwnd, timer_fin_partida, 5000, NULL);
-                        timer_fin_partida_activado = 1;
-                    }
-                    if (wParam == timer_fin_partida){
-                        timer_fin_partida_activado = 0;
-                        moneda_presionada = 0;
-                        monedas_introducidas = 0;
-                        timestamp_pintar_mensaje = 0;
-                        modo_zoom = 0;
-                        puntuacion_partida = 0;
-                        friccion_atmosfera_activada = 0;
-                        modo_ia_activado = 0;
-                        partida_empezada = 0;
-                        inicializar_puntos();
-                        inicializar_aleatoriedad();
-                        iniciar_nueva_partida(hwnd);
-                        SetTimer(hwnd, timer_IA, 1000, NULL);
-                        estado_actual = ESTADO_PIDIENDO_MONEDA;
-                    }
-                    break;
-                }
                 default: break;
             }
         break;
@@ -364,7 +339,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_CONTROLES: {
-                    printf("PAINT - Estado controles\n");
                     dibujar_menu_controles(hdcMem, hwnd);
                     break;
                 }
@@ -408,15 +382,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        printf("\nHa insertado una moneda\n");
                         PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                         monedas_introducidas = 1;
                         inicializar_menu_nueva_partida();
                         estado_actual = ESTADO_OPCIONES;
-                        printf("\nEsta en el menu de opciones:\n\tUse la tecla enter para cambiar el tipo de mision y de terreno\n");
-                        printf("\tUse las flechas de arriba y abajo para desplazarse por el menu\n");
-                        printf("\tUse el enter para seleccionar/deseleccionar el modo superfacil\n\n");
-                        printf("\tPulse espacio para comenzar la partida\n\n");
                         repintar_ventana(hwnd);
                         destruir_menu_insertar_moneda();
                     }
@@ -425,12 +394,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case ESTADO_OPCIONES: {
                     if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        printf("Ha insertado una moneda\n");
                         PlaySound(MAKEINTRESOURCE(IDR_SOUND_COIN), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
                         monedas_introducidas++;
                     }
                     else if(wParam == VK_DOWN || wParam == VK_UP) {
                         procesar_pulsado_flechas(hwnd, uMsg, wParam, lParam);
+                        repintar_ventana(hwnd);
                     }
                     else if(wParam == VK_RETURN) {
                         gestionar_opcion_seleccionada();
@@ -481,7 +450,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         //gestionar_opcion_seleccionada_controles();
                         Opcion_Menu_Controles opcion_elegida = obtener_opcion_seleccionada_controles();
                         if(opcion_elegida == CONTROL_VOLVER) {
-                            printf("Control volver\n");
                             estado_actual = ESTADO_OPCIONES;
                             retornar_menu_opciones();
                             destruir_menu_controles();
@@ -501,8 +469,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         repintar_ventana(hwnd);
                     }
                     if (GetAsyncKeyState(TECLA_PROPULSOR) & 0x8000) { 
-                        pulsar_tecla(ARRIBA);
-                        PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                        if(combustible >= combustible_motor){
+                            pulsar_tecla(ARRIBA);
+                            PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
+                        }
                     }
                     if (GetAsyncKeyState(TECLA_ROTAR_IZDA) & 0x8000) pulsar_tecla(IZQUIERDA);
                     if (GetAsyncKeyState(TECLA_ROTAR_DCHA) & 0x8000) pulsar_tecla(DERECHA);
@@ -536,13 +506,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     break;
                 }
-
-                case ESTADO_FIN_PARTIDA: {
-                    if (GetAsyncKeyState(VK_SPACE) & 0x8000) { 
-                    }
-                    break;
-                }
-
                 default: break;
             }
             if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
@@ -611,7 +574,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)hPrevInstance; // Evita el warning
     (void)lpCmdLine; // Evita el warning
 
-    AttachConsoleToStdout();
+    //AttachConsoleToStdout();
     WNDCLASS wc = {0};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
@@ -628,8 +591,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     inicializar_puntos();
     inicializar_aleatoriedad();
-    printf("Presione '5' para insertar moneda y acceder al menu de opciones\n");
-    printf("Recuerde: Si pulsa 'i' se activara el piloto automatico\n\n");
     iniciar_nueva_partida(hwnd);
 
     if (!hwnd) return 0;
