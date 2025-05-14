@@ -12,7 +12,7 @@
 // Si se cambia el valor por defecto (0.7), se deben actualizar las posciones de
 // las palabras dadas en inicializar_cabecera()
 #define escalado_cabecera 0.7
-#define MULTIPLICADOR_VELOCIDADES 20
+#define MULTIPLICADOR_VELOCIDADES 10
 // Palabras para las variables mostradas por cabecera
 struct Palabra* score = {0};
 struct Palabra* score_valor = {0};

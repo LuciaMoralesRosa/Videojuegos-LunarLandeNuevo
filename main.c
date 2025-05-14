@@ -148,7 +148,7 @@ void escalar_textos(HWND hwnd, float factor){
             break;
         }
         case ESTADO_FIN_PARTIDA:{
-
+            escalar_menu_final_partida(factor);
             break;
         }
     }
