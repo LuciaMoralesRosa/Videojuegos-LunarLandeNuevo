@@ -30,10 +30,10 @@ const struct DibujableConstante Nave_Propulsion_Maxima = {
         {9, 48} // Centro
     },
     (struct UnionAristas[]){
-        {0, 1}, {1, 2}, {2, 0}
+        {1, 2}, {0, 2}
     },
     3,
-    3
+    2
 };
 
 const struct DibujableConstante Nave_Propulsion_Media = {
@@ -44,10 +44,10 @@ const struct DibujableConstante Nave_Propulsion_Media = {
         {9, 38} // Centro
     },
     (struct UnionAristas[]){
-        {0, 1}, {1, 2}, {2, 0}
+        {1, 2}, {0, 2}
     },
     3,
-    3
+    2
 };
 
 const struct DibujableConstante Nave_Propulsion_Minima = {
@@ -58,10 +58,10 @@ const struct DibujableConstante Nave_Propulsion_Minima = {
         {9, 28} // Centro
     },
     (struct UnionAristas[]){
-        {0, 1}, {1, 2}, {2, 0}
+        {1, 2}, {0, 2}
     },
     3,
-    3
+    2
 };
 
 

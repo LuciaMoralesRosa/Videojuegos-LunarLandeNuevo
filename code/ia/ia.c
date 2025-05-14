@@ -136,13 +136,11 @@ void cargar_pesos() {
 void recompensar(int recompensa_general) {
     float alpha = 0.01f;
 
-    B += alpha * recompensa_general * delta_B;
-
-    C_pos += alpha * recompensa_general * delta_C_pos;
-    C_neg += alpha * recompensa_general * delta_C_neg;
-
-    D_pos += alpha * recompensa_general * delta_D_pos;
-    D_neg += alpha * recompensa_general * delta_D_neg;
+    //B += alpha * recompensa_general * delta_B;
+    //C_pos += alpha * recompensa_general * delta_C_pos;
+    //C_neg += alpha * recompensa_general * delta_C_neg;
+    //D_pos += alpha * recompensa_general * delta_D_pos;
+    //D_neg += alpha * recompensa_general * delta_D_neg;
 
     //guardar_pesos();
     aleatorizar_pesos();

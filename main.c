@@ -280,28 +280,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
                 case ESTADO_ATERRIZAJE:{
-                    if(timer_ia_fin_partida_activado == 0){
-                        SetTimer(hwnd, timer_IA_2, 5000, NULL);
-                        timer_ia_fin_partida_activado = 1;
-                    }
                     if (wParam == timer_TICK_juego) {
                         if(tipo_aterrizaje == COLISION){
                             fisicas_fragmentos();
                             InvalidateRect(hwnd, NULL, FALSE);
                         }
                     }
-                    if (wParam == timer_IA_2){
-                        // seguir jugando
-                        if(combustible < combustible_motor) {
-                            generar_mensaje_final_partida(puntuacion_partida);
-                            estado_actual = ESTADO_FIN_PARTIDA;
+                    if(modo_ia_activado){
+                        if(timer_ia_fin_partida_activado == 0){
+                            SetTimer(hwnd, timer_IA_2, 5000, NULL);
+                            timer_ia_fin_partida_activado = 1;
                         }
-                        else {
-                            continuar_tras_aterrizaje();
-                            estado_actual = ESTADO_JUEGO;
+                        if (wParam == timer_IA_2){
+                            // seguir jugando
+                            if(combustible < combustible_motor) {
+                                generar_mensaje_final_partida(puntuacion_partida);
+                                estado_actual = ESTADO_FIN_PARTIDA;
+                            }
+                            else {
+                                continuar_tras_aterrizaje();
+                                estado_actual = ESTADO_JUEGO;
+                            }
+                            repintar_ventana(hwnd);
+                            timer_ia_fin_partida_activado = 0;
                         }
-                        repintar_ventana(hwnd);
-                        timer_ia_fin_partida_activado = 0;
                     }
                     break;
                 }
@@ -373,6 +375,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // Código cuando se presiona 'i' o 'I'
                 modo_ia_activado = modo_ia_activado == 0 ? 1 : 0;
                 if(modo_ia_activado) {
+                    inicializar_ia();
                     printf("Cambiando control a piloto automatico (IA activada)\n");
                 }
                 else {

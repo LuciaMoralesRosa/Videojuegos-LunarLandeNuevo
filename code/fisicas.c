@@ -71,9 +71,13 @@ void propulsar(void){
 		case 3:
 			propulsor--;
 			break;
-		default:
+		default:{
 			propulsor++;
+			if(modo_ia_activado) {
+				propulsor++;
+			}
 			break;
+		}
 	}
 }
 
