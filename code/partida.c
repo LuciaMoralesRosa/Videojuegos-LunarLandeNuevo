@@ -105,6 +105,7 @@ void escalar_terreno_partida_dado_punto(struct Punto punto, float factor_x, floa
 
 void escalar_escena_partida(float factor_x, float factor_y){
 	if(inicio == 1) {
+		
 		escalar_nave_partida(factor_x, factor_y);
 		escalar_terreno_partida(factor_x, factor_y);
 	}

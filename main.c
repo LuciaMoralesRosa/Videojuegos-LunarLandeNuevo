@@ -124,7 +124,6 @@ void dibujar_bordes(HDC hdc) {
 }
 
 void escalar_textos(HWND hwnd, float factor){
-
     switch(estado_actual) {
         case ESTADO_PIDIENDO_MONEDA:{
             escalar_menu_insertar_moneda(factor);

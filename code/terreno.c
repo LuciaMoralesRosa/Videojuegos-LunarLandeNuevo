@@ -112,7 +112,6 @@ void dibujar_superficie_lunar(HDC hdc, struct Dibujable* terreno, struct Platafo
 void dibujar_punto_cielo(HDC hdc, int x, int y) {
     DrawLine(hdc, x, y, x+1, y, RGB(255, 255, 255));
     DrawLine(hdc, x, y+1, x+1, y+1, RGB(255, 255, 255));
-
 }
 
 void dibujar_cielo_estrellado(HDC hdc) {

@@ -38,12 +38,12 @@ uint8_t hay_arista_en_radio_zoom(uint8_t modo_zoom, struct Punto nave, struct Di
         float d = distancia_punto_a_segmento(nave, *(arista.origen), *(arista.destino));
 		if (modo_zoom == 0) {
 			// Si esta el zoom activado 
-			if (d <= DISTANCIA_DESACTIVAR_ZOOM) {
+			if (d <= DISTANCIA_DESACTIVAR_ZOOM * factor_escalado) {
 				return 1;
 			}
 		}
 		else {
-			if (d <= DISTANCIA_ACTIVAR_ZOOM) {
+			if (d <= DISTANCIA_ACTIVAR_ZOOM * factor_escalado) {
 				return 1;
 			}
 		}
@@ -56,7 +56,7 @@ uint8_t hay_arista_en_radio_activar_zoom(struct Punto nave, struct Dibujable* te
 	for (int i = 0; i < terreno->num_aristas; i++) {
         struct Arista arista = terreno->aristas[i];
         float d = distancia_punto_a_segmento(nave, *(arista.origen), *(arista.destino));
-		if (d <= DISTANCIA_ACTIVAR_ZOOM) {
+		if (d <= DISTANCIA_ACTIVAR_ZOOM * factor_escalado) {
 			return 1;
 		}
     }
@@ -68,7 +68,7 @@ uint8_t no_hay_arista_en_radio_desactivar_zoom(struct Punto nave, struct Dibujab
 	for (int i = 0; i < terreno->num_aristas; i++) {
         struct Arista arista = terreno->aristas[i];
         float d = distancia_punto_a_segmento(nave, *(arista.origen), *(arista.destino));
-		if (d <= DISTANCIA_DESACTIVAR_ZOOM) {
+		if (d <= DISTANCIA_DESACTIVAR_ZOOM * factor_escalado) {
 			return 0;
 		}
     }
