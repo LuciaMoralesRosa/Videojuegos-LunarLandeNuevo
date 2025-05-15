@@ -2,7 +2,7 @@
 #include "constantes.h"
 
 
-struct objetoFisico* nave = NULL;
+struct objetoFisico* nave;
 
 estado_aplicacion estado_actual = ESTADO_PIDIENDO_MONEDA;
 Aterrizaje tipo_aterrizaje = COLISION;
@@ -25,6 +25,6 @@ float altitud = 0.0;
 
 
 // Plataformas
-struct Plataforma* plataformas_0 = NULL;
-struct Plataforma* plataformas_1 = NULL;
+struct Plataforma* plataformas_0;
+struct Plataforma* plataformas_1;
 uint8_t numero_plataformas = 0;

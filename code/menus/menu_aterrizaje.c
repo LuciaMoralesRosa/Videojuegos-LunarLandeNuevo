@@ -32,9 +32,9 @@ void generar_mensaje_aterrizaje(int puntuacion) {
 	}
 }
 
-void dibujar_mensajes_aterrizaje(HDC hdc) {
-	dibujar_palabra(primer_mensaje, hdc);
-	dibujar_palabra(puntuacion_mensaje, hdc);
+void dibujar_mensajes_aterrizaje() {
+	dibujar_palabra(primer_mensaje);
+	dibujar_palabra(puntuacion_mensaje);
 }
 
 

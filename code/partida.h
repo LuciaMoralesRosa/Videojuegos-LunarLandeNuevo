@@ -6,8 +6,6 @@
 #ifndef PARTIDA_H
 #define PARTIDA_H
 
-#include <windows.h>
-
 #include "lunar_lander.h"
 #include "fisicas.h"
 #include "transformaciones.h"
@@ -17,7 +15,7 @@
 
 extern int combustible;
 
-void dibujar_escena(HDC hdc);
+void dibujar_escena();
 
 void rotar_nave(uint8_t direccion);
 

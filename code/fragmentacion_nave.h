@@ -8,6 +8,6 @@ void establecer_fragmentos_al_colisionar(float v_vertical, float v_horizontal, s
 void inicializar_nave_fragmentada();
 
 void fisicas_fragmentos();
-void dibujar_fragmentos(HDC hdc);
+void dibujar_fragmentos();
 
 #endif // FRAGMENTACION_NAVE_H

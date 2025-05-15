@@ -1,7 +1,6 @@
 #ifndef CABECERA_JUEGO_H
 #define CABECERA_JUEGO_H
 
-#include <windows.h>
 
 /**
  * @brief Inicializa todos los elementos de la cabecera del juego.
@@ -28,7 +27,7 @@ void escalar_cabecera(float factor);
  * 
  * @param hdc Contexto gráfico donde se dibujarán los elementos.
  */
-void dibujar_cabecera(HDC hdc);
+void dibujar_cabecera();
 
 /**
  * @brief Actualiza el contador de tiempo en la cabecera.

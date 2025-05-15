@@ -16,9 +16,9 @@ void generar_mensaje_final_partida(int puntuacion) {
 	
 }
 
-void dibujar_mensajes_final_partida(HDC hdc) {
-	dibujar_palabra(mensaje_1, hdc);
-	dibujar_palabra(mensaje_puntuacion, hdc);
+void dibujar_mensajes_final_partida() {
+	dibujar_palabra(mensaje_1);
+	dibujar_palabra(mensaje_puntuacion);
 }
 
 

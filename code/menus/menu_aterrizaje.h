@@ -1,7 +1,6 @@
 #ifndef MENU_ATERRIZAJE_H
 #define MENU_ATERRIZAJE_H
 
-#include <windows.h>
 
 #include "../../data/variables_juego.h"
 
@@ -24,7 +23,7 @@ void generar_mensaje_aterrizaje(int puntuacion);
  * 
  * @param hdc Contexto gráfico de Windows donde se dibujan las palabras.
  */
-void dibujar_mensajes_aterrizaje(HDC hdc);
+void dibujar_mensajes_aterrizaje();
 
 /**
  * @brief Escala todos los textos del menú de aterrizaje según el factor dado.

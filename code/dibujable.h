@@ -11,7 +11,6 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <wtypes.h>
 
 /** 
  * @brief Estructura que representa un punto en el plano cartesiano
@@ -91,7 +90,7 @@ struct Dibujable* crear_dibujable(const struct DibujableConstante* constante);
  *
  * @param dibujable Dibujable a pintar por pantalla
  */
-void dibujar_dibujable(HDC hdc, const struct Dibujable* dibujable);
+void dibujar_dibujable(const struct Dibujable* dibujable);
 
 /**
  * @brief Verifica si una arista es horizontal.

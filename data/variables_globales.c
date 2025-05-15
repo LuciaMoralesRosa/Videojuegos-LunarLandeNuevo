@@ -1,5 +1,4 @@
 #include "variables_globales.h"
-#include <windows.h>
 
 float tam_ventana_x = 1024;
 float tam_ventana_y = 768;

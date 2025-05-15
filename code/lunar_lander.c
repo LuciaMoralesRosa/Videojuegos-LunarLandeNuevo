@@ -51,10 +51,10 @@ void manejar_instante(){
     manejar_instante_partida();
 }
 
-void pintar_pantalla(HDC hdc){
-    dibujar_escena(hdc);
+void pintar_pantalla(){
+    dibujar_escena();
     if(estado_actual == ESTADO_ATERRIZAJE && tipo_aterrizaje == COLISION) {
-        dibujar_fragmentos(hdc);
+        dibujar_fragmentos();
     }
 }
 

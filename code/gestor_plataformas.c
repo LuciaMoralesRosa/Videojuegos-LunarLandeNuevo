@@ -320,7 +320,7 @@ void generar_plataformas(struct Plataforma** plataformas_1, struct Plataforma** 
 }
 
 
-void dibujar_plataforma(HDC hdc, struct Plataforma plataforma){
-    dibujar_palabra(plataforma.palabra, hdc);
-    dibujar_dibujable(hdc, plataforma.linea);
+void dibujar_plataforma(struct Plataforma plataforma){
+    dibujar_palabra(plataforma.palabra);
+    dibujar_dibujable(plataforma.linea);
 }

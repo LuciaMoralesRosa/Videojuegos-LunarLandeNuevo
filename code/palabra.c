@@ -46,10 +46,10 @@ void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* let
     palabra->letras[palabra->num_letras - 1] = letraDibujable;
 }
 
-void dibujar_palabra(struct Palabra* palabra, HDC hdc) {
+void dibujar_palabra(struct Palabra* palabra) {
     if (palabra == NULL || palabra->num_letras == 0) return;
     for (uint8_t i = 0; i < palabra->num_letras; i++) {
-        dibujar_dibujable(hdc, palabra->letras[i]);
+        dibujar_dibujable(palabra->letras[i]);
     }
 }
 

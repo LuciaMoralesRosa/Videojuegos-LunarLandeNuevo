@@ -171,12 +171,12 @@ void fisicas_fragmentos(){
 }
 
 
-void dibujar_fragmentos(HDC hdc) {
-	dibujar_dibujable(hdc, of_fragmento_Pata_Izda->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Pata_Dcha->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Cupula->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Base->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Motor_Izda->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Motor_Dcha->objeto);
-	dibujar_dibujable(hdc, of_fragmento_Motor_Base->objeto);
+void dibujar_fragmentos() {
+	dibujar_dibujable(of_fragmento_Pata_Izda->objeto);
+	dibujar_dibujable(of_fragmento_Pata_Dcha->objeto);
+	dibujar_dibujable(of_fragmento_Cupula->objeto);
+	dibujar_dibujable(of_fragmento_Base->objeto);
+	dibujar_dibujable(of_fragmento_Motor_Izda->objeto);
+	dibujar_dibujable(of_fragmento_Motor_Dcha->objeto);
+	dibujar_dibujable(of_fragmento_Motor_Base->objeto);
 }

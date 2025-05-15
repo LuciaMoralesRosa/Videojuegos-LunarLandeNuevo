@@ -1,7 +1,6 @@
 #ifndef MENU_FINAL_PARTIDA_H
 #define MENU_FINAL_PARTIDA_H
 
-#include <windows.h>
 
 /**
  * @brief Genera los mensajes de fin de partida por falta de combustible.
@@ -23,7 +22,7 @@ void generar_mensaje_final_partida(int puntuacion);
  * 
  * @param hdc Contexto gráfico de Windows donde se dibujan las palabras.
  */
-void dibujar_mensajes_final_partida(HDC hdc);
+void dibujar_mensajes_final_partida();
 
 /**
  * @brief Escala los mensajes del menú final según el factor proporcionado.

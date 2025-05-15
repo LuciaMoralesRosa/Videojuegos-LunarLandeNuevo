@@ -37,7 +37,7 @@ void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* let
  * @param palabra Palabra a dibujar
  * @param hdc Contexto de dispositivo
  */
-void dibujar_palabra(struct Palabra* palabra, HDC hdc);
+void dibujar_palabra(struct Palabra* palabra);
 
 
 struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen);

@@ -34,13 +34,12 @@ struct Dibujable* crear_dibujable(const struct DibujableConstante* constante) {
     return dibujable;
 }
 
-void dibujar_dibujable(HDC hdc, const struct Dibujable* dibujable){
+void dibujar_dibujable(const struct Dibujable* dibujable){
     for(uint8_t i = 0; i < dibujable->num_aristas; i++) {
-        DrawLine(hdc, dibujable->aristas[i].origen->x,
+        DrawLine(dibujable->aristas[i].origen->x,
             dibujable->aristas[i].origen->y,
             dibujable->aristas[i].destino->x,
-            dibujable->aristas[i].destino->y,
-            RGB(255, 255, 255));
+            dibujable->aristas[i].destino->y);
     }
 }
 

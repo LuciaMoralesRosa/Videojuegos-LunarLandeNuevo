@@ -123,20 +123,20 @@ void inicializar_cabecera(void) {
 
 
 
-void dibujar_cabecera(HDC hdc){
+void dibujar_cabecera(){
 	actualizar_dibujables();
-	dibujar_palabra(score, hdc);
-	dibujar_palabra(score_valor, hdc);
-	dibujar_palabra(time, hdc);
-	dibujar_palabra(time_valor, hdc);
-	dibujar_palabra(fuel, hdc);
-	dibujar_palabra(fuel_valor, hdc);
-	dibujar_palabra(altitude, hdc);
-	dibujar_palabra(altitude_valor, hdc);
-	dibujar_palabra(horizontal_speed, hdc);
-	dibujar_palabra(horizontal_speed_valor, hdc);
-	dibujar_palabra(vertical_speed, hdc);
-	dibujar_palabra(vertical_speed_valor, hdc);
+	dibujar_palabra(score);
+	dibujar_palabra(score_valor);
+	dibujar_palabra(time);
+	dibujar_palabra(time_valor);
+	dibujar_palabra(fuel);
+	dibujar_palabra(fuel_valor);
+	dibujar_palabra(altitude);
+	dibujar_palabra(altitude_valor);
+	dibujar_palabra(horizontal_speed);
+	dibujar_palabra(horizontal_speed_valor);
+	dibujar_palabra(vertical_speed);
+	dibujar_palabra(vertical_speed_valor);
 }
 
 void actualizar_segundos_cabecera(void) {

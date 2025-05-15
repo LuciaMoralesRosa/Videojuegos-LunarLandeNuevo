@@ -40,6 +40,6 @@ void generar_plataformas(struct Plataforma** plataformas_1, struct Plataforma** 
  * @param hdc
  * @param plataforma plataforma a dibujar
  */
-void dibujar_plataforma(HDC hdc, struct Plataforma plataforma);
+void dibujar_plataforma(struct Plataforma plataforma);
 
 #endif // GESTOR_PLATAFORMAS_H

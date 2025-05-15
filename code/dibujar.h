@@ -2,7 +2,7 @@
 #define DIBUJAR_H
 
 #include <stdio.h>
-#include <wtypes.h>
+#include <Arduino.h>
 
 /**
  * @brief Dibuja una línea utilizando el algoritmo de Bresenham.
@@ -20,7 +20,7 @@
  *
  * @note Utiliza la función SetPixel para dibujar cada punto
  */
-void DrawLine(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color);
+void DrawLine(int x1, int y1, int x2, int y2);
 
 
 #endif // DIBUJAR_H

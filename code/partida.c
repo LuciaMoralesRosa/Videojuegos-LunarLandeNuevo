@@ -8,8 +8,6 @@
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
 
-#include "ia/ia.h"
-
 #include "../data/variables_globales.h"
 #include "../data/variables_juego.h"
 
@@ -17,7 +15,7 @@
 #include "menus/menu_aterrizaje.h"
 #include "menus/menu_final_partida.h"
 
-#pragma comment(lib, "winmm.lib")
+//#pragma comment(lib, "winmm.lib")
 
 #define fuel_por_moneda 1500
 #define masa_nave 1000
@@ -153,10 +151,6 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		puntuacion = 5 * bonificador;
 		tipo_aterrizaje = COLISION;
 	}
-
-	if(modo_ia_activado){
-		recompensar(puntuacion);
-	}
 	
 	return puntuacion;
 }
@@ -219,25 +213,25 @@ uint8_t gestionar_colisiones() {
 	return 0;
 }
 
-void dibujar_escena(HDC hdc){
-	dibujar_cabecera(hdc);
-	dibujar_superficie_lunar(hdc, terreno_0, plataformas_0, numero_plataformas);
-	dibujar_superficie_lunar(hdc, terreno_1, plataformas_1, numero_plataformas);
-	dibujar_cielo_estrellado(hdc);
+void dibujar_escena(){
+	dibujar_cabecera();
+	dibujar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas);
+	dibujar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas);
+	dibujar_cielo_estrellado();
     if(estado_actual != ESTADO_ATERRIZAJE || tipo_aterrizaje != COLISION) {
-		dibujar_dibujable(hdc, nave -> objeto);	
+		dibujar_dibujable(nave -> objeto);	
 		switch(obtener_propulsor()){
 			case 1:
 				colocar_dibujable(motor_debil, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_debil);
+				dibujar_dibujable(motor_debil);
 				break;
 			case 2:
 				colocar_dibujable(motor_medio, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_medio);
+				dibujar_dibujable(motor_medio);
 				break;
 			case 3:
 				colocar_dibujable(motor_fuerte, nave -> objeto -> origen);
-				dibujar_dibujable(hdc, motor_fuerte);
+				dibujar_dibujable(motor_fuerte);
 				break;
 			default:
 				break;
@@ -642,9 +636,6 @@ void manejar_instante_partida(){
 			gestionar_posicion_nave_terreno();
 		}
 
-		if(modo_ia_activado == 1){
-			manejar_instante_ia((struct Punto){nave->velocidad[0], nave->velocidad[1]}, nave->objeto->origen);
-		}
 	}
 }
 
