@@ -30,7 +30,6 @@ struct Palabra* crear_palabra(struct Punto origen);
 void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* letra);
 
 
-int16_t calcular_centro_x_palabra(struct Palabra* palabra);
 
 /**
  * @brief Dibuja una palabra
@@ -40,12 +39,6 @@ int16_t calcular_centro_x_palabra(struct Palabra* palabra);
  */
 void dibujar_palabra(struct Palabra* palabra, HDC hdc);
 
-/**
- * @brief Destruir una palabra
- * 
- * @param palabra Palabra a destruir
- */
-void destruir_palabra(struct Palabra* palabra);
 
 struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen);
 

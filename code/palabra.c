@@ -46,31 +46,11 @@ void agregar_letra(struct Palabra* palabra, const struct DibujableConstante* let
     palabra->letras[palabra->num_letras - 1] = letraDibujable;
 }
 
-int16_t calcular_centro_x_palabra(struct Palabra* palabra) {
-    if(!palabra || !palabra->letras) return -1;
-    // - el centro sera: (letras * ancho + letras-1 separacion)/2 - ancho/2
-    uint8_t media_palabra = ((palabra->num_letras * ANCHURA_CARACTER_MAX + 
-                            (palabra->num_letras - 1) * SEPARACION_CARACTER) / 2);
-    
-    return (palabra->origen.x - (ANCHURA_CARACTER_MAX / 2) + media_palabra);
-}
-
 void dibujar_palabra(struct Palabra* palabra, HDC hdc) {
     if (palabra == NULL || palabra->num_letras == 0) return;
     for (uint8_t i = 0; i < palabra->num_letras; i++) {
         dibujar_dibujable(hdc, palabra->letras[i]);
     }
-}
-
-void destruir_palabra(struct Palabra* palabra) {
-    if (palabra == NULL) return;
-    if (palabra->letras != NULL) {
-        for (uint8_t i = 0; i < palabra->num_letras; i++) {
-            destruir_dibujable(palabra->letras[i]);
-        }
-        //free(palabra->letras);
-    }
-    free(palabra);
 }
 
 struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto origen) {

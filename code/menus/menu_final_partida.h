@@ -35,11 +35,5 @@ void dibujar_mensajes_final_partida(HDC hdc);
  */
 void escalar_menu_final_partida(float factor);
 
-/**
- * @brief Libera la memoria utilizada por los mensajes del menú final de partida.
- * 
- * Elimina todas las estructuras `Palabra` generadas en este módulo.
- */
-void destruir_menu_final_partida(void);
 
 #endif // MENU_FINAL_PARTIDA_H

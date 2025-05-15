@@ -36,11 +36,4 @@ void dibujar_mensajes_aterrizaje(HDC hdc);
  */
 void escalar_menu_aterrizaje(float factor);
 
-/**
- * @brief Libera la memoria utilizada por las palabras del menú de aterrizaje.
- * 
- * Destruye todas las estructuras Palabra utilizadas
- * Ideal para llamar al cambiar de escena o finalizar el juego.
- */
-void destruir_menu_aterrizaje(void);
 #endif // MENU_ATERRIZAJE_H 

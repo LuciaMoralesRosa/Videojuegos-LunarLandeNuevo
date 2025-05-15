@@ -38,7 +38,3 @@ void dibujar_mensajes_aterrizaje(HDC hdc) {
 }
 
 
-void destruir_menu_aterrizaje() {
-	destruir_palabra(primer_mensaje);
-	destruir_palabra(puntuacion_mensaje);
-}

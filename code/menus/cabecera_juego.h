@@ -46,11 +46,5 @@ void actualizar_segundos_cabecera(void);
  */
 void actualizar_puntuacion_cabecera(void);
 
-/**
- * @brief Libera la memoria de todas las palabras utilizadas en la cabecera.
- * 
- * Debe llamarse al finalizar el juego o al destruir la interfaz.
- */
-void destruir_cabecera(void);
 
 #endif // CABECERA_JUEGO_H

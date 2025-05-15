@@ -23,7 +23,3 @@ void dibujar_mensajes_final_partida(HDC hdc) {
 
 
 
-void destruir_menu_final_partida() {
-	destruir_palabra(mensaje_1);
-	destruir_palabra(mensaje_puntuacion);
-}

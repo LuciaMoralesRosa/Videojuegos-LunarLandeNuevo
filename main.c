@@ -3,7 +3,6 @@
 #include "code/palabra.h"
 #include "code/fragmentacion_nave.h"
 
-#include "code/menus/menu_insertar_moneda.h"
 #include "code/menus/cabecera_juego.h"
 #include "code/menus/menu_aterrizaje.h"
 #include "code/menus/menu_final_partida.h"
@@ -83,9 +82,7 @@ void repintar_ventana(HWND hwnd) {
 
 void iniciar_nueva_partida(HWND hwnd) {
     monedas_introducidas = 0;
-    crear_palabra_insertar_moneda();
     estado_actual = ESTADO_PIDIENDO_MONEDA;
-    pulsar_tecla(ESPACIO);
     iniciar_partida(monedas_introducidas);
     repintar_ventana(hwnd);
 }
@@ -104,15 +101,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ESTADO_PIDIENDO_MONEDA: {
                     if(wParam == timer_IA) {
                         // Gestionar partida ia
-                        destruir_menu_insertar_moneda();
                         iniciar_partida(1);
                         inicializar_ia();
                         modo_ia_activado = 1;
                         estado_actual = ESTADO_JUEGO;
-                    }
-                    if (wParam == timer_TICK_juego) {
-                        manejar_instante();
-                        InvalidateRect(hwnd, NULL, FALSE);
                     }
                     break;
                 }
@@ -174,14 +166,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
-                    // Gestionar IA de fondo
-                    pintar_pantalla(hdcMem);
-                    // Pintar peticion
-                    if((timestamp_pintar_mensaje % 25) > 7) {
-                        mostrar_insertar_moneda(hdcMem);
-                    }
-                    timestamp_pintar_mensaje++;
-                    break;
                 }
                 case ESTADO_JUEGO: {
                     pintar_pantalla(hdcMem);
@@ -222,25 +206,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             switch(estado_actual) {
                 case ESTADO_PIDIENDO_MONEDA: {
-                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){
-                        monedas_introducidas = 1;
-                        estado_actual = ESTADO_OPCIONES;
-                        repintar_ventana(hwnd);
-                        destruir_menu_insertar_moneda();
-                    }
-                    break;
-                }
-
-                case ESTADO_OPCIONES: {
-                    if (wParam == VK_SPACE) {
+                    if (GetAsyncKeyState(TECLA_MONEDA) & 0x8000 || GetAsyncKeyState(VK_NUMPAD5) & 0x8000){                        
                         pulsar_tecla(ESPACIO);
-                        if(modo_superfacil) {
-                            mision = TRAINING;
-                            terreno = FACIL;
-                        }
-                        iniciar_partida(monedas_introducidas);
+                        iniciar_partida(1);
                         estado_actual = ESTADO_JUEGO;
-                        repintar_ventana(hwnd);
                     }
                     break;
                 }

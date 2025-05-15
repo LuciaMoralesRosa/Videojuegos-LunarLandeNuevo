@@ -36,18 +36,6 @@ int segundos = 0;
 
 // ----------------------------- METODOS PRIVADOS ------------------------------
 
-/**
- * @brief Aplica un escalado inicial a una palabra de la cabecera.
- * 
- * Escala la palabra con el factor global factor_escalado y el factor adicional
- * escalado_cabecera para ajustarse al diseño de la interfaz.
- * 
- * @param palabra Puntero a la palabra a escalar.
- */
-void escalado_inicial(struct Palabra* palabra){
-	escalar_palabra_en_escena_dados_ejes(palabra, factor_escalado, factor_escalado);
-	escalar_palabra_en_escena_dados_ejes(palabra, escalado_cabecera, escalado_cabecera);
-}
 
 /**
  * @brief Actualiza los valores numéricos de combustible, altitud y velocidades.
@@ -67,7 +55,6 @@ void actualizar_dibujables(void) {
 		crear_cadena_dado_valor_3_digitos(combustible / 3, buffer);
 	}
 	fuel_valor = crear_palabra_desde_cadena(buffer, fuel_valor -> origen); 
-	escalado_inicial(fuel_valor);
 
 	int valor = (int)(velocidad_horizontal* MULTIPLICADOR_VELOCIDADES);
 	if(valor < 0) {
@@ -80,7 +67,6 @@ void actualizar_dibujables(void) {
 		buffer[0] = '0';
 	}
 	horizontal_speed_valor = crear_palabra_desde_cadena(buffer, horizontal_speed_valor -> origen); 
-	escalado_inicial(horizontal_speed_valor);
 
 	valor = (int)(velocidad_vertical * MULTIPLICADOR_VELOCIDADES);
 	if(valor < 0) {
@@ -93,12 +79,10 @@ void actualizar_dibujables(void) {
 		buffer[0] = '0';
 	}
 	vertical_speed_valor = crear_palabra_desde_cadena(buffer, vertical_speed_valor -> origen); 
-	escalado_inicial(vertical_speed_valor);
 
 	int valor_altitud = tamano_inicial_pantalla_Y - pos_real_nave_y - 130;
 	crear_cadena_dado_valor_4_digitos(valor_altitud, buffer);
 	altitude_valor = crear_palabra_desde_cadena(buffer, altitude_valor -> origen); 
-	escalado_inicial(altitude_valor);
 }
 
 
@@ -126,7 +110,7 @@ void inicializar_cabecera(void) {
 	}
 	fuel_valor = crear_palabra_desde_cadena(buffer, (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
-	origen_x_izda = tamano_inicial_pantalla_X + 130;
+	origen_x_izda = tamano_inicial_pantalla_X - 130;
 	origen_x_izda_valores = origen_x_izda + 50;
 	altitude = crear_palabra_desde_cadena("A", (struct Punto) {origen_x_izda, origen_y});
 	altitude_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y});
@@ -135,24 +119,8 @@ void inicializar_cabecera(void) {
 	vertical_speed = crear_palabra_desde_cadena("VV", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
 	vertical_speed_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
-	escalar_cabecera(factor_escalado);
-	escalar_cabecera(escalado_cabecera); // Reducir el tamaño de los dibujables
 }
 
-void escalar_cabecera(float factor) {
-	escalar_palabra_en_escena_dados_ejes(score, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(score_valor, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(time, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(time_valor, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(fuel, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(fuel_valor, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(altitude, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(altitude_valor, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(horizontal_speed, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(horizontal_speed_valor, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(vertical_speed, factor, factor);
-	escalar_palabra_en_escena_dados_ejes(vertical_speed_valor, factor, factor);
-}
 
 
 void dibujar_cabecera(HDC hdc){
@@ -187,28 +155,10 @@ void actualizar_segundos_cabecera(void) {
     buffer[4] = '0' + (segundos % 10);            // Unidad
 	buffer[5] = '\0';                          // Terminador nulo para cadena
 	time_valor = crear_palabra_desde_cadena(buffer, time_valor -> origen);
-	escalado_inicial(time_valor);
 }
 
 void actualizar_puntuacion_cabecera(void) {
 	char buffer[5];
 	crear_cadena_dado_valor_4_digitos(puntuacion_partida, buffer);
 	score_valor = crear_palabra_desde_cadena(buffer, score_valor -> origen); 
-	escalado_inicial(score_valor);
-
-}
-
-void destruir_cabecera(void){
-	destruir_palabra(score);
-	destruir_palabra(score_valor);
-	destruir_palabra(time);
-	destruir_palabra(time_valor);
-	destruir_palabra(fuel);
-	destruir_palabra(fuel_valor);
-	destruir_palabra(altitude);
-	destruir_palabra(altitude_valor);
-	destruir_palabra(horizontal_speed);
-	destruir_palabra(horizontal_speed_valor);
-	destruir_palabra(vertical_speed);
-	destruir_palabra(vertical_speed_valor);
 }
