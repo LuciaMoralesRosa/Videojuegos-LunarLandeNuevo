@@ -92,20 +92,3 @@ const struct DibujableConstante Terreno = {
     140,
     139
 };
-
-
-
-
-const struct DibujableConstante Terreno_Casi_Plano = {
-    {ANCHURA_TERRENO/2, ALTURA_TERRENO},
-    (struct Punto[]){
-        {0, 189}, {200, 198}, {259, 250}, {369, 250}, {400, 200}, {450, 200},
-        {520, 300}, {550, 300}, {800, 189}, {1024, 189}
-    },
-    (struct UnionAristas[]){
-        {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6},  
-        {6, 7}, {7, 8}, {8, 9}  
-    },
-    10,
-    9
-};

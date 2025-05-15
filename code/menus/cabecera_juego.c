@@ -111,13 +111,13 @@ void inicializar_cabecera(void) {
 
 	float separacion_altura =  ALTURA_CARACTER_MAX + ALTURA_CARACTER_MAX / 2;
 	float origen_x_izda = 30;
-	float origen_x_izda_valores = 200;
+	float origen_x_izda_valores = 60;
 	float origen_y = 30;
-	score = crear_palabra_desde_cadena("PUNTUACION", (struct Punto) {origen_x_izda, origen_y});
+	score = crear_palabra_desde_cadena("P", (struct Punto) {origen_x_izda, origen_y});
 	score_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y});
-	time = crear_palabra_desde_cadena("TIEMPO", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
+	time = crear_palabra_desde_cadena("T", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	time_valor = crear_palabra_desde_cadena("00:00", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
-	fuel = crear_palabra_desde_cadena("COMBUSTIBLE", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
+	fuel = crear_palabra_desde_cadena("C", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
 	if(combustible < 10000) {
 		crear_cadena_dado_valor_4_digitos(combustible / 3, buffer);
 	}
@@ -127,12 +127,12 @@ void inicializar_cabecera(void) {
 	fuel_valor = crear_palabra_desde_cadena(buffer, (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
 	origen_x_izda = tamano_inicial_pantalla_X + 130;
-	origen_x_izda_valores = origen_x_izda + 230;
-	altitude = crear_palabra_desde_cadena("ALTITUD", (struct Punto) {origen_x_izda, origen_y});
+	origen_x_izda_valores = origen_x_izda + 50;
+	altitude = crear_palabra_desde_cadena("A", (struct Punto) {origen_x_izda, origen_y});
 	altitude_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y});
-	horizontal_speed = crear_palabra_desde_cadena("VEL HORIZONTAL", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
+	horizontal_speed = crear_palabra_desde_cadena("VH", (struct Punto) {origen_x_izda, origen_y + separacion_altura});
 	horizontal_speed_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura});
-	vertical_speed = crear_palabra_desde_cadena("VEL VERTICAL", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
+	vertical_speed = crear_palabra_desde_cadena("VV", (struct Punto) {origen_x_izda, origen_y + separacion_altura * 2});
 	vertical_speed_valor = crear_palabra_desde_cadena("0000", (struct Punto) {origen_x_izda_valores, origen_y + separacion_altura * 2});
 
 	escalar_cabecera(factor_escalado);
@@ -182,7 +182,7 @@ void actualizar_segundos_cabecera(void) {
 	char buffer[6];
 	buffer[0] = '0' + ((minutos / 10) % 10);     // Decena
     buffer[1] = '0' + (minutos % 10);            // Unidad
-	buffer[2] = ':';
+	buffer[2] = ' ';
 	buffer[3] = '0' + ((segundos / 10) % 10);     // Decena
     buffer[4] = '0' + (segundos % 10);            // Unidad
 	buffer[5] = '\0';                          // Terminador nulo para cadena

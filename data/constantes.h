@@ -1,13 +1,6 @@
 #ifndef TABLAS_TRIGONOMETRICAS_H
 #define TABLAS_TRIGONOMETRICAS_H
 
-
-// Valores para las distintas misiones
-#define GRAVEDAD_TRAINING -0.00020625
-#define GRAVEDAD_CADET -0.00040625
-#define GRAVEDAD_PRIME  -0.0007625
-#define GRAVEDAD_COMMAND -0.0010625
-
 #define FRICCION_ATMOSFERA 0.001
 
 // Angulo de la rotacion de la nave por cada pulsacion de las teclas

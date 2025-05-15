@@ -4,7 +4,6 @@
 #include "../data/variables_juego.h"
 #include "../data/variables_globales.h"
 #include "fragmentacion_nave.h"
-#include "../resources.h"
 
 static int estado = PEDIR;
 static int estado_teclas[5] = {
@@ -63,39 +62,13 @@ void cambiar_estado(int nuevo_estado){
     estado = nuevo_estado;
 }
 
-void escalar_escena(float factor_x, float factor_y) {
-    escalar_escena_partida(factor_x, factor_y);
-}
-
-void reestablecer_mision(Tipo_Mision mision) {
-    switch(mision) {
-        case TRAINING:
-            gravedad_m_ms = GRAVEDAD_TRAINING;
-            friccion_atmosfera_activada = 1;
-        break;
-        case CADET:
-            gravedad_m_ms = GRAVEDAD_CADET;
-        break;
-        case PRIME:
-            gravedad_m_ms = GRAVEDAD_PRIME;
-        break;
-        case COMMAND:
-            gravedad_m_ms = GRAVEDAD_COMMAND;
-        break;
-    }
-}
-
-
-void iniciar_partida(int monedas_introducidas, Tipo_Mision mision, Tipo_Terreno terreno) {
-    reestablecer_mision(mision);
-    inicializar_partida(terreno);
+void iniciar_partida(int monedas_introducidas) {
+    inicializar_partida();
     insertar_monedas(monedas_introducidas);
     comenzarPartida();
-    escalar_escena_partida(factor_escalado, factor_escalado);
 }
 
 void continuar_tras_aterrizaje(void){
     continuar_tras_aterrizaje_partida();
     comenzarPartida();
-    escalar_escena_partida(factor_escalado, factor_escalado);
 }

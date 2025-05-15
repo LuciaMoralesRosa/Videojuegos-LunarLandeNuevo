@@ -5,7 +5,6 @@
 #include "terreno.h"
 #include "fragmentacion_nave.h"
 
-#include "../resources.h"
 #include "../resources/nave.h"
 #include "../resources/superficie_lunar.h"
 
@@ -37,9 +36,6 @@
 #define MARCO_TERRENO 150
 
 int inicio = 0;
-
-struct DibujableConstante terreno_seleccionado = {0};
-
 
 struct Dibujable* motor_debil = NULL;
 struct Dibujable* motor_medio = NULL;
@@ -121,7 +117,6 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion <= aterrizaje_perfecto_rot ||
 			nave->rotacion >= 360 - aterrizaje_perfecto_rot)) {
 			// Aterrizaje perfecto
-			PlaySound(MAKEINTRESOURCE(IDR_SOUND_PERFECT), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("\nAterrizaje perfecto\n");
 			printf("\tVelocidad: (%f, %f), Rotacion = %d\n\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			puntuacion = 50 * bonificador;
@@ -134,7 +129,6 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			(nave->rotacion <= aterrizaje_brusco_rot ||
 			nave->rotacion >= 360 - aterrizaje_brusco_rot)) {
 			// Aterrizaje brusco
-			PlaySound(MAKEINTRESOURCE(IDR_SOUND_FORCED), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			printf("\nAterrizaje brusco\n");
 			printf("\tVelocidad: (%f, %f), Rotacion = %d\n\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			puntuacion = 15 * bonificador;
@@ -145,7 +139,6 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 			printf("\nColision (con arista aterrizable)\n");
 			printf("\tVelocidad: (%f, %f), Rotacion = %d\n\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 			inicializar_nave_fragmentada();
-			PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 			establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 			puntuacion = 5 * bonificador;
 			tipo_aterrizaje = COLISION;
@@ -156,7 +149,6 @@ uint16_t evaluar_aterrizaje(uint8_t bonificador, uint8_t es_arista_aterrizable){
 		printf("\nColision (arista inclinada)\n");
 		printf("\tVelocidad: (%f, %f), Rotacion = %d\n\n", nave->velocidad[0], nave->velocidad[1], nave->rotacion);
 		inicializar_nave_fragmentada();
-		PlaySound(MAKEINTRESOURCE(IDR_SOUND_COLISION), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 		establecer_fragmentos_al_colisionar(nave->velocidad[0], nave->velocidad[1], nave->objeto->origen);
 		puntuacion = 5 * bonificador;
 		tipo_aterrizaje = COLISION;
@@ -656,31 +648,15 @@ void manejar_instante_partida(){
 	}
 }
 
-void establecer_terreno_seleccionado(Tipo_Terreno terreno) {
-	switch (terreno) {
-		case ORIGINAL:
-		terreno_seleccionado = Terreno;
-		break;
-		case FACIL: 
-		terreno_seleccionado = Terreno_Casi_Plano;
-		break;
-		default:
-		terreno_seleccionado = Terreno;
-		break;
-	}
-}
-
-void inicializar_partida(Tipo_Terreno terreno){
+void inicializar_partida(){
 	inicializar_cabecera();
     combustible = 0;
 
-	establecer_terreno_seleccionado(terreno);
-
-	terreno_0 = crear_dibujable(&terreno_seleccionado);
-	terreno_1 = crear_dibujable(&terreno_seleccionado);
+	terreno_0 = crear_dibujable(&Terreno);
+	terreno_1 = crear_dibujable(&Terreno);
 
 	//generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
-	generar_plataformas(&plataformas_0, &plataformas_1, &terreno_seleccionado, terreno_1->origen, &numero_plataformas);
+	generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
 }
@@ -694,9 +670,9 @@ void continuar_tras_aterrizaje_partida(){
 
 	modo_zoom = DESACTIVADO;
 	
-	terreno_0 = crear_dibujable(&terreno_seleccionado);
-	terreno_1 = crear_dibujable(&terreno_seleccionado);
-	generar_plataformas(&plataformas_0, &plataformas_1, &terreno_seleccionado, terreno_1->origen, &numero_plataformas);
+	terreno_0 = crear_dibujable(&Terreno);
+	terreno_1 = crear_dibujable(&Terreno);
+	generar_plataformas(&plataformas_0, &plataformas_1, &Terreno, terreno_1->origen, &numero_plataformas);
 	trasladar_superficie_lunar(terreno_0, plataformas_0, numero_plataformas, (struct Punto){0, 350});
 	trasladar_superficie_lunar(terreno_1, plataformas_1, numero_plataformas, (struct Punto){-tamano_inicial_pantalla_X, 350});
 }

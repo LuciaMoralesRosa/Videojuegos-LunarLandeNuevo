@@ -79,31 +79,12 @@ struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto orig
         char c = cadena[i];
         switch (c) {
             case 'A': agregar_letra(txt, &Letra_A_Base); break;
-            case 'B': agregar_letra(txt, &Letra_B_Base); break;
             case 'C': agregar_letra(txt, &Letra_C_Base); break;
-            case 'D': agregar_letra(txt, &Letra_D_Base); break;
-            case 'E': agregar_letra(txt, &Letra_E_Base); break;
-            case 'F': agregar_letra(txt, &Letra_F_Base); break;
-            case 'G': agregar_letra(txt, &Letra_G_Base); break;
             case 'H': agregar_letra(txt, &Letra_H_Base); break;
-            case 'I': agregar_letra(txt, &Letra_I_Base); break;
-            case 'J': agregar_letra(txt, &Letra_J_Base); break;
-            case 'K': agregar_letra(txt, &Letra_K_Base); break;
-            case 'L': agregar_letra(txt, &Letra_L_Base); break;
-            case 'M': agregar_letra(txt, &Letra_M_Base); break;
-            case 'N': agregar_letra(txt, &Letra_N_Base); break;
-            case 'O': agregar_letra(txt, &Letra_O_Base); break;
             case 'P': agregar_letra(txt, &Letra_P_Base); break;
-            case 'Q': agregar_letra(txt, &Letra_Q_Base); break;
-            case 'R': agregar_letra(txt, &Letra_R_Base); break;
-            case 'S': agregar_letra(txt, &Letra_S_Base); break;
             case 'T': agregar_letra(txt, &Letra_T_Base); break;
-            case 'U': agregar_letra(txt, &Letra_U_Base); break;
             case 'V': agregar_letra(txt, &Letra_V_Base); break;
-            case 'W': agregar_letra(txt, &Letra_W_Base); break;
             case 'X': agregar_letra(txt, &Letra_X_Base); break;
-            case 'Y': agregar_letra(txt, &Letra_Y_Base); break;
-            case 'Z': agregar_letra(txt, &Letra_Z_Base); break;
             case '0': agregar_letra(txt, &Numero_0_Base); break;
             case '1': agregar_letra(txt, &Numero_1_Base); break;
             case '2': agregar_letra(txt, &Numero_2_Base); break;
@@ -116,17 +97,8 @@ struct Palabra* crear_palabra_desde_cadena(const char* cadena, struct Punto orig
             case '9': agregar_letra(txt, &Numero_9_Base); break;
             case ' ': agregar_letra(txt, &Simbolo_Espacio_Base); break;
             case ':': agregar_letra(txt, &Simbolo_DosPuntos_Base); break;
-            case '>': agregar_letra(txt, &Simbolo_Derecha_Base); break;
-            case '<': agregar_letra(txt, &Simbolo_Izquierda_Base); break;
-            case '*': agregar_letra(txt, &Checkbox_Base); break;
-            case '+': agregar_letra(txt, &Checkbox_Base_Check); break;
             case '-': agregar_letra(txt, &Menos_Base); break;
-            case '\'': agregar_letra(txt, &Apostrofe_Base); break;
-            case '?': agregar_letra(txt, &Interrogante_Base); break;
-            case ',': agregar_letra(txt, &Coma_Base); break;
-
-
-
+            
             // Agnadir mas simbolos
             default: break;
         }

@@ -3,7 +3,7 @@ CC = gcc
 WINDRES = windres
 
 # Flags de compilación
-CFLAGS = -Wall -Wextra -Wpedantic -g -mwindows
+CFLAGS = -Wall -Wextra -Wpedantic -O3 -mwindows
 
 # Flags de enlazado
 LDFLAGS = -lwinmm
@@ -32,20 +32,16 @@ TARGET = lunar_lander.exe
 all: $(TARGET)
 
 # Compilar el ejecutable
-$(TARGET): $(OBJS) $(RES_FILE)
-	$(CC) $(CFLAGS) $(OBJS) $(RES_FILE) -o $(TARGET) $(LDFLAGS)
+$(TARGET): $(OBJS) 
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 # Compilar cada archivo fuente en un objeto
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compilar el archivo de recursos
-$(RES_FILE): $(RC_FILE) resources.h
-	$(WINDRES) -O coff $(RC_FILE) -o $(RES_FILE)
-
 # Limpiar archivos compilados
 clean:
-	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o $(SRC_DIR)\$(IA_DIR)\*.o main.o $(RES_FILE) $(TARGET) 2>nul
+	del /Q $(SRC_DIR)\*.o $(DATA_DIR)\*.o $(RES_DIR)\*.o $(SRC_DIR)\$(MENU_DIR)\*.o $(SRC_DIR)\$(IA_DIR)\*.o main.o $(TARGET) 2>nul
 
 # Recompilar todo y ejecutar
 run:

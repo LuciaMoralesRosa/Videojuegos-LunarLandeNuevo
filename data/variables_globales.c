@@ -11,10 +11,6 @@ int friccion_atmosfera_activada = 0;
 int modo_ia_activado = 0;
 int partida_empezada = 0;
 
-Tipo_Terreno tipo_terreno_seleccionado = ORIGINAL;
-Tipo_Mision tipo_mision_seleccionado = TRAINING;
-Opcion_Menu opcion_menu_seleccionado = MISSION;
-
 int TECLA_MONEDA = 0x35;
 int TECLA_PROPULSOR = 0x26;
 int TECLA_ROTAR_IZDA =  0x25;

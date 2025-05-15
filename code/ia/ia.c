@@ -5,7 +5,6 @@
 #include "../../data/variables_juego.h"
 
 #include "../menus/menu_final_partida.h"
-#include "../../resources.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -207,13 +206,11 @@ void manejar_instante_ia(struct Punto v0, struct Punto p0){
             pulsar_tecla(ARRIBA);
             if(primera_pulsacion_propulsor == 1) {
                 primera_pulsacion_propulsor = 0;
-                PlaySound(MAKEINTRESOURCE(IDR_SOUND_MOTOR), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
             }
         }
     }
     else {
         primera_pulsacion_propulsor = 1;
-        PlaySound(NULL, 0, 0);
     }
     if(input.izquierda > 0) {
         pulsar_tecla(IZQUIERDA);
